@@ -7,7 +7,7 @@ export const tableColumns = [
     key: "name",
     render: ({ id, name }) => (
       <Link to={`/profile/${id}`} target="_blank">
-        {name}
+        {`${name.firstName} ${name.lastName}`}
       </Link>
     ),
   },
@@ -33,13 +33,48 @@ export const tableColumns = [
   },
 ];
 
-export const sampleData = Array(20)
-  .fill(undefined)
-  .map((_, index) => ({
+const randomNames = [
+  "Emily Thompson",
+  "Joshua Davis",
+  "Olivia Miller",
+  "Alexander Lee",
+  "Sophia Rodriguez",
+  "Liam Johnson",
+  "Ava Wilson",
+  "Noah Taylor",
+  "Mia Brown",
+  "Ethan Martinez",
+  "Isabella Harris",
+  "Lucas Anderson",
+  "Amelia Smith",
+  "James Taylor",
+  "Emma Garcia",
+  "Benjamin White",
+  "Abigail Jackson",
+  "Oliver Martinez",
+  "Harper Davis",
+  "William Turner",
+  "Charlotte Harris",
+  "Logan Smith",
+  "Aria Johnson",
+  "Daniel Wilson",
+];
+
+export const sampleData = randomNames.map((name, index) => {
+  const [firstName, lastName] = name.split(" ");
+  return {
     key: index,
-    name: { id: "00000", name: "Joe Black" },
+    name: {
+      id: "00000",
+      name: {
+        firstName: firstName,
+        lastName: lastName,
+        preferredName: "test0",
+      },
+    },
     ssn: "123456",
     visa: "OPT",
     cellPhone: "12345678",
     email: "test0@gmail.com",
-  }));
+  };
+});

@@ -57,18 +57,21 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
       state.user = {};
       state.status = "idle";
-      // Remove from localStorage
+      // Remove user information
       localStorage.removeItem("userID");
       localStorage.removeItem("position");
       localStorage.removeItem("appStatus");
       localStorage.removeItem("token");
+      // Remove data in employee profile page
+      localStorage.removeItem("profileSummaryPage");
+      localStorage.removeItem("profileSummarySearch");
     },
   },
   extraReducers: (builder) => {
     builder.addCase(authUser.fulfilled, (state, action) => {
       state.isAuthenticated = !!Object.keys(action.payload).length;
       state.user = action.payload;
-      state.status = 'succeeded';
+      state.status = "succeeded";
     });
     builder.addCase(authUser.rejected, (state, action) => {
       state.isAuthenticated = false;
