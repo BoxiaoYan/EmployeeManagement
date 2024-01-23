@@ -1,0 +1,21 @@
+.searchBar {
+  width: 80%;
+  margin: auto;
+  margin-top: 5%;
+  margin-bottom: 2%;
+}
+
+.text {
+  width: 80%;
+  margin: auto;
+  font-size: medium;
+  font-weight: 500;
+}
+
+.employeeTable {
+  width: 80%;
+  margin: auto;
+  margin-top: 1%;
+  margin-bottom: 10%;
+  border: 1px solid lightgray;
+}
