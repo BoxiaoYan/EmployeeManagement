@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
-  regToken: {
+  regLink: {
     type: String,
     required: true,
   },
@@ -13,12 +13,10 @@ const userSchema = new mongoose.Schema({
   },
   username: {
     type: String,
-    required: true,
     unique: true,
   },
   password: {
     type: String,
-    required: true,
   },
   position: {
     type: String,
@@ -26,7 +24,7 @@ const userSchema = new mongoose.Schema({
   },
   appStatus: {
     type: String,
-    default: "Unsubmitted",
+    default: "UnRegistered",
   },
 });
 
@@ -35,20 +33,20 @@ userSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {
       return next();
     }
-    let hashedPassword = await bcrypt.hash(this.password, 10);
+    const hashedPassword = await bcrypt.hash(this.password, 10);
     this.password = hashedPassword;
     return next();
-  } catch (err) {
-    return next(err);
+  } catch (error) {
+    return next(error);
   }
 });
 
 userSchema.methods.comparePassWord = async function (candidatePassword, next) {
   try {
-    let isMatched = await bcrypt(candidatePassword, this.password);
+    const isMatched = await bcrypt.compare(candidatePassword, this.password);
     return isMatched;
-  } catch (err) {
-    return next(err);
+  } catch (error) {
+    return next(error);
   }
 };
 
