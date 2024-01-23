@@ -9,7 +9,7 @@ exports.saveProfile = async function (req, res, next) {
       await db.Profile.updateOne({ user: userID }, profile);
       return res
         .status(200)
-        .json({ message: "User profile updated successfully" });
+        .json({ message: "User profile is updated successfully" });
     } else {
       // If user does not exist, create a new profile
       const newUserProfile = new db.Profile(profile);
@@ -20,11 +20,10 @@ exports.saveProfile = async function (req, res, next) {
       await user.save();
       return res
         .status(201)
-        .json({ message: "User profile saved successfully" });
+        .json({ message: "User profile is saved successfully" });
     }
   } catch (error) {
-    console.error(error);
-    return next({ status: 500, message: "Server Error" });
+    return next(error);
   }
 };
 
@@ -35,10 +34,9 @@ exports.getProfile = async function (req, res, next) {
     if (userProfile) {
       return res.status(200).json({ profile: userProfile });
     } else {
-      return res.status(404).json({ error: "User profile not found" });
+      return res.status(404).json({ error: "User profile is not found" });
     }
   } catch (error) {
-    console.error(error);
-    return next({ status: 500, message: "Server Error" });
+    return next(error);
   }
 };

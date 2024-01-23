@@ -7,16 +7,28 @@ const profileSchema = new mongoose.Schema({
     ref: "User",
   },
 
-  // i. Name
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  middleName: String,
-  preferredName: String,
+  // a. Name
+  name: {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    middleName: String,
+    preferredName: String,
+  },
 
-  // ii. Profile picture
+  // b. Profile picture
   pictrue: { data: Buffer, contentType: String },
 
-  // iii. Current address
+  // c. Email
+  email: { type: String, unique: true, required: true },
+
+  // d. SSN, date of birth, gender
+  personalInfo: {
+    ssn: { type: Number, required: true },
+    birthday: { type: Date, required: true },
+    gender: { type: String, required: true },
+  },
+
+  // e. Address
   address: {
     street: { type: String, required: true },
     apt: { type: String, required: true },
@@ -25,25 +37,20 @@ const profileSchema = new mongoose.Schema({
     zip: { type: String, required: true },
   },
 
-  // iv. Phone
-  phone: { type: Number, required: true },
-  workPhone: Number,
-
-  // v. Email
-  email: { type: String, unique: true, required: true },
-
-  // vi. SSN, birthday, gender
-  ssn: { type: Number, required: true },
-  birthday: { type: Date, required: true },
-  gender: { type: String, required: true },
-
-  // vii.
-  usCitizenship: {
-    isCitizen: { type: Boolean, default: false },
-    // discuss with frontend
+  // f. Contact info
+  phone: {
+    cellPhone: { type: Number, required: true },
+    workPhone: Number,
   },
 
-  // viii. Reference
+  // g. Employment
+  employment: {
+    visa: { type: String, required: true },
+    startDate: { type: Date, required: true },
+    endDate: { type: Date, required: true },
+  },
+
+  // h. Reference
   reference: {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -52,6 +59,8 @@ const profileSchema = new mongoose.Schema({
     email: String,
     relationship: { type: String, required: true },
   },
+
+  // i. Emergency contacts
   emergencyContacts: [
     {
       firstName: { type: String, required: true },
@@ -63,8 +72,8 @@ const profileSchema = new mongoose.Schema({
     },
   ],
 
-  // ix. Uploaded files
-  files: [
+  // j. Documents
+  documents: [
     {
       type: String,
       data: Buffer,
