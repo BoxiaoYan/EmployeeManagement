@@ -30,6 +30,10 @@ function EmployeePersonalInformation() {
   const [cellPhone, setCellPhone] = useState("");
   const [workPhone, setWorkPhone] = useState("");
 
+  const [visaTitle, setVisaTitle] = useState("");
+  const [visaStartDate, setVisaStartDate] = useState("");
+  const [visaEndDate, setVisaEndDate] = useState("");
+
   const [emerFirstName, setEmerFirstName] = useState("");
   const [emerLastName, setEmerLastName] = useState("");
   const [emerMiddleName, setEmerMiddleName] = useState("");
@@ -151,8 +155,8 @@ function EmployeePersonalInformation() {
 
   return (
     <div className="all">
-      <Container>
-        <Row className="justify-content-center">
+      <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+        <Row>
           <Col xs={12} md={6} xl={10}>
             {isEdit ? (<Row className="mt-4 mb-4">
               <Col>
@@ -447,6 +451,56 @@ function EmployeePersonalInformation() {
                         style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
                       />
                     </Form.Group>
+                  </Col>
+                </Row>
+
+
+                <h5 className="my-4">Employment</h5>
+                <Row>
+                  <Col className="mb-3">
+                    <Form.Group id="visa-title">
+                      <Form.Label>Visa Title</Form.Label>
+                      <Form.Control 
+                        type="text" 
+                        value={visaTitle}
+                        onChange={(e) => setVisaTitle(e.target.value)}
+                        placeholder="H1-B, L2, F1(CPT/OPT), H4, Other"
+                        readOnly={!isEdit}
+                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col className="mb-3">
+                    <Form.Group id="start-date">
+                      <Form.Label>Visa Start Date</Form.Label>
+                        <InputGroup>
+                          <InputGroup.Text><CalendarIcon /></InputGroup.Text>
+                          <Form.Control 
+                            required 
+                            type="text"
+                            readOnly={!isEdit}
+                            style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                            value={visaStartDate}
+                            onChange={(e) => setVisaStartDate(e.target.value)} 
+                            placeholder="mm/dd/yyyy" />
+                        </InputGroup>
+                      </Form.Group>
+                  </Col>
+                  <Col className="mb-3">
+                    <Form.Group id="end-date">
+                      <Form.Label>Visa End Date</Form.Label>
+                        <InputGroup>
+                          <InputGroup.Text><CalendarIcon /></InputGroup.Text>
+                          <Form.Control 
+                            required 
+                            type="text"
+                            readOnly={!isEdit}
+                            style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                            value={visaEndDate}
+                            onChange={(e) => setVisaEndDate(e.target.value)} 
+                            placeholder="mm/dd/yyyy" />
+                        </InputGroup>
+                      </Form.Group>
                   </Col>
                 </Row>
 
