@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EmployeeProfileSummary from "./pages/EmployeeProfileSummary";
 
 import NotFound from "./pages/ErrorPages/NotFound";
+import NotAuthorized from "./pages/ErrorPages/NotAuthorized"
 import SessionExpired from "./pages/ErrorPages/SessionExpired";
 import ServerError from "./pages/ErrorPages/ServerError";
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<EmployeeProfileSummary />} />
         <Route path="/error">
           <Route path="/error/server-error" element={<ServerError />} />
+          <Route path="/error/not-authorized" element={<NotAuthorized />} />
           <Route path="/error/session-expired" element={<SessionExpired />} />
         </Route>
         <Route path="*" element={<NotFound />} />

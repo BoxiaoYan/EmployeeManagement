@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Input, Table } from "antd";
 
 import { fetchProfileSummary } from "../../services/profiles";
@@ -28,12 +28,8 @@ export default function EmployeeProfileSummary() {
     }
 
     // Fetch employee profile summary
-    try {
-      fetchProfileSummary(setProfile, setDisplayProfile);
-    } catch (error) {
-      console.log(error)
-      navigate("/error/session-expired")
-    }
+    fetchProfileSummary(setProfile, setDisplayProfile, navigate)
+    
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

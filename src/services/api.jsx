@@ -20,7 +20,6 @@ export default async function apiCall({ url: apiUrl, method, data, headers }) {
   });
   if (!response.ok) {
     const { error } = await response.json();
-    console.log(error);
     throw new Error(error.message);
   }
   const result = await response.json();
