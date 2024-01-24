@@ -16,6 +16,10 @@ export const signIn = async (data) => {
   });
 };
 
-export const getRegEmail = async (data) => {
-
+export const verifyRegLink = async (token, setEmail) => {
+  const response = await apiCall({
+    url: `/api/auth/registration/${token}`,
+    method: "GET",
+  });
+  setEmail(response.email);
 };
