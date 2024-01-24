@@ -16,7 +16,7 @@ export const signIn = async (data) => {
   });
 };
 
-export const verifyRegLink = async (token, setEmail, navigate) => {
+export const verifyRegLink = async (token, setEmail) => {
   try {
     const response = await apiCall({
       url: `/api/auth/registration/${token}`,
