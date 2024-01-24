@@ -1,14 +1,17 @@
 import { UserOutlined, MailOutlined } from '@ant-design/icons';
 import Authform from '../components/Authform';
-// import { useDispatch } from 'react-redux';
-// import { authUser } from 'app/userSlice';
+import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
+import { registerUser } from '../app/userSlice';
+
+import { verifyRegLink } from '../services/auth'
 
 // const validateTokenWithServer = async (token) => {
 //     try {
-//       const response = await fetch(`https://your-api-endpoint.com/validate-token?token=${token}`);
+//       const response = await fetch("/api/auth/register");
 //       const data = await response.json();
+//       console.log('Response:', data);
   
 //       return data.isValid;
 //     } catch (error) {
@@ -21,26 +24,20 @@ export default function Registration() {
   // confirm the url has token
   const navigate = useNavigate();
   const location = useLocation();
-  const {token} = useParams();
+  const {token } = useParams();
+  const [email, setEmail] = useState('');
 
-//   const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const isValidToken = await validateTokenWithServer(token);
+  useEffect(() => {
+    const handleVerification = async () => {
+      await verifyRegLink(token, setEmail);
+    //   console.log('Email after verification:', email);
+    };
+  
+    handleVerification();
+  }, [token, email]); 
 
-//         if (!isValidToken) {
-//             navigate('/error');
-//         }
-
-//       } catch (error) {
-//         console.error('Error during registration:', error);
-//       }
-//     };
-
-//     fetchData();
-//   }, [navigate, location.search]);
   
   
   const fields = [
@@ -83,8 +80,9 @@ export default function Registration() {
 
 
 const onSubmit = data => {
-  navigate('/login')
-//   dispatch(signUpUser(data)).then(() => navigate('/login'));
+//   navigate('/login')
+  console.log(data)
+  dispatch(registerUser(data)).then(() => navigate('/login'));
 };
 
   return (

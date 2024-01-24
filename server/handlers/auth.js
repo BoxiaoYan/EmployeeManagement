@@ -17,10 +17,10 @@ exports.signin = async function (req, res, next) {
       });
       return res.status(200).json({ id, username, position, appStatus, token });
     } else {
-      return next({ status: 400, message: "Invalid Email / Password." });
+      return next({ status: 400, message: "Invalid Username / Password" });
     }
   } catch (error) {
-    return next({ status: 400, message: "Invalid Email / Password." });
+    return next(error);
   }
 };
 
@@ -29,11 +29,11 @@ exports.register = async function (req, res, next) {
     const { email, username, password } = req.body;
     const user = await db.User.findOne({ email });
     if (!user) {
-      return next({ status: 400, message: "Email is not exists." });
+      return next({ status: 400, message: "Email is not existed" });
     }
     // User is already registered
     if (user.appStatus !== "UnRegistered") {
-      return next({ status: 400, message: "User is already registered." });
+      return next({ status: 400, message: "User is already registered" });
     }
     // Update username, password, and application status
     user.username = username;
@@ -49,7 +49,7 @@ exports.register = async function (req, res, next) {
   } catch (error) {
     // Username already exist
     if (error.code === 11000) {
-      return next({ status: 400, message: "Username is already exists" });
+      return next({ status: 400, message: "Username is already existed" });
     }
     return next(error);
   }
@@ -62,13 +62,13 @@ exports.generateRegLink = async function (req, res, next) {
     const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY, {
       expiresIn: "3h",
     });
-    const regLink = `${rootLink}/${token}`;
+    const regLink = `${rootLink}/registration/${token}`;
     // Check if current email exists
     const existUser = await db.User.findOne({ email });
     if (existUser) {
       // Check if user already registered
       if (existUser.appStatus !== "UnRegistered") {
-        return next({ status: 400, message: "User already registered." });
+        return next({ status: 400, message: "User is already registered" });
       }
       // Update the registration link
       existUser.regLink = regLink;
@@ -76,7 +76,7 @@ exports.generateRegLink = async function (req, res, next) {
       return res.status(200).json({ regLink });
     } else {
       // Create new user
-      await db.User.create({ email, regLink });
+      await db.User.create({ email, regLink, username: email });
       return res.status(200).json({ regLink });
     }
   } catch (error) {
@@ -95,9 +95,9 @@ exports.getRegEmail = async function (req, res, next) {
     return res.status(200).json({ email });
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      return next({ status: 401, message: "Invalid token." });
+      return next({ status: 401, message: "Invalid token" });
     } else if (error instanceof jwt.TokenExpiredError) {
-      return next({ status: 401, message: "Token Expired." });
+      return next({ status: 401, message: "Token Expired" });
     } else {
       return next(error);
     }

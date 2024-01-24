@@ -1,8 +1,8 @@
 import { UserOutlined } from '@ant-design/icons';
 import Authform from '../components/Authform';
 import { useNavigate } from 'react-router-dom';
-// import { useDispatch } from 'react-redux';
-// import { authUser } from 'app/userSlice';
+import { useDispatch } from 'react-redux';
+import { authUser,setCurrentUser } from '../app/userSlice';
 
 export default function Login() {
 
@@ -28,31 +28,31 @@ export default function Login() {
     }
   ];
 
-//   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     //gonna update with redux part
-    navigate('/')
+    // navigate('/')
 
-    // try{
-    //   const user = await dispatch(authUser(data));
-    //   console.log(user);
+    try{
+      const user = await dispatch(authUser(data));
+      console.log(user);
 
-    //   if (user.payload.success) {
-    //     console.log('Successful login');
+      if (user.payload.success) {
+        console.log('Successful login');
 
-    //     dispatch(setCurrentUser(user.payload.id));
-    //     dispatch(setCurrentToken(user.payload.token));
-    //     navigate('/personal');
+        dispatch(setCurrentUser(user.payload.id));
+        // dispatch(setCurrentToken(user.payload.token));
+        navigate('/personal');
         
-    //   } 
-    //   else {
-    //     alert("Invalid username or password");
-    //   }
-    // } catch (err) {
-    //   console.error('Authentication failed:', err);
-    // }
+      } 
+      else {
+        alert("Invalid username or password");
+      }
+    } catch (err) {
+      console.error('Authentication failed:', err);
+    }
   };
 
 
