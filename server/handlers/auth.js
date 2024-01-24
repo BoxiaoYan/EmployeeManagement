@@ -76,7 +76,7 @@ exports.generateRegLink = async function (req, res, next) {
       return res.status(200).json({ regLink });
     } else {
       // Create new user
-      await db.User.create({ email, regLink });
+      await db.User.create({ email, regLink, username: email });
       return res.status(200).json({ regLink });
     }
   } catch (error) {
