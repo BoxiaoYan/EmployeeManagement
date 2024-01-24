@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import moment from "moment-timezone";
 import Datetime from "react-datetime";
-import "./EmployeePersonalInformation.css";
+import "./PersonalInformation.css";
 
 import { Col, Row, Card, Form, Button, InputGroup, Container, Table,  Modal } from 'react-bootstrap';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
@@ -11,7 +11,7 @@ import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { CalendarIcon } from '@chakra-ui/icons'
 
 
-function EmployeePersonalInformation() {
+function EmployeeInformation() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -660,4 +660,4 @@ function EmployeePersonalInformation() {
 };
 
 
-export default EmployeePersonalInformation;
+export default EmployeeInformation;
