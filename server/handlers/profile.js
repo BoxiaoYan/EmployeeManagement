@@ -27,7 +27,7 @@ exports.saveProfile = async function (req, res, next) {
   }
 };
 
-exports.getProfile = async function (req, res, next) {
+exports.getOneProfile = async function (req, res, next) {
   try {
     const { userID } = req.body;
     const userProfile = await db.Profile.findOne({ user: userID });
@@ -36,6 +36,32 @@ exports.getProfile = async function (req, res, next) {
     } else {
       return res.status(404).json({ error: "User profile is not found" });
     }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.getProfileSummary = async function (req, res, next) {
+  try {
+    const profiles = await db.Profile.find();
+
+    // Extract profile summary
+    const profileSummary = profiles.map((profile) => ({
+      name: {
+        id: profile.user,
+        name: {
+          firstName: profile.name.firstName,
+          lastName: profile.name.lastName,
+          preferredName: profile.name.preferredName,
+        },
+      },
+      ssn: profile.personalInfo.ssn,
+      visa: profile.employment.visa,
+      cellPhone: profile.phone.cellPhone,
+      email: profile.email,
+    }));
+
+    return res.status(200).json({ profileSummary });
   } catch (error) {
     return next(error);
   }
