@@ -62,7 +62,7 @@ exports.generateRegLink = async function (req, res, next) {
     const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY, {
       expiresIn: "3h",
     });
-    const regLink = `${rootLink}/${token}`;
+    const regLink = `${rootLink}/registration/${token}`;
     // Check if current email exists
     const existUser = await db.User.findOne({ email });
     if (existUser) {
