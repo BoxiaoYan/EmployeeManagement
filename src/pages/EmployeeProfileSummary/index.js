@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Input, Table } from "antd";
 
-import { tableColumns, sampleData } from "./dataFormat";
+import { fetchProfileSummary } from "../../services/profiles";
+import { tableColumns } from "./dataFormat";
 import styles from "./style.module.css";
 
 export default function EmployeeProfileSummary() {
   const [search, setSearch] = useState("");
-  const [employee, setEmployee] = useState([]);
-  const [displayEmloyee, setDisplayEmployee] = useState([]);
+  const [profile, setProfile] = useState([]);
+  const [displayProfile, setDisplayProfile] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Load the current page from localStorage
@@ -24,25 +28,31 @@ export default function EmployeeProfileSummary() {
     }
 
     // Fetch employee profile summary
-    // TODO
-    setEmployee(sampleData);
-    setDisplayEmployee(sampleData);
+    try {
+      fetchProfileSummary(setProfile, setDisplayProfile);
+    } catch (error) {
+      console.log(error)
+      navigate("/error/session-expired")
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     // Update displayed employee with search result
-    setDisplayEmployee(
-      employee.filter((item) => {
+    setDisplayProfile(
+      profile.filter((item) => {
         const { firstName, lastName, preferredName } = item.name.name;
+        const fullName = firstName + " " + lastName;
         const lowerCaseSearchTerm = search.toLowerCase();
         return (
           firstName.toLowerCase().includes(lowerCaseSearchTerm) ||
           lastName.toLowerCase().includes(lowerCaseSearchTerm) ||
-          preferredName.toLowerCase().includes(lowerCaseSearchTerm)
+          preferredName.toLowerCase().includes(lowerCaseSearchTerm) ||
+          fullName.toLowerCase().includes(lowerCaseSearchTerm)
         );
       })
     );
-  }, [search, employee]);
+  }, [search, profile]);
 
   // Handle search bar change
   const handleSearchBarChange = (e) => {
@@ -70,7 +80,7 @@ export default function EmployeeProfileSummary() {
         />
       </div>
       <div className={styles.text}>
-        Found {displayEmloyee.length} employee(s)
+        Found {displayProfile.length} employee(s)
       </div>
       <div className={styles.employeeTable}>
         <Table
@@ -80,7 +90,7 @@ export default function EmployeeProfileSummary() {
             pageSize: 10,
           }}
           columns={tableColumns}
-          dataSource={displayEmloyee}
+          dataSource={displayProfile}
         />
       </div>
     </>

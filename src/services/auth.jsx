@@ -15,3 +15,7 @@ export const signIn = async (data) => {
     data,
   });
 };
+
+export const getRegEmail = async (data) => {
+
+};
