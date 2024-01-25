@@ -2,8 +2,9 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EmployeeProfileSummary from "./pages/EmployeeProfileSummary";
 import NotFound from "./pages/NorFound";
-import EmployeePersonalInformation from "./pages/PersonalInformation/PersonalInformation";
-import HRPersonalInformation from "./pages/HRInformation/HRInformation";
+import PersonalInformation from "./pages/PersonalInformation/PersonalInformation";
+import HRInformation from "./pages/HRInformation/HRInformation";
+import OnboardingApplication from "./pages/OnboardingApplication/OnboardingApplication";
 
 
 import './scripts/App.css';
@@ -31,7 +32,8 @@ function App() {
           <Route path="/signin" element={<Login/>} />
 
           <Route path="/summary" element={<EmployeeProfileSummary />} />
-          <Route path="/personal-profile" element={<EmployeeInformation />} />
+          <Route path="/onboarding-application" element={<OnboardingApplication />} />
+          <Route path="/personal-profile" element={<PersonalInformation />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/HR-profile" element={<HRInformation />} />
         </Routes>

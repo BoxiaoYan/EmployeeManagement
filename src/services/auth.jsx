@@ -15,13 +15,13 @@ export const signIn = async (data) => {
     data,
   });
 };
+
 export const verifyRegLink = async (token, setEmail) => {
   try {
     const response = await apiCall({
       url: `/api/auth/registration/${token}`,
       method: "GET",
     });
-    // console.log('API Response:', response);
     setEmail(response.email);
   } catch (error) {
     // if email is empty, render <RegLinkExpired />

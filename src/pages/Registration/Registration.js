@@ -1,64 +1,56 @@
 import { UserOutlined, MailOutlined } from '@ant-design/icons';
-import Authform from '../../components/Authform';
+import Authform from '../components/Authform';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useEffect,useState } from 'react';
-import { registerUser } from '../../app/userSlice';
+import { registerUser } from '../app/userSlice';
 
-import { verifyRegLink } from '../../services/auth'
-
-// const validateTokenWithServer = async (token) => {
-//     try {
-//       const response = await fetch("/api/auth/register");
-//       const data = await response.json();
-//       console.log('Response:', data);
-  
-//       return data.isValid;
-//     } catch (error) {
-//       console.error('Error validating token:', error);
-//       return false;
-//     }
-//   };
+import { verifyRegLink } from '../services/auth'
 
 export default function Registration() {
   // confirm the url has token
   const navigate = useNavigate();
   const location = useLocation();
   const {token } = useParams();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const handleVerification = async () => {
-      await verifyRegLink(token, setEmail);
-    //   console.log('Email after verification:', email);
-    };
+//   useEffect(() => {
+//     const handleVerification = async () => {
+//       await verifyRegLink(token, setEmail);
+//       console.log('Email after verification:', email);
+//     };
   
+//     handleVerification();
+//   }, [token, email]); 
+
+useEffect(() => {
+    const handleVerification = async () => {
+      try {
+        // Wait for email verification to complete
+        await verifyRegLink(token, setEmail);
+      } catch (error) {
+        console.error('Error during verification:', error);
+        // Handle the error if needed
+      }
+    };
     handleVerification();
-  }, [token, email]); 
+}, [token]);
 
   
   
   const fields = [
     {
-        placeholder: 'email',
+        placeholder: email,
+        defaultValue:email,
         name: 'email',
         type: 'email',
         prefix: <MailOutlined />,
-        rules:[{
-            type: 'email',
-            message: 'Please enter a valid email address',
-        },
-        {
-            required:true,
-            message:'Email address cannot be empty'
-        }
-        ],
     },
     {
       placeholder: 'Username',
-      name: 'Username',
+      name: 'username',
       type: 'text',
       prefix: <UserOutlined />,
       rules:[{
@@ -79,20 +71,33 @@ export default function Registration() {
 
 
 
-const onSubmit = data => {
-//   navigate('/login')
-  console.log(data)
-  dispatch(registerUser(data)).then(() => navigate('/login'));
-};
+  const onSubmit = async (data) => {
+    try {
+      // Wait for email verification to complete
+      await verifyRegLink(token, setEmail);
+  
+      // Now, the email state has been updated
+      console.log('Email before submission:', email);
+      console.log('Submitted data:', data);
+  
+      // Dispatch registerUser action
+      dispatch(registerUser({ ...data, email })).then(() => navigate('/signin'));
+    } catch (error) {
+      console.error('Error during verification:', error);
+      // Handle the error if needed
+    }
+  };
 
   return (
     <div>
-      <Authform
+        {email===''? (<>Invalid</>):( <Authform
         buttonText="Create your account"
         onSubmit={onSubmit}
         title="Registration"
         fields={fields}
-      />
+        email ={email}
+      />)}
+
     </div>
   );
 }
