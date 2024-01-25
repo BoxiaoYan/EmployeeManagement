@@ -14,7 +14,7 @@ export const authUser = createAsyncThunk(
     try {
       const user = await signIn(data);
       console.log("User data after signin:", user);
-      // Save in localStorage
+      // Save data in localStorage
       localStorage.setItem("userID", user.id);
       localStorage.setItem("position", user.position);
       localStorage.setItem("appStatus", user.appStatus);
@@ -34,7 +34,7 @@ export const registerUser = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const user = await register(data);
-      console.log("User data after signup:", user);
+      console.log("User data after register:", user);
       thunkAPI.dispatch(removeError());
       return user;
     } catch (error) {
