@@ -1,11 +1,11 @@
 import { UserOutlined, MailOutlined } from '@ant-design/icons';
-import Authform from '../components/Authform';
+import Authform from '../../components/Authform';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { useEffect,useState } from 'react';
-import { registerUser } from '../app/userSlice';
+import { registerUser } from '../../app/userSlice';
 
-import { verifyRegLink } from '../services/auth'
+import { verifyRegLink } from '../../services/auth'
 
 export default function Registration() {
   // confirm the url has token

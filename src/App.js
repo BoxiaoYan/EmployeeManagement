@@ -1,13 +1,18 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EmployeeProfileSummary from "./pages/EmployeeProfileSummary";
-import NotFound from "./pages/NorFound";
 import PersonalInformation from "./pages/PersonalInformation/PersonalInformation";
 import HRInformation from "./pages/HRInformation/HRInformation";
 import OnboardingApplication from "./pages/OnboardingApplication/OnboardingApplication";
+import Registration from "./pages/Registration/Registration";
+import Login from "./pages/Login/Login";
+import HiringManagementPage from "./pages/HiringManagementPage/index";
+import ServerError from "./pages/ErrorPages/ServerError";
+import NotAuthorized from "./pages/ErrorPages/NotAuthorized";
+import SessionExpired from "./pages/ErrorPages/SessionExpired";
+import NotFound from "./pages/ErrorPages/NotFound";
 
-
-import './scripts/App.css';
+import './App.css';
 import {
   ChakraBaseProvider,
   extendBaseTheme,
@@ -27,9 +32,9 @@ function App() {
     <ChakraBaseProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={(<>Welcome to the Home Page</>)} />
+          <Route path="/home" element={(<>Welcome to the Home Page</>)} />
           <Route path="/registration/:token" element={<Registration/>} />
-          <Route path="/signin" element={<Login/>} />
+          <Route path="/" element={<Login/>} />
 
           <Route path="/hiring" element={<HiringManagementPage />} />
           <Route path="/error">

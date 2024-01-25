@@ -1,8 +1,8 @@
 import { UserOutlined } from '@ant-design/icons';
-import Authform from '../components/Authform';
+import Authform from '../../components/Authform';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { authUser,setCurrentUser } from '../app/userSlice';
+import { authUser,setCurrentUser } from '../../app/userSlice';
 
 export default function Login() {
 

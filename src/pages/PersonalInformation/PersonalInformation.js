@@ -3,12 +3,12 @@ import moment from "moment-timezone";
 import Datetime from "react-datetime";
 import { useDropzone } from 'react-dropzone';
 
-import "./EmployeePersonalInformation.css";
+import "./PersonalInformation.css";
 
 import { Col, Row, Card, Form, Button, InputGroup, Container, Table,  Modal, Image, Dropdown } from 'react-bootstrap';
-import { Worker, Viewer } from '@react-pdf-viewer/core';
-import '@react-pdf-viewer/core/lib/styles/index.css';
-import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+// import { Worker, Viewer } from '@react-pdf-viewer/core';
+// import '@react-pdf-viewer/core/lib/styles/index.css';
+// import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 
 import { CalendarIcon } from '@chakra-ui/icons'

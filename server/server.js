@@ -1,5 +1,6 @@
 require("dotenv").config();
 require("./models");
+
 const express = require("express");
 const cors = require("cors");
 const errorHandler = require("./handlers/error");
@@ -17,11 +18,17 @@ app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", profileRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
+
 app.use((req, res, next) => {
   const error = new Error("Not Found");
   error.status = 404;
   next(error);
 });
+
+
 
 app.use(errorHandler);
 
