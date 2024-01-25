@@ -1,10 +1,9 @@
 const express = require("express");
-const authRouter = express.Router();
-const { signin, register, generateRegLink, getRegEmail } = require("../handlers/auth");
+const router = express.Router();
+const { signin, register, getRegEmail } = require("../handlers/auth");
 
-authRouter.post("/signin", signin);
-authRouter.post("/register", register);
-authRouter.post("/generate_registration_link", generateRegLink);
-authRouter.get("/registration/:token", getRegEmail);
+router.post("/signin", signin);
+router.post("/register", register);
+router.get("/registration/:token", getRegEmail);
 
-module.exports = authRouter;
+module.exports = router;
