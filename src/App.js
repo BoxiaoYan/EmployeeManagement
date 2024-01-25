@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import EmployeeProfileSummary from "./pages/EmployeeProfileSummary";
+import HiringManagementPage from "./pages/HiringManagementPage";
 
 import NotFound from "./pages/ErrorPages/NotFound";
 import NotAuthorized from "./pages/ErrorPages/NotAuthorized"
@@ -12,7 +12,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<EmployeeProfileSummary />} />
+        <Route path="/" element={<HiringManagementPage />} />
         <Route path="/error">
           <Route path="/error/server-error" element={<ServerError />} />
           <Route path="/error/not-authorized" element={<NotAuthorized />} />
