@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Tabs } from "antd";
 
-import ReviewTable from "./ReviewTable.js";
+import ReviewTable from "./ReviewTable";
 import styles from "./style.module.css";
 
 // HiringManagementPage
