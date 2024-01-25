@@ -10,7 +10,7 @@ export const register = async (data) => {
 
 export const signIn = async (data) => {
   return await apiCall({
-    url: "/api/auth/login",
+    url: "/api/auth/signin",
     method: "POST",
     data,
   });
