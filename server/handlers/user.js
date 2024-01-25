@@ -3,9 +3,8 @@ const jwt = require("jsonwebtoken");
 
 exports.getEmployeeByStatus = async (req, res, next) => {
   try {
-    const { status } = req.body;
     const employees = await db.User.find(
-      { appStatus: status },
+      { appStatus: req.params?.status },
       "_id email fullName"
     );
     res.status(200).json({ employees });
