@@ -1,20 +1,20 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input, Table } from "antd";
 
+import { fetchEmployeeByStatus } from "../../services/employees";
 import styles from "./style.module.css";
+
 
 // HiringManagementPage
 export default function ReviewTable(props) {
-  const { appStatus } = props;
+  const { status } = props;
 
   const [search, setSearch] = useState("");
-  const [employee, setEmployee] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    console.log(appStatus)
-  }, [appStatus]);
+  const navigate = useNavigate();
 
   const tableColumns = [
     {
@@ -38,6 +38,12 @@ export default function ReviewTable(props) {
       ),
     },
   ];
+
+  useEffect(() => {
+    console.log(status)
+    fetchEmployeeByStatus(status, setEmployees, navigate)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle search bar change
   const handleSearchBarChange = (e) => {
@@ -63,7 +69,7 @@ export default function ReviewTable(props) {
           onChange={handleSearchBarChange}
         />
       </div>
-      <div className={styles.text}>Found {employee.length} employee(s)</div>
+      <div className={styles.text}>Found {employees.length} employee(s)</div>
       <div className={styles.table}>
         <Table
           pagination={{
@@ -72,7 +78,7 @@ export default function ReviewTable(props) {
             pageSize: 10,
           }}
           columns={tableColumns}
-          dataSource={employee}
+          dataSource={employees}
         />
       </div>
     </>

@@ -6,23 +6,23 @@ import { useState } from "react";
 
 // HiringManagementPage
 export default function OnboardingApplicationReview() {
-  const [appStatus, setAppStatus] = useState("Pending");
+  const [status, setStatus] = useState("Pending");
 
   const items = [
     {
       key: "Pending",
       label: "Pending",
-      children: <ReviewTable appStatus={appStatus} />,
+      children: <ReviewTable status={status} />,
     },
     {
       key: "Rejected",
       label: "Rejected",
-      children: <ReviewTable appStatus={appStatus} />,
+      children: <ReviewTable status={status} />,
     },
     {
       key: "Approved",
       label: "Approved",
-      children: <ReviewTable appStatus={appStatus} />,
+      children: <ReviewTable status={status} />,
     },
   ];
 
@@ -31,10 +31,10 @@ export default function OnboardingApplicationReview() {
   return (
     <>
       <Tabs
-        defaultActiveKey={appStatus}
+        defaultActiveKey={status}
         items={items}
         size="large"
-        onChange={(key) => setAppStatus(key)}
+        onChange={(key) => setStatus(key)}
       />
     </>
   );

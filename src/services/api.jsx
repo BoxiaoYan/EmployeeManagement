@@ -1,6 +1,7 @@
 const BASE_URL = `http://localhost:${process.env.PORT || 8080}`;
 
 export default async function apiCall({ url: apiUrl, method, data, headers }) {
+  console.log(data)
   const url = new URL(apiUrl, BASE_URL).href;
   const defaultHeaders = {
     "Content-Type": "application/json",
