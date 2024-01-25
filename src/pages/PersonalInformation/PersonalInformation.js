@@ -1,17 +1,24 @@
 import React, { useState } from "react";
 import moment from "moment-timezone";
 import Datetime from "react-datetime";
-import "./PersonalInformation.css";
+import { useDropzone } from 'react-dropzone';
 
-import { Col, Row, Card, Form, Button, InputGroup, Container, Table,  Modal } from 'react-bootstrap';
+import "./EmployeePersonalInformation.css";
+
+import { Col, Row, Card, Form, Button, InputGroup, Container, Table,  Modal, Image, Dropdown } from 'react-bootstrap';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
+
 import { CalendarIcon } from '@chakra-ui/icons'
 
 
-function EmployeeInformation() {
+function PersonalInformation() {
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [showBigImage, setShowBigImage] = useState(false);
+  const [avatarImage, setAvatarImage] = useState(null);
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [middleName, setMiddleName] = useState("");
@@ -52,6 +59,26 @@ function EmployeeInformation() {
     { name: 'File2', extension: 'jpg', url: '../../assets/file2.jpg' },
     { name: 'File3', extension: 'docx', url: '../../assets/file3.docx' },
   ];
+
+  const handleShowImageModal = () => setShowImageModal(true);
+  const handleCloseImageModal = () => setShowImageModal(false);
+
+  const onDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+      setAvatarImage(URL.createObjectURL(file));
+      handleCloseImageModal();
+    } else {
+      alert('Invalid file format. Please upload a JPG/JPEG image.');
+    }
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'image/jpeg, image/jpg' });
+
+  const openLargeImage = () => {
+    setShowBigImage(true);                     
+  };
+
 
   const handleDownload = (url) => {
     // 创建一个隐藏的<a>标签
@@ -154,7 +181,7 @@ function EmployeeInformation() {
   // };
 
   return (
-    <div className="all">
+    <div className="all-personal-profile">
       <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <Row>
           <Col xs={12} md={6} xl={10}>
@@ -181,7 +208,54 @@ function EmployeeInformation() {
 
             <Card className="bg-white shadow-sm mb-4" style={{ width : '80vw'}}>
               <Card.Body>
-                <h5 className="my-4">General information</h5>
+                <Row>
+                  <Col className="mb-3">
+                    <h5 className="my-4">General information</h5>
+                  </Col>
+                  <Col className="mb-3">
+                    <div>
+                      <div className="avatar-container" onClick={isEdit ? handleShowImageModal : null}>
+                        {avatarImage && <Image src={avatarImage} alt="Avatar" roundedCircle />}
+                        {!avatarImage && <div className="avatar-placeholder">Upload Avatar</div>}
+                      </div>
+
+                      <Modal show={showImageModal} onHide={handleCloseImageModal}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>Avatar Settings</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                          <div {...getRootProps()} className="dropzone">
+                            <input {...getInputProps()} />
+                            <p>Drop new image here, or click to select a file</p>
+                          </div>
+                        </Modal.Body>
+                        <Modal.Footer>
+                          <Dropdown>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                              Options
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                              <Dropdown.Item onClick={openLargeImage}>View Large Image</Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                          <Button variant="secondary" onClick={handleCloseImageModal}>
+                            Close
+                          </Button>
+                          <Modal show={showBigImage} onHide={() => setShowBigImage(false)}>
+                            <Modal.Header closeButton>
+                              <Modal.Title>Large Image</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                              <img src={avatarImage} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                            </Modal.Body>
+                            <Modal.Footer/>
+                          </Modal>
+                        </Modal.Footer>
+                      </Modal>
+                    </div>
+                  </Col>
+                </Row>
                 <Row>
                   <Col className="mb-3">
                     <Form.Group id="first-name">
@@ -660,4 +734,4 @@ function EmployeeInformation() {
 };
 
 
-export default EmployeeInformation;
+export default PersonalInformation;

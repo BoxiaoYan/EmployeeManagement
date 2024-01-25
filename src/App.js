@@ -26,7 +26,11 @@ function App() {
     <ChakraBaseProvider theme={theme}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<EmployeeProfileSummary />} />
+          <Route path="/" element={(<>Welcome to the Home Page</>)} />
+          <Route path="/registration/:token" element={<Registration/>} />
+          <Route path="/signin" element={<Login/>} />
+
+          <Route path="/summary" element={<EmployeeProfileSummary />} />
           <Route path="/personal-profile" element={<EmployeeInformation />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/HR-profile" element={<HRInformation />} />

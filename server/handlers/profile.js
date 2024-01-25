@@ -46,7 +46,8 @@ exports.getProfileSummary = async function (req, res, next) {
     const profiles = await db.Profile.find();
 
     // Extract profile summary
-    const profileSummary = profiles.map((profile) => ({
+    const profileSummary = profiles.map((profile, index) => ({
+      key: index,
       name: {
         id: profile.user,
         name: {
