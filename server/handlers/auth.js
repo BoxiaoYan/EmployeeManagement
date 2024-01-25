@@ -65,10 +65,13 @@ exports.getRegEmail = async function (req, res, next) {
     const email = decoded.email;
     return res.status(200).json({ email });
   } catch (error) {
-    if (error instanceof jwt.JsonWebTokenError) {
+    if (
+      error instanceof jwt.JsonWebTokenError ||
+      error.message.includes("Bad control")
+    ) {
       return next({ status: 401, message: "Invalid token" });
     } else if (error instanceof jwt.TokenExpiredError) {
-      return next({ status: 401, message: "Token Expired" });
+      return next({ status: 401, message: "Token expired" });
     } else {
       return next(error);
     }
