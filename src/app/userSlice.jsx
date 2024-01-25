@@ -65,6 +65,10 @@ const userSlice = createSlice({
       // Remove data in employee profile page
       localStorage.removeItem("profileSummaryPage");
       localStorage.removeItem("profileSummarySearch");
+      // Remove data in hiring management page
+      localStorage.removeItem("hiringManagementTab1");
+      localStorage.removeItem("hiringManagementTab2");
+      localStorage.removeItem("hiringManagementSearch");
     },
   },
   extraReducers: (builder) => {

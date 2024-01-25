@@ -1,84 +1,56 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Input, Table } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Table } from "antd";
 
+import { reviewTableColumns } from "./dataFormat";
 import { fetchEmployeeByStatus } from "../../services/employees";
+
+import SearchBar from "../../components/SearchBar";
 import styles from "./style.module.css";
 
-
-// HiringManagementPage
-export default function ReviewTable(props) {
-  const { status } = props;
-
-  const [search, setSearch] = useState("");
+export default function ReviewTable({ status, search, setSearch }) {
+  // const [search, setSearch] = useState("");
   const [employees, setEmployees] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [displayEmployees, setDisplayEmployees] = useState([]);
 
   const navigate = useNavigate();
 
-  const tableColumns = [
-    {
-      title: "Full Name",
-      dataIndex: "fullName",
-      key: "name",
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "View Application",
-      dataIndex: "id",
-      key: "view_app",
-      render: (id) => (
-        <Link to={`/profile/${id}`} target="_blank">
-          View Application
-        </Link>
-      ),
-    },
-  ];
+  useEffect(() => {
+    // Load the search result from localStorage
+    const storedSearch = localStorage.getItem("hiringManagementSearch");
+    if (storedSearch) {
+      setSearch(storedSearch);
+    }
+
+    // Fetch empoyees
+    fetchEmployeeByStatus(status, setEmployees, setDisplayEmployees, navigate);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   useEffect(() => {
-    console.log(status)
-    fetchEmployeeByStatus(status, setEmployees, navigate)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Handle search bar change
-  const handleSearchBarChange = (e) => {
-    setSearch(e.target.value);
-    localStorage.setItem("profileSummarySearch", e.target.value);
-    handlePaginationChange(1);
-  };
-
-  // Handle pagination change
-  const handlePaginationChange = (page) => {
-    setCurrentPage(page);
-    localStorage.setItem("profileSummaryPage", page);
-  };
+    // Update displayed employee with search result
+    setDisplayEmployees(
+      employees.filter((item) =>
+        item.fullName.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [search, employees]);
 
   return (
     <>
-      <div className={styles.searchBar}>
-        <Input
-          value={search}
-          placeholder="Search employee by name"
-          allowClear
-          size="large"
-          onChange={handleSearchBarChange}
-        />
+      <SearchBar
+        storageId="hiringManagementSearch"
+        search={search}
+        setSearch={setSearch}
+      />
+      <div className={styles.text}>
+        Found {displayEmployees.length} employee(s)
       </div>
-      <div className={styles.text}>Found {employees.length} employee(s)</div>
       <div className={styles.table}>
         <Table
-          pagination={{
-            current: currentPage,
-            onChange: handlePaginationChange,
-            pageSize: 10,
-          }}
-          columns={tableColumns}
-          dataSource={employees}
+          pagination={{ pageSize: 10 }}
+          columns={reviewTableColumns}
+          dataSource={displayEmployees}
         />
       </div>
     </>
