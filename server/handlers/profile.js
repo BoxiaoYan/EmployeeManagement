@@ -29,8 +29,7 @@ exports.saveProfile = async function (req, res, next) {
 
 exports.getOneProfile = async function (req, res, next) {
   try {
-    const { userID } = req.body;
-    const userProfile = await db.Profile.findOne({ user: userID });
+    const userProfile = await db.Profile.findOne({ user: req.params?.userID });
     if (userProfile) {
       return res.status(200).json({ profile: userProfile });
     } else {
