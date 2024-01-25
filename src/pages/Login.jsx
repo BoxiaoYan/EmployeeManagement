@@ -9,7 +9,7 @@ export default function Login() {
   const fields = [
     {
       placeholder: 'Username',
-      name: 'Username',
+      name: 'username',
       type: 'text',
       prefix: <UserOutlined />,
       rules:[{
@@ -32,23 +32,18 @@ export default function Login() {
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
-    //gonna update with redux part
-    // navigate('/')
-
-    try{
+    console.log('Data before authentication:', data);
+  
+    try {
       const user = await dispatch(authUser(data));
-      console.log(user);
-
-      if (user.payload.success) {
+      console.log('User after authentication:', user);
+  
+      if (user.payload.id) {
         console.log('Successful login');
-
         dispatch(setCurrentUser(user.payload.id));
-        // dispatch(setCurrentToken(user.payload.token));
-        navigate('/personal');
-        
-      } 
-      else {
-        alert("Invalid username or password");
+        navigate('/');
+      } else {
+        alert('Invalid username password');
       }
     } catch (err) {
       console.error('Authentication failed:', err);

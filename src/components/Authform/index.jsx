@@ -9,7 +9,7 @@ export default function AuthForm({
   onSubmit,
   title,
   fields,
-  errors
+  email
 }) {
   // const { status } = useSelector(state => state.user);
 
@@ -26,6 +26,8 @@ export default function AuthForm({
                 prefix={field.prefix}
                 size="large"
                 rules = {field.rules}
+                readOnly
+                value={email}
               />
             ) : field.type === 'text' ? (
               <Input
@@ -52,7 +54,6 @@ export default function AuthForm({
             htmlType="submit"
             className={styles.btn}
             size="large"
-            // loading={status === 'pending'}
           >
             {buttonText}
           </Button>

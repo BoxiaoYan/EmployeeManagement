@@ -16,7 +16,7 @@ export const authUser = createAsyncThunk(
       console.log("User data after signin:", user);
       // Save in localStorage
       localStorage.setItem("userID", user.id);
-      localStorage.setItem("position", user.positoin);
+      localStorage.setItem("position", user.position);
       localStorage.setItem("appStatus", user.appStatus);
       localStorage.setItem("token", user.token);
       thunkAPI.dispatch(removeError());
