@@ -42,7 +42,7 @@ export default function SendRegistrationToken({ refresh, setRefresh }) {
   };
 
   const handleEmailChange = (e) => {
-    const value = e.target.value;
+    const value = e.target.value.replace(/\s/g, '');
     setEmail(value);
     setEmailStatus(value.trim() === "" ? "error" : "");
     setEmailError(value.trim() === "" ? "Email cannot be empty" : "");
