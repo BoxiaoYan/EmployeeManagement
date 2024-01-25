@@ -55,35 +55,6 @@ exports.register = async function (req, res, next) {
   }
 };
 
-exports.generateRegLink = async function (req, res, next) {
-  try {
-    const { rootLink, email } = req.body;
-    // Generate registration link
-    const token = jwt.sign({ email }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "3h",
-    });
-    const regLink = `${rootLink}/registration/${token}`;
-    // Check if current email exists
-    const existUser = await db.User.findOne({ email });
-    if (existUser) {
-      // Check if user already registered
-      if (existUser.appStatus !== "UnRegistered") {
-        return next({ status: 400, message: "User is already registered" });
-      }
-      // Update the registration link
-      existUser.regLink = regLink;
-      await existUser.save();
-      return res.status(200).json({ regLink });
-    } else {
-      // Create new user
-      await db.User.create({ email, regLink, username: email });
-      return res.status(200).json({ regLink });
-    }
-  } catch (error) {
-    return next(error);
-  }
-};
-
 exports.getRegEmail = async function (req, res, next) {
   try {
     // Verify token
