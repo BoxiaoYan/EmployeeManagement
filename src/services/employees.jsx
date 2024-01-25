@@ -16,9 +16,9 @@ export const fetchEmployeeByStatus = async (
           url: "/api/employees_reg_status",
           method: "GET",
         });
-    const employees = response.employees.map((employee, index) => ({
+    const employees = response.employees.map((employee) => ({
+      key: employee.email,
       ...employee,
-      key: index,
     }));
     setEmployees(employees);
     setDisplayEmployees(employees);

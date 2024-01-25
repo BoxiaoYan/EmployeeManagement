@@ -11,7 +11,7 @@
 }
 
 .inputContainer {
-  width: 90vh;
+  width: 75vh;
   margin-top: 1%;
   margin-bottom: 2%;
   display: flex;
@@ -30,7 +30,7 @@
 }
 
 .error {
-  width: 77vh;
+  width: 71vh;
   margin-top: 1%;
   margin-bottom: 1%;
 }

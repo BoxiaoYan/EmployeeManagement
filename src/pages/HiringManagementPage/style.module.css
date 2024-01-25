@@ -1,5 +1,6 @@
 .tab {
   width: 95%;
+  min-width: 80vh;
   margin: auto;
 }
 

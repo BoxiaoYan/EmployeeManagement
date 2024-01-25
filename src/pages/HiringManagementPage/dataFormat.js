@@ -39,10 +39,10 @@ export const pageTableColumns = [
     dataIndex: "regLink",
     key: "regLink",
     render: (link) => {
-      const regex = new RegExp(`.{1,72}`, "g");
+      const regex = new RegExp(`.{1,60}`, "g");
       const segments = link.match(regex);
       if (segments) {
-        return segments.map((seg) => <div>{seg}</div>);
+        return segments.map((seg, index) => <div key={index}>{seg}</div>);
       }
       return link;
     },
