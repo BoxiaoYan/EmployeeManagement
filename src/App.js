@@ -2,7 +2,7 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import HiringManagementPage from "./pages/HiringManagementPage";
-
+import NavBar from "./pages/NavBar";
 import NotFound from "./pages/ErrorPages/NotFound";
 import NotAuthorized from "./pages/ErrorPages/NotAuthorized"
 import SessionExpired from "./pages/ErrorPages/SessionExpired";
@@ -18,6 +18,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <NavBar />
       <Routes>
         <Route path="/" element={<HiringManagementPage />}>
           <Route path="/hiring-management" element={<HiringManagementPage />} />
