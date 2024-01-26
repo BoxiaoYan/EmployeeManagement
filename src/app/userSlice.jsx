@@ -6,6 +6,8 @@ const initialState = {
   isAuthenticated: false,
   user: {},
   status: "idle",
+  appStatus: "",
+  email: ""
 };
 
 export const authUser = createAsyncThunk(
@@ -19,6 +21,7 @@ export const authUser = createAsyncThunk(
       localStorage.setItem("position", user.position);
       localStorage.setItem("appStatus", user.appStatus);
       localStorage.setItem("token", user.token);
+      localStorage.setItem("email", user.email);
       thunkAPI.dispatch(removeError());
       return user;
     } catch (error) {
@@ -53,15 +56,24 @@ const userSlice = createSlice({
       state.isAuthenticated = !!Object.keys(action.payload).length;
       state.user = action.payload;
     },
+    setCurrentUserStatus: (state, action) => {
+      state.appStatus = action.payload;
+    },
+    setCurrentUserEmail: (state, action) => {
+      state.email = action.payload;
+    },
     logOutUser: (state, action) => {
       state.isAuthenticated = false;
       state.user = {};
       state.status = "idle";
+      state.appStatus = "";
+      state.email = "";
       // Remove user information
       localStorage.removeItem("userID");
       localStorage.removeItem("position");
       localStorage.removeItem("appStatus");
       localStorage.removeItem("token");
+      localStorage.removeItem("email");
       // Remove data in employee profile page
       localStorage.removeItem("profileSummaryPage");
       localStorage.removeItem("profileSummarySearch");
@@ -97,6 +109,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setCurrentUser, logOutUser } = userSlice.actions;
+export const { setCurrentUser, setCurrentUserStatus, setCurrentUserEmail, logOutUser } = userSlice.actions;
 
 export default userSlice.reducer;

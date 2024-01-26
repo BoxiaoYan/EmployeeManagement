@@ -11,6 +11,7 @@ import ServerError from "./pages/ErrorPages/ServerError";
 import NotAuthorized from "./pages/ErrorPages/NotAuthorized";
 import SessionExpired from "./pages/ErrorPages/SessionExpired";
 import NotFound from "./pages/ErrorPages/NotFound";
+import ErrorBoundary from "./pages/ErrorPages/ErrorBoundary";
 
 import './App.css';
 import {
@@ -35,6 +36,7 @@ function App() {
           <Route path="/home" element={(<>Welcome to the Home Page</>)} />
           <Route path="/registration/:token" element={<Registration/>} />
           <Route path="/" element={<Login/>} />
+          <Route path="/signin" element={<Login/>} />
 
           <Route path="/hiring" element={<HiringManagementPage />} />
           <Route path="/error">

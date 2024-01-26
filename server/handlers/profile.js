@@ -1,5 +1,6 @@
 const db = require("../models");
 
+
 exports.saveProfile = async function (req, res, next) {
   try {
     const { userID, profile } = req.body;
@@ -9,7 +10,7 @@ exports.saveProfile = async function (req, res, next) {
       await db.Profile.updateOne({ user: userID }, profile);
       return res
         .status(200)
-        .json({ message: "User profile is updated successfully" });
+        .json({ status: 200, message: "User profile is updated successfully", email: profile.email});
     } else {
       // If user does not exist, create a new profile
       const newUserProfile = new db.Profile(profile);
@@ -20,7 +21,7 @@ exports.saveProfile = async function (req, res, next) {
       await user.save();
       return res
         .status(201)
-        .json({ message: "User profile is saved successfully" });
+        .json({ status: 201, message: "User profile is saved successfully", email: profile.email });
     }
   } catch (error) {
     return next(error);
@@ -31,7 +32,7 @@ exports.getOneProfile = async function (req, res, next) {
   try {
     const userProfile = await db.Profile.findOne({ user: req.params?.userID });
     if (userProfile) {
-      return res.status(200).json({ profile: userProfile });
+      return res.status(200).json({ status: 200, profile: userProfile, message: "User profile is found"});
     } else {
       return res.status(404).json({ error: "User profile is not found" });
     }

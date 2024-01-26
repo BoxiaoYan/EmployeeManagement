@@ -1,9 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { saveProfile, getOneProfile, getProfileSummary } = require("../handlers/profile")
+const {
+  getEmployeeByStatus,
+  getEmployeeByRegStatus,
+  generateRegLink,
+} = require("../handlers/user");
 
-router.post("/save_profile", saveProfile);
-router.get("/profile_summary", getProfileSummary);
-router.get("/profile/:userID", getOneProfile);
+router.get("/employees_status/:status", getEmployeeByStatus);
+router.get("/employees_reg_status", getEmployeeByRegStatus);
+router.post("/generate_registration_link", generateRegLink);
 
 module.exports = router;

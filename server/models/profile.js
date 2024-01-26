@@ -16,7 +16,17 @@ const profileSchema = new mongoose.Schema({
   },
 
   // b. Profile picture
-  pictrue: { data: Buffer, contentType: String },
+  picture: { 
+    data: {
+      type: Buffer,      // 存储二进制数据的 Buffer 类型
+      required: true,
+    },
+    contentType: {
+      type: String,      // 存储文件类型（如 'application/pdf'）
+      required: true,
+    },
+    filename: String
+  },
 
   // c. Email
   email: { type: String, unique: true, required: true },
@@ -31,7 +41,7 @@ const profileSchema = new mongoose.Schema({
   // e. Address
   address: {
     street: { type: String, required: true },
-    apt: { type: String, required: true },
+    apt: { type: String },
     city: { type: String, required: true },
     state: { type: String, required: true },
     zip: { type: String, required: true },
@@ -75,9 +85,15 @@ const profileSchema = new mongoose.Schema({
   // j. Documents
   documents: [
     {
-      type: String,
-      data: Buffer,
-      contentType: String,
+      data: {
+        type: Buffer,      // 存储二进制数据的 Buffer 类型
+        required: true,
+      },
+      contentType: {
+        type: String,      // 存储文件类型（如 'application/pdf'）
+        required: true,
+      },
+      filename: String
     },
   ],
 });

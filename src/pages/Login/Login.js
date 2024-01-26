@@ -2,7 +2,7 @@ import { UserOutlined } from '@ant-design/icons';
 import Authform from '../../components/Authform';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { authUser,setCurrentUser } from '../../app/userSlice';
+import { authUser,setCurrentUser, setCurrentUserStatus, setCurrentUserEmail } from '../../app/userSlice';
 
 export default function Login() {
 
@@ -41,7 +41,9 @@ export default function Login() {
       if (user.payload.id) {
         console.log('Successful login');
         dispatch(setCurrentUser(user.payload.id));
-        navigate('/');
+        dispatch(setCurrentUserStatus(user.payload.appStatus));
+        dispatch(setCurrentUserEmail(user.payload.email));
+        navigate('/home');
       } else {
         alert('Invalid username password');
       }

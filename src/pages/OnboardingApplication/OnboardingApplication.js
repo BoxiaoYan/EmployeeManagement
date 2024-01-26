@@ -1,42 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment-timezone";
 import Datetime from "react-datetime";
 import { useDropzone } from 'react-dropzone';
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 
 import "./OnboardingApplication.css";
 
 import { Col, Row, Card, Form, Button, InputGroup, Container, Table,  Modal, Image, Dropdown } from 'react-bootstrap';
 // import { Worker, Viewer } from '@react-pdf-viewer/core';
-// import '@react-pdf-viewer/core/lib/styles/index.css';
-// import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 import { CalendarIcon } from '@chakra-ui/icons';
+import { set } from "mongoose";
+
 
 function OnboardingApplication() {
+  const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState("Pending");
   const [showFeedback, setShowFeedback] = useState(false);
-
-  const handleDownload = () => {};
-
-
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [showLargeImage, setShowLargeImage] = useState(false);
-  const [avatarImage, setAvatarImage] = useState(null);
-
-  const handleShowImageModal = () => setShowImageModal(true);
-  const handleCloseImageModal = () => setShowImageModal(false);
-  
-  const onImageDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-      setAvatarImage(URL.createObjectURL(file));
-      handleCloseImageModal();
-    } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image.');
-    }
-  };
-  const { getRootProps: getRootProps1, getInputProps: getInputProps1 } = useDropzone({ onImageDrop, accept: 'image/jpeg, image/jpg' });
-
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -58,28 +41,9 @@ function OnboardingApplication() {
 
   const [isCitizen, setIsCitizen] = useState("");
   const [title, setTitle] = useState("");
-  const [commentTitle, setCommentTitle] = useState("");
+  const [finalVisa, setFinalVisa] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [uploadedF1, setUploadedF1] = useState(null);
-
-  const handleVisaUpload = (event) => {
-    const uploadedFile = event.target.files[0];
-
-    if (uploadedFile) {
-      // Check file extension
-      const allowedExtensions = ['pdf', 'jpg', 'jpeg'];
-      const fileExtension = uploadedFile.name.split('.').pop().toLowerCase();
-
-      if (allowedExtensions.includes(fileExtension)) {
-        // Process the uploaded file (you can upload it to the server or handle it as needed)
-        console.log('Uploaded file:', uploadedFile);
-        setUploadedF1(uploadedFile);
-      } else {
-        alert('Invalid file type. Allowed types: pdf, jpg, jpeg');
-      }
-    }
-  };
 
   const [refFirstName, setRefFirstName] = useState("");
   const [refLastName, setRefLastName] = useState("");
@@ -88,10 +52,82 @@ function OnboardingApplication() {
   const [refEmail, setRefEmail] = useState("");
   const [refRelationship, setRefRelationship] = useState("");
 
-
   const [emergencies, setEmergencies] = useState([
     { firstName: '', lastName: '', middleName: '', phone: '', email: '', relationship: '' },
   ]);
+
+
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [showLargeImage, setShowLargeImage] = useState(false);
+  const [avatarImage, setAvatarImage] = useState(null);
+  const [avatarURL, setAvatarURL] = useState(null);
+
+  const [showDLModal, setShowDLModal] = useState(false);
+  const [showLargeDL, setShowLargeDL] = useState(false);
+  const [driverID, setDriverID] = useState(null);
+  const [DLURL, setDLURL] = useState(null);
+
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showLargeAuth, setShowLargeAuth] = useState(false);
+  const [workAuth, setWorkAuth] = useState(null);
+  const [authURL, setAuthURL] = useState(null);
+
+  const [uploadedF1, setUploadedF1] = useState(null);
+
+
+  const user_status = useSelector((state) => state.user.appStatus);
+  const user_id = localStorage.getItem("userID");
+  const user_email = localStorage.getItem("email");
+  const user_token = localStorage.getItem("token");
+
+
+  const handleDownload = () => {};
+
+  const handleShowImageModal = () => setShowImageModal(true);
+  const handleCloseImageModal = () => setShowImageModal(false);
+  
+
+  const onImageDrop = (acceptedFiles) => {
+    console.log('Files dropped:', acceptedFiles);
+    const file = acceptedFiles[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+      setAvatarImage(URL.createObjectURL(file));
+      setAvatarURL(file);
+      handleCloseImageModal();
+      console.log('Uploaded file:', avatarURL, avatarImage);
+    } else {
+      alert('Invalid file format. Please upload a JPG/JPEG image.');
+    }
+  };
+  const { getRootProps: getRootProps1, getInputProps: getInputProps1 } = useDropzone({ 
+    onDrop: onImageDrop, 
+    accept: 'image/jpeg, image/jpg' 
+  });
+
+
+
+  const handleVisaUpload = (event) => {
+    const uploadedFile = event.target.files[0];
+
+    if (uploadedFile) {
+      // Check file extension
+      const allowedExtensions = ['jpg', 'jpeg'];
+      const fileExtension = uploadedFile.name.split('.').pop().toLowerCase();
+
+      if (allowedExtensions.includes(fileExtension)) {
+        // Process the uploaded file (you can upload it to the server or handle it as needed)
+        console.log('Uploaded file:', uploadedFile);
+        setUploadedF1(uploadedFile);
+      } else {
+        alert('Invalid file type. Allowed types: jpg, jpeg');
+      }
+    }
+  };
+
+ 
+
+
+  
   const addEmergencyBlock = () => {
     setEmergencies([...emergencies, { firstName: '', lastName: '', middleName: '', phone: '', email: '', relationship: '' }]);
   };
@@ -172,50 +208,282 @@ function OnboardingApplication() {
 
   
 
-  const [showDLModal, setShowDLModal] = useState(false);
-  const [showLargeDL, setShowLargeDL] = useState(false);
-  const [driverID, setDriverID] = useState(null);
-
   const handleShowDLModal = () => setShowDLModal(true);
   const handleCloseDLModal = () => setShowDLModal(false);
   const onDLDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'application/pdf')) {
-      if (file.type.startsWith('image/')) {
-        setDriverID(URL.createObjectURL(file));
-      } else if (file.type === 'application/pdf') {
-        setDriverID('your_pdf_file_path');
-      }
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+      setDriverID(URL.createObjectURL(file));
+      setDLURL(file);
+      console.log('Uploaded file:', DLURL, driverID);
       handleCloseDLModal();
     } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image or PDF file.');
+      alert('Invalid file format. Please upload a JPG/JPEG image');
     }
   };
-  const { getRootProps: getRootProps2, getInputProps: getInputProps2 } = useDropzone({ onDLDrop, accept: 'image/jpeg, image/jpg, application/pdf'});
+  const { getRootProps: getRootProps2, getInputProps: getInputProps2 } = useDropzone({ 
+    onDrop: onDLDrop, 
+    accept: 'image/jpeg, image/jpg'
+  });
 
 
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showLargeAuth, setShowLargeAuth] = useState(false);
-  const [workAuth, setWorkAuth] = useState(null);
+  
+
 
   const handleShowAuthModal = () => setShowAuthModal(true);
   const handleCloseAuthModal = () => setShowAuthModal(false);
   const onAuthDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'application/pdf')) {
-      if (file.type.startsWith('image/')) {
-        setWorkAuth(URL.createObjectURL(file));
-      } else if (file.type === 'application/pdf') {
-        setWorkAuth('your_pdf_file_path');
-      }
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+      setWorkAuth(URL.createObjectURL(file));
+      setAuthURL(file);
+      console.log('Uploaded file:', authURL, workAuth);
       handleCloseAuthModal();
     } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image or PDF file.');
+      alert('Invalid file format. Please upload a JPG/JPEG image');
     }
   };
-  const { getRootProps: getRootProps3, getInputProps: getInputProps3 } = useDropzone({ onAuthDrop, accept: 'image/jpeg, image/jpg, application/pdf'});
+  const { getRootProps: getRootProps3, getInputProps: getInputProps3 } = useDropzone({ 
+    onDrop: onAuthDrop, 
+    accept: 'image/jpeg, image/jpg'
+  });
 
-  const handleSubmit = () => {};
+  
+
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (firstName.trim() === "") {
+      alert("Please enter your first name");
+      return;
+    } else if (lastName.trim() === "") {
+      alert("Please enter your last name");
+      return;
+    }
+
+    
+    // 读取头像图片文件
+    const avatarBlob = await fetch(avatarURL.path).then((res) => res.blob());
+    const avatarData = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const buffer = Buffer.from(reader.result);
+        resolve(buffer);
+      };
+      reader.readAsArrayBuffer(avatarBlob);
+    });
+
+    // 读取驾照文件
+    const DLBlob = await fetch(DLURL.path).then((res) => res.blob());
+    const DLData = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const buffer = Buffer.from(reader.result);
+        resolve(buffer);
+      };
+      reader.readAsArrayBuffer(DLBlob);
+    });
+
+    // 读取其他文件（auth 文件）
+    const authBlob = await fetch(authURL.path).then((res) => res.blob());
+    const authData = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const buffer = Buffer.from(reader.result);
+        resolve(buffer);
+      };
+      reader.readAsArrayBuffer(authBlob);
+    });
+
+    const f1Blob = await fetch(uploadedF1.name).then((res) => res.blob());
+    const f1Data = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const buffer = Buffer.from(reader.result);
+        resolve(buffer);
+      };
+      reader.readAsArrayBuffer(f1Blob);
+    });
+
+    const formData = {
+      name: {
+        firstName: firstName,
+        lastName: lastName,
+        middleName: middleName,
+        preferredName: preferredName,
+      },
+      picture: {
+        data: avatarData,
+        contentType: avatarBlob.type,
+        fileName: avatarURL.name
+      },
+      personalInfo: {
+        ssn: SSN,
+        birthday: birthDate,
+        gender: gender
+      },
+      address: {
+        street: address,
+        apt: apt,
+        city: city,
+        state: state,
+        zip: zipCode,
+      },
+      phone: {
+        cellPhone: cellPhone,
+        workPhone: workPhone,
+      },
+      employment: {
+        visa: title === "Other" ? finalVisa : title,
+        startDate: startDate,
+        endDate: endDate,
+      },
+      reference: {
+        firstName: refFirstName,
+        lastName: refLastName,
+        middleName: refMiddleName,
+        phone: refPhone,
+        email: refEmail,
+        relationship: refRelationship,
+      },
+      emergencyContacts: emergencies,
+      documents: [
+        {
+          data: DLData,
+          contentType: DLBlob.type,
+          fileName: DLURL.name
+        }
+        ,
+        {
+          data: authData,
+          contentType: authBlob.type,
+          fileName: authURL.name
+        }
+        ,
+        {
+          data: f1Data,
+          contentType: f1Blob.type,
+          fileName: uploadedF1.name
+        }
+      ]
+    }
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/save_profile`, {user_id, formData},
+        {
+          headers: {
+            "Content-Type": 'multipart/form-data',
+            Authorization: `${user_token}`,
+          },
+        }
+      );
+      if (response.data.status === 201) {
+        console.log("Success in submitting the profile:", response.data.message);
+        console.log(response.data.email);
+        if (step === "Rejected" || step === "UnSubmitted") {
+          setStep("Pending");
+        }
+      } else if (response.data.status === 200) {
+        console.log("The profile already exists");
+      } else {
+        console.error("Fail in submitting the profile:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error for submitting the profile:", error.message);
+    }
+  };
+
+
+
+  useEffect(() => {
+    setIsLoading(true);
+    setStep(user_status);
+    setEmail(user_email);
+    console.log("userStatus is", user_status);
+    console.log("userEmail is", user_email);
+
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/profile/${user_id}`,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `${user_token}`,
+            },
+          }
+        );
+        if (response.data.status === 200) {
+          const profile = response.data.profile;
+
+          // 将二进制数据转换为 Blob
+          const avatar_blob = new Blob([response.data.picture.data], { type: 'image/jpeg; image/jpg' });
+          // 将 Blob 转换为预览 URL
+          const image_Url = URL.createObjectURL(avatar_blob);
+          setAvatarImage(image_Url);
+
+          const DL_blob = new Blob([response.data.documents[0].data], { type: 'image/jpeg; image/jpg' });
+          const DL_Url = URL.createObjectURL(DL_blob);
+          setDriverID(DL_Url);
+
+          const auth_blob = new Blob([response.data.documents[1].data], { type: 'image/jpeg; image/jpg' });
+          const auth_Url = URL.createObjectURL(auth_blob);
+          setWorkAuth(auth_Url);
+
+          const f1_blob = new Blob([response.data.documents[2].data], { type: 'image/jpeg; image/jpg' });
+          const f1_Url = URL.createObjectURL(f1_blob);
+          setUploadedF1(f1_Url);
+
+          setFirstName(profile.name.firstName);
+          setLastName(profile.name.lastName);
+          setMiddleName(profile.name.middleName);
+          setPreferredName(profile.name.preferredName);
+          setGender(profile.personalInfo.gender);
+          setSSN(profile.personalInfo.ssn);
+          setBirthDate(profile.personalInfo.birthday);
+
+          setAddress(profile.address.street);
+          setApt(profile.address.apt);
+          setCity(profile.address.city);
+          setState(profile.address.state);
+          setZipCode(profile.address.zip);
+
+          setCellPhone(profile.phone.cellPhone);
+          setWorkPhone(profile.phone.workPhone);
+
+          setIsCitizen(profile.employment.visa === "citizen" || profile.employment.visa === "greenCard" ? "Yes" : "No");
+          setTitle(profile.employment.visa);
+          setStartDate(profile.employment.startDate);
+          setEndDate(profile.employment.endDate);
+
+          setRefFirstName(profile.reference.firstName);
+          setRefLastName(profile.reference.lastName);
+          setRefMiddleName(profile.reference.middleName);
+          setRefPhone(profile.reference.phone);
+          setRefEmail(profile.reference.email);
+          setRefRelationship(profile.reference.relationship);
+
+          setEmergencies(profile.emergencyContacts);
+
+        } else if (response.data.status === 404) {
+          console.log("The profile does not exist", response.data.error);
+        } else {
+          console.log("???");
+        }
+      } catch (err) {
+        console.error("Error fetching product", err.message);
+      }
+    }
+
+    fetchProfile();
+
+    setIsLoading(false);
+
+  }, []);
 
 
 
@@ -240,6 +508,7 @@ function OnboardingApplication() {
       {step === "Pending"  && <div className="custom-textbox-pending">
         Your application has been submitted and is currently pending. You can download files by clicking those round gray areas.
       </div>}
+      
       <h2 style={{textAlign: 'center', paddingTop: '10vh'}}>Onboarding Application Form</h2>
       <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <Row>
@@ -305,7 +574,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={firstName} 
-                        onChange={(e) => setFirstName(e.target.value)} />
+                        onChange={(e) => {setFirstName(e.target.value); console.log(firstName)}} />
                     </Form.Group>
                   </Col>
                   <Col className="mb-3">
@@ -317,13 +586,13 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={lastName}
-                        onChange={(e) => setLastName(e.target.value)} 
+                        onChange={(e) => {setLastName(e.target.value); console.log(lastName)}} 
                       />
                     </Form.Group>
                   </Col>
                   <Col className="mb-3">
                     <Form.Group id="middle-name">
-                      <Form.Label>Middle Name (option)</Form.Label>
+                      <Form.Label>Middle Name (Optional)</Form.Label>
                       <Form.Control 
                         type="text"
                         readOnly={step === "Pending" ? true : false}
@@ -337,7 +606,7 @@ function OnboardingApplication() {
                 <Row>
                   <Col className="mb-3">
                     <Form.Group id="preferred-name">
-                      <Form.Label>Preferred Name (option)</Form.Label>
+                      <Form.Label>Preferred Name (Optional)</Form.Label>
                       <Form.Control 
                         type="text"
                         readOnly={step === "Pending" ? true : false}
@@ -356,7 +625,7 @@ function OnboardingApplication() {
                         disabled={step === "Pending" ? true : false} 
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         defaultValue={gender}
-                        onChange={(e) => setGender(e.target.value)}
+                        onChange={(e) => {setGender(e.target.value); console.log(gender)}}
                       >
                         <option value=""></option>
                         <option value="male">Male</option>
@@ -364,7 +633,7 @@ function OnboardingApplication() {
                         <option value="transgender">Transgender</option>
                         <option value="non-binary">Non-binary</option>
                         <option value="other">Other</option>
-                        <option value="not to disclose">Not to disclose</option>
+                        <option value="not to disclose">I wish not to disclose</option>
                       </Form.Select>
                     </Form.Group>
                   </Col>
@@ -377,7 +646,7 @@ function OnboardingApplication() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly="true"
+                        readOnly={true}
                         style={{ backgroundColor: '#f2f2f2'}}
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)}
@@ -432,7 +701,7 @@ function OnboardingApplication() {
                   </Col>
                   <Col className="mb-3">
                     <Form.Group id="apt">
-                      <Form.Label>Building/Apt # (Option)</Form.Label>
+                      <Form.Label>Building/Apt # (Optional)</Form.Label>
                       <Form.Control 
                         type="text" 
                         readOnly={step === "Pending" ? true : false}
@@ -466,7 +735,7 @@ function OnboardingApplication() {
                         defaultValue={state}
                         disabled={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                        onChange={(e) => setState(e.target.value)}
+                        onChange={(e) => {setState(e.target.value); console.log(state)}}
                       >
                         <option value=""></option>
                         <option value="AL">Alabama</option>
@@ -554,7 +823,7 @@ function OnboardingApplication() {
                   </Col>
                   <Col className="mb-3">
                     <Form.Group id="work phone">
-                      <Form.Label>Work Phone</Form.Label>
+                      <Form.Label>Work Phone (Optional)</Form.Label>
                       <Form.Control 
                         type="text" 
                         value={workPhone}
@@ -571,7 +840,7 @@ function OnboardingApplication() {
                 <Row>
                   <Col className="mb-3">
                     <Form.Group className="mb-2">
-                      <Form.Label>Visa State</Form.Label>
+                      <Form.Label>Are you ciziten/green card holder?</Form.Label>
                       <Form.Select 
                         id="visa-state" 
                         defaultValue={""}
@@ -593,7 +862,7 @@ function OnboardingApplication() {
                         defaultValue={"greenCard"}
                         disabled={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={(e) => {setTitle(e.target.value); console.log(title)}}
                       >
                         <option value="greenCard">Green Card</option>
                         <option value="citizen">Citizen</option>
@@ -625,8 +894,8 @@ function OnboardingApplication() {
                       <Form.Label>Please specify visa title</Form.Label>
                       <Form.Control 
                         type="text" 
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        value={finalVisa}
+                        onChange={(e) => {setFinalVisa(e.target.value); console.log(finalVisa)}}
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                       />
@@ -706,7 +975,7 @@ function OnboardingApplication() {
                   </Col>
                   <Col className="mb-3">
                     <Form.Group id="ref-middle-name">
-                      <Form.Label>Reference Middle Name</Form.Label>
+                      <Form.Label>Reference Middle Name (Optional)</Form.Label>
                       <Form.Control 
                         type="text" 
                         readOnly={step === "Pending" ? true : false}
@@ -720,7 +989,7 @@ function OnboardingApplication() {
                 <Row>
                   <Col className="mb-3">
                     <Form.Group id="ref-phone-number">
-                      <Form.Label>Reference Phone Number</Form.Label>
+                      <Form.Label>Reference Phone Number (Optional)</Form.Label>
                       <Form.Control 
                         required
                         type="text" 
@@ -734,7 +1003,7 @@ function OnboardingApplication() {
                   </Col>
                   <Col className="mb-3">
                     <Form.Group id="ref-email">
-                      <Form.Label>Reference Email</Form.Label>
+                      <Form.Label>Reference Email (Optional)</Form.Label>
                       <Form.Control 
                         required
                         type="text" 
@@ -755,7 +1024,7 @@ function OnboardingApplication() {
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={refRelationship}
                         onChange={(e) => setRefRelationship(e.target.value)}
-                        placeholder="Sibling, parent, spouse, etc." 
+                        placeholder="Supervisor, colleague, etc." 
                       />
                     </Form.Group>
                   </Col>
@@ -768,20 +1037,20 @@ function OnboardingApplication() {
                     <Row>
                       <Col className="mb-3">
                         <Form.Group id="ref-first-name">
-                          <Form.Label>Emergency Contact {index + 1} First Name</Form.Label>
+                          <Form.Label>First Name {index + 1}</Form.Label>
                           <Form.Control 
                             required
                             type="text" 
                             readOnly={step === "Pending" ? true : false}
                             style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                             value={emergency.firstName}
-                            onChange={(e) => updateEmergencyFirstName(index, e.target.value)}
+                            onChange={(e) => {updateEmergencyFirstName(index, e.target.value); console.log(emergencies[index].firstName)}}
                           />
                         </Form.Group>
                       </Col>
                       <Col className="mb-3">
                         <Form.Group id="ref-last-name">
-                          <Form.Label>Emergency Contact {index + 1} Last Name</Form.Label>
+                          <Form.Label>Last Name {index + 1}</Form.Label>
                           <Form.Control 
                             required
                             type="text" 
@@ -794,7 +1063,7 @@ function OnboardingApplication() {
                       </Col>
                       <Col className="mb-3">
                         <Form.Group id="ref-middle-name">
-                          <Form.Label>Emergency Contact {index + 1} Middle Name</Form.Label>
+                          <Form.Label>Middle Name {index + 1} (Optional)</Form.Label>
                           <Form.Control 
                             type="text" 
                             readOnly={step === "Pending" ? true : false}
@@ -808,7 +1077,7 @@ function OnboardingApplication() {
                     <Row>
                       <Col className="mb-3">
                         <Form.Group id="ref-phone-number">
-                          <Form.Label>Emergency Contact {index + 1} Phone Number</Form.Label>
+                          <Form.Label>Phone Number {index + 1} (Optional)</Form.Label>
                           <Form.Control 
                             required
                             type="text" 
@@ -822,7 +1091,7 @@ function OnboardingApplication() {
                       </Col>
                       <Col className="mb-3">
                         <Form.Group id="ref-email">
-                          <Form.Label>Emergency Contact {index + 1} Email</Form.Label>
+                          <Form.Label>Email {index + 1} (Optional)</Form.Label>
                           <Form.Control 
                             required
                             type="text" 
@@ -848,7 +1117,7 @@ function OnboardingApplication() {
                         </Form.Group>
                       </Col>
                     </Row>
-                    {index > 0 && <Button variant="danger" onClick={() => removeEmergencyBlock(index)} className="mb-3">
+                    {index > 0 && <Button variant="danger" onClick={() => {removeEmergencyBlock(index); console.log(emergencies)}} className="mb-3">
                       Remove Emergency Contact
                     </Button>}
 
@@ -858,16 +1127,25 @@ function OnboardingApplication() {
                   Add Emergency Contact
                 </Button>
 
-                <h5 className="my-4">Additional files(Optional)</h5>
+                <hr/>
+
+                <h4 className="my-4">Additional files(Optional)</h4>
                 <Row>
                   <Col className="mb-3">
                     <div>
-                      <div className="avatar-container" onClick={handleShowImageModal}>
-                        {avatarImage && <Image src={avatarImage} alt="Avatar" roundedCircle />}
-                        {!avatarImage && <div className="avatar-placeholder">
-                          {step === "Pending" ? "Avatar?" : "Upload Avatar"}
-                        </div>}
-                      </div>
+                      <Col>
+                        <Row>
+                          <h5>Profile Picture</h5>
+                        </Row>
+                        <Row>
+                          <div className="avatar-container" onClick={handleShowImageModal}>
+                            {avatarImage && <Image src={avatarImage} alt="Avatar" roundedCircle />}
+                            {!avatarImage && <div className="avatar-placeholder">
+                              {step === "Pending" ? "Avatar?" : "Upload Avatar"}
+                            </div>}
+                          </div>
+                        </Row>
+                      </Col>
 
                       <Modal show={showImageModal} onHide={handleCloseImageModal}>
                         <Modal.Header closeButton>
@@ -890,9 +1168,7 @@ function OnboardingApplication() {
                               <Dropdown.Item onClick={() => {setShowLargeImage(true)}}>View Large Image</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
-                          {/* <Button variant="secondary" onClick={handleCloseImageModal}>
-                            Close
-                          </Button> */}
+      
                           <Modal show={showLargeImage} onHide={() => setShowLargeImage(false)}>
                             <Modal.Header closeButton>
                               <Modal.Title>Large Image</Modal.Title>
@@ -908,12 +1184,19 @@ function OnboardingApplication() {
                   </Col>
                   <Col className="mb-3">
                     <div>
-                      <div className="avatar-container" onClick={handleShowDLModal}>
-                        {driverID && <Image src={driverID} alt="Avatar" roundedCircle />}
-                        {!driverID && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
-                          {step === "Pending" ? "Driver License?" : "Upload Driver License"}
-                        </div>}
-                      </div>
+                      <Col>
+                        <Row>
+                          <h5>Driver License</h5>
+                        </Row>
+                        <Row>
+                          <div className="avatar-container" onClick={handleShowDLModal}>
+                            {driverID && <Image src={driverID} alt="Avatar" roundedCircle />}
+                            {!driverID && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
+                              {step === "Pending" ? "Driver License?" : "Upload Driver License"}
+                            </div>}
+                          </div>
+                        </Row>
+                      </Col>
 
                       <Modal show={showDLModal} onHide={handleCloseDLModal}>
                         <Modal.Header closeButton>
@@ -951,12 +1234,19 @@ function OnboardingApplication() {
                   </Col>
                   <Col className="mb-3">
                     <div>
-                      <div className="avatar-container" onClick={handleShowAuthModal}>
-                        {workAuth && <Image src={workAuth} alt="Avatar" roundedCircle />}
-                        {!workAuth && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
-                          {step === "Pending" ? "Work Authorization?" : "Upload Work Authorization"}
-                        </div>}
-                      </div>
+                      <Col>
+                        <Row>
+                          <h5>Work Authorization</h5>
+                        </Row>
+                        <Row>
+                          <div className="avatar-container" onClick={handleShowAuthModal}>
+                            {workAuth && <Image src={workAuth} alt="Avatar" roundedCircle />}
+                            {!workAuth && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
+                              {step === "Pending" ? "Work Authorization?" : "Upload Work Authorization"}
+                            </div>}
+                          </div>
+                        </Row>
+                      </Col>
 
                       <Modal show={showAuthModal} onHide={handleCloseAuthModal}>
                         <Modal.Header closeButton>
@@ -996,7 +1286,7 @@ function OnboardingApplication() {
 
               </Card.Body>
             </Card>
-            {(step === "Never" || step === "Rejected") && <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft: '35vw'}}>
+            {(step === "UnSubmitted" || step === "Rejected") && <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft: '35vw'}}>
               <Button variant="primary" onClick={handleSubmit}>
                 Submit Data
               </Button>

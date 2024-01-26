@@ -8,11 +8,14 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const profileRoutes = require("./routes/profile");
 
+
+
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
