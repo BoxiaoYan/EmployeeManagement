@@ -90,7 +90,7 @@ useEffect(() => {
 
   return (
     <div>
-        {email===''? (<>Invalid</>):( <Authform
+        {email===''? (<>Invalid URL</>):( <Authform
         buttonText="Create your account"
         onSubmit={onSubmit}
         title="Registration"

@@ -4,6 +4,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
+import VisaStatusManagement from './pages/VisaStatusManagement/VisaStatusManagement';
 
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={(<>Welcome to the Home Page</>)} />
             <Route path="/registration/:token" element={<Registration/>} />
             <Route path="/signin" element={<Login/>} />
+            <Route path="/vsm" element={<VisaStatusManagement/>} />
       </Routes>
     </BrowserRouter>
   );
