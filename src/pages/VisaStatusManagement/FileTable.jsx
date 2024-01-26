@@ -22,6 +22,7 @@ export default function FileTable({ props }) {
   const { Text } = Typography;
 
   const BASE_URL = `http://localhost:${process.env.PORT || 8080}`;
+  const postUrl = BASE_URL + "/api/save_file";
 
   return (
     <div className={styles.section}>
@@ -38,8 +39,13 @@ export default function FileTable({ props }) {
           : message.approved}
       </Text>
       <div className={styles.upload}>
-        {(status !== "Approved" && !isDisable) && (
-          <FileUpload filename={filename} userID={userID} refresh={refresh} />
+        {status !== "Approved" && !isDisable && (
+          <FileUpload
+            filename={filename}
+            userID={userID}
+            url={postUrl}
+            refresh={refresh}
+          />
         )}
         <br />
         <br />

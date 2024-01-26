@@ -3,8 +3,7 @@ import { Upload, Button, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 
-const FileUpload = ({ filename, userID, refresh }) => {
-  const BASE_URL = `http://localhost:${process.env.PORT || 8080}`;
+const FileUpload = ({ filename, userID, url, refresh }) => {
 
   const onChange = (info) => {
     if (info.file.status === "done") {
@@ -18,7 +17,7 @@ const FileUpload = ({ filename, userID, refresh }) => {
     const data = { filename, file, contentType: file.type, userID };
     try {
       // Backend api call to save the file
-      await axios.post(BASE_URL + "/api/save_file", data, {
+      await axios.post(url, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       refresh();
