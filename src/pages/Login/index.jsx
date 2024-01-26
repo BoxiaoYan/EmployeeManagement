@@ -41,7 +41,8 @@ export default function Login() {
       if (user.payload.id) {
         console.log('Successful login');
         dispatch(setCurrentUser(user.payload.id));
-        navigate('/');
+
+        navigate('/hiring-management');
       } else {
         alert('Invalid username password');
       }
