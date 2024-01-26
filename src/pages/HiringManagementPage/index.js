@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Tabs } from "antd";
 
 import TokenList from "./TokenList";
@@ -9,6 +11,14 @@ import styles from "./style.module.css";
 export default function HiringManagementPage() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("Registration Token");
+
+  const position = useSelector((state) => state.user.user.position);
+  const navigate = useNavigate();
+
+  // Authentication Check
+  if (position !== "hr") {
+    navigate("/error/not-authorized")
+  }
 
   const items = [
     {

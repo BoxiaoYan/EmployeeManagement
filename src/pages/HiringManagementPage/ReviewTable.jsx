@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Table } from "antd";
 
@@ -14,6 +15,7 @@ export default function ReviewTable({ status, search, setSearch }) {
   const [displayEmployees, setDisplayEmployees] = useState([]);
 
   const navigate = useNavigate();
+  const userToken = useSelector((state) => state.user.user.token || null);
 
   useEffect(() => {
     // Load the search result from localStorage
@@ -23,7 +25,13 @@ export default function ReviewTable({ status, search, setSearch }) {
     }
 
     // Fetch empoyees
-    fetchEmployeeByStatus(status, setEmployees, setDisplayEmployees, navigate);
+    fetchEmployeeByStatus(
+      status,
+      setEmployees,
+      setDisplayEmployees,
+      navigate,
+      userToken
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 

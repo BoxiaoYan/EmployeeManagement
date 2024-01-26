@@ -38,9 +38,9 @@ export default function Login() {
       const user = await dispatch(authUser(data));
       console.log('User after authentication:', user);
   
-      if (user.payload.id) {
+      if (user.payload) {
         console.log('Successful login');
-        dispatch(setCurrentUser(user.payload.id));
+        dispatch(setCurrentUser(user.payload));
         navigate('/');
       } else {
         alert('Invalid username password');

@@ -4,17 +4,18 @@ export const fetchEmployeeByStatus = async (
   status,
   setEmployees,
   setDisplayEmployees,
-  navigate
+  navigate,
+  userToken
 ) => {
   try {
     const response = status
       ? await apiCall({
           url: `/api/employees_status/${status}`,
-          method: "GET",
+          method: "GET", undefined, userToken
         })
       : await apiCall({
           url: "/api/employees_reg_status",
-          method: "GET",
+          method: "GET", undefined, userToken
         });
     const employees = response.employees.map((employee) => ({
       key: employee.email,

@@ -1,19 +1,9 @@
 import React from "react";
 import { Button, Form, Input, Typography } from "antd";
 import { LockOutlined } from "@ant-design/icons";
-import { useSelector } from "react-redux";
 import styles from "./style.module.css";
 
-export default function AuthForm({
-  buttonText,
-  onSubmit,
-  title,
-  fields,
-}) {
-  // const { status } = useSelector(state => state.user);
-
-  console.log(fields)
-
+export default function AuthForm({ buttonText, onSubmit, title, fields }) {
   return (
     <div className={styles.container}>
       <Form className={styles.form} onFinish={onSubmit} autoComplete="off">
