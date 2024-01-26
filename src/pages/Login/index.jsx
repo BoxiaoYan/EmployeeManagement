@@ -3,6 +3,7 @@ import Authform from '../../components/Authform';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { authUser,setCurrentUser } from '../../app/userSlice';
+import { useEffect } from 'react';
 
 export default function Login() {
 
@@ -30,6 +31,10 @@ export default function Login() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(()=>{
+    // Skip login if token is valid
+  }, [])
 
   const onSubmit = async (data) => {
     console.log('Data before authentication:', data);
