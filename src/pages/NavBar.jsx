@@ -4,16 +4,15 @@ import '../Navbar.css';
 import { useSelector } from 'react-redux';
 
 const Navbar = () => {
-    const userId = useSelector(state => state.user.id);
-    const Userposition = useSelector(state => state.user.position);
-    console.log("current id: " + userId);
-    console.log("current position: " + Userposition);
+    const position = useSelector((state) => state.user.user.position);
+
+    console.log("current position: " + position);
     return (
 
         <nav>
             <ul>
                 <li className="navbar-title">Employee Management</li>
-                {Userposition === 'employee' ? (
+                {position === 'employee' ? (
                     <>
 
                         <li>
@@ -26,7 +25,7 @@ const Navbar = () => {
                             <Link to="/logout">Logout</Link>
                         </li>
                     </>
-                ) : Userposition === 'hr' ? (
+                ) : position === 'hr' ? (
                     <>
                         <li>
                             <Link to="/">Home</Link>
