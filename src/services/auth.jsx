@@ -16,7 +16,7 @@ export const signIn = async (data) => {
   });
 };
 
-export const verifyRegLink = async (token, setEmail) => {
+export const verifyRegLink = async (token, setEmail, setErrorMsg) => {
   try {
     const response = await apiCall({
       url: `/api/auth/registration/${token}`,
@@ -24,6 +24,18 @@ export const verifyRegLink = async (token, setEmail) => {
     });
     setEmail(response.email);
   } catch (error) {
-    // if email is empty, render <RegLinkExpired />
+    switch (error.message) {
+      case "Token expired":
+        setErrorMsg(
+          "Your link has expired. Please contact HR to resend a link."
+        );
+        break;
+      case "Invalid token":
+        setErrorMsg("The registration link is invalid.");
+        break;
+      default:
+        setErrorMsg("Server Error");
+        break;
+    }
   }
 };

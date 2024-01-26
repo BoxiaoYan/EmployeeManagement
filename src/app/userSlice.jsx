@@ -13,12 +13,7 @@ export const authUser = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const user = await signIn(data);
-      console.log("User data after signin:", user);
-      // Save data in localStorage
-      localStorage.setItem("userID", user.id);
-      localStorage.setItem("position", user.position);
-      localStorage.setItem("appStatus", user.appStatus);
-      localStorage.setItem("token", user.token);
+      localStorage.setItem("token", user.token)
       thunkAPI.dispatch(removeError());
       return user;
     } catch (error) {
@@ -34,11 +29,11 @@ export const registerUser = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const user = await register(data);
-      console.log("User data after register:", user);
       thunkAPI.dispatch(removeError());
       return user;
     } catch (error) {
       const { message } = error;
+      console.log(message)
       thunkAPI.dispatch(addError(message));
       return thunkAPI.rejectWithValue(message);
     }
@@ -57,18 +52,21 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
       state.user = {};
       state.status = "idle";
-      // Remove from localStorage
-      localStorage.removeItem("userID");
-      localStorage.removeItem("position");
-      localStorage.removeItem("appStatus");
-      localStorage.removeItem("token");
+      localStorage.removeItem("token")
+      // Remove data in employee profile page
+      localStorage.removeItem("profileSummaryPage");
+      localStorage.removeItem("profileSummarySearch");
+      // Remove data in hiring management page
+      localStorage.removeItem("hiringManagementTab1");
+      localStorage.removeItem("hiringManagementTab2");
+      localStorage.removeItem("hiringManagementSearch");
     },
   },
   extraReducers: (builder) => {
     builder.addCase(authUser.fulfilled, (state, action) => {
       state.isAuthenticated = !!Object.keys(action.payload).length;
       state.user = action.payload;
-      state.status = 'succeeded';
+      state.status = "succeeded";
     });
     builder.addCase(authUser.rejected, (state, action) => {
       state.isAuthenticated = false;
