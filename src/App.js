@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./components/Layout";
 import HiringManagementPage from "./pages/HiringManagementPage";
+import VisaStatusManagement from './pages/VisaStatusManagement';
 
 import NotFound from "./pages/ErrorPages/NotFound";
 import NotAuthorized from "./pages/ErrorPages/NotAuthorized";
@@ -21,6 +22,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<HiringManagementPage />} />
           <Route path="/hiring-management" element={<HiringManagementPage />} />
+          <Route path="/visa-status-management" element={<VisaStatusManagement/>} />
         </Route>
         <Route path="/registration/:token" element={<Registration />} />
         <Route path="/login" element={<Login />} />
