@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // import Registration from './pages/Registration';
 // import Login from './pages/Login';
-//import VisaStatusManagement from './pages/VisaStatusManagement/VisaStatusManagement';
+import VisaStatusManagement from "./pages/VisaStatusManagement/VisaStatusManagement";
 
 import Layout from "./components/Layout";
 import HiringManagementPage from "./pages/HiringManagementPage";
@@ -33,6 +33,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<HiringManagementPage />} />
           <Route path="/hiring-management" element={<HiringManagementPage />} />
+          <Route path="/vsm" element={<VisaStatusManagement/>} />
         </Route>
         <Route path="/registration/:token" element={<Registration />} />
         <Route path="/login" element={<Login />} />
