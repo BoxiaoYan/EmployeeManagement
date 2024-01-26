@@ -13,12 +13,7 @@ export const authUser = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const user = await signIn(data);
-      console.log("User data after signin:", user);
-      // Save data in localStorage
-      localStorage.setItem("userID", user.id);
-      localStorage.setItem("position", user.positoin);
-      localStorage.setItem("appStatus", user.appStatus);
-      localStorage.setItem("token", user.token);
+      localStorage.setItem("token", user.token)
       thunkAPI.dispatch(removeError());
       return user;
     } catch (error) {
@@ -34,11 +29,11 @@ export const registerUser = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const user = await register(data);
-      console.log("User data after register:", user);
       thunkAPI.dispatch(removeError());
       return user;
     } catch (error) {
       const { message } = error;
+      console.log(message)
       thunkAPI.dispatch(addError(message));
       return thunkAPI.rejectWithValue(message);
     }
@@ -57,11 +52,7 @@ const userSlice = createSlice({
       state.isAuthenticated = false;
       state.user = {};
       state.status = "idle";
-      // Remove user information
-      localStorage.removeItem("userID");
-      localStorage.removeItem("position");
-      localStorage.removeItem("appStatus");
-      localStorage.removeItem("token");
+      localStorage.removeItem("token")
       // Remove data in employee profile page
       localStorage.removeItem("profileSummaryPage");
       localStorage.removeItem("profileSummarySearch");

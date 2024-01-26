@@ -1,28 +1,11 @@
 import apiCall from "./api";
 
 export const register = async (data) => {
-  try {
-    await apiCall({
-      url: "/api/auth/register",
-      method: "POST",
-      data,
-    });
-    alert("You have successfully registered. Please log in.");
-    data.navigate("/login");
-  } catch (error) {
-    switch (error.message) {
-      case "User is already registered":
-        alert("You have already registered. Please log in.");
-        data.navigate("/login");
-        break;
-      case "Username is already existed":
-        alert("Username is already existed.");
-        break;
-      default:
-        data.navigate("/error/server-error");
-        break;
-    }
-  }
+  return await apiCall({
+    url: "/api/auth/register",
+    method: "POST",
+    data,
+  });
 };
 
 export const signIn = async (data) => {

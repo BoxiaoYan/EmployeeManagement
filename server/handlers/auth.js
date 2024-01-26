@@ -7,7 +7,7 @@ exports.signin = async function (req, res, next) {
     const user = await db.User.findOne({
       username: req.body.username,
     });
-    const { id, username, position, appStatus } = user;
+    const { id, email, username, position, appStatus } = user;
     // verify password
     const isMatch = await user.comparePassWord(req.body.password);
     if (isMatch) {
@@ -15,7 +15,9 @@ exports.signin = async function (req, res, next) {
       const token = jwt.sign({ id, position }, process.env.JWT_SECRET_KEY, {
         expiresIn: "1d",
       });
-      return res.status(200).json({ id, username, position, appStatus, token });
+      return res
+        .status(200)
+        .json({ id, email, username, position, appStatus, token });
     } else {
       return next({ status: 400, message: "Invalid Username / Password" });
     }
@@ -41,11 +43,11 @@ exports.register = async function (req, res, next) {
     user.appStatus = "UnSubmitted";
     await user.save();
     // Generate login token
-    const { id, position, appStatus } = user;
-    const token = jwt.sign({ id, position }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1d",
-    });
-    return res.status(200).json({ id, username, position, appStatus, token });
+    // const { id, position, appStatus } = user;
+    // const token = jwt.sign({ id, position }, process.env.JWT_SECRET_KEY, {
+    //   expiresIn: "1d",
+    // });
+    return res.status(200).json({ message: "Successfully registered"});
   } catch (error) {
     // Username already exist
     if (error.code === 11000) {

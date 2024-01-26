@@ -18,15 +18,6 @@ export default function Registration() {
 
   const dispatch = useDispatch();
 
-  //   useEffect(() => {
-  //     const handleVerification = async () => {
-  //       await verifyRegLink(token, setEmail);
-  //       console.log('Email after verification:', email);
-  //     };
-
-  //     handleVerification();
-  //   }, [token, email]);
-
   useEffect(() => {
     verifyRegLink(token, setEmail, setErrorMsg);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -66,19 +57,25 @@ export default function Registration() {
   ];
 
   const onSubmit = async (data) => {
-    try {
-      // Wait for email verification to complete
-      await verifyRegLink(token, setEmail, setErrorMsg);
+    // Wait for email verification to complete
+    await verifyRegLink(token, setEmail, setErrorMsg);
 
-      // Now, the email state has been updated
-      // console.log("Email before submission:", email);
-      // console.log("Submitted data:", data);
-
-      // Dispatch registerUser action
-      dispatch(registerUser({ ...data, email, navigate }));
-    } catch (error) {
-      console.error("Error during verification:", error);
-      // Handle the error if needed
+    // Dispatch registerUser action
+    const response = await dispatch(registerUser({ ...data, email }));
+    if (!response.error) {
+      alert("You have successfully registered. Please log in.");
+      navigate("/login");
+    } else {
+      const error = response.payload;
+      console.log(error);
+      if (error === "User is already registered") {
+        alert("You have already registered. Please log in.");
+        navigate("/login");
+      } else if (error === "Username is already existed") {
+        alert("Username is already existed.");
+      } else {
+        navigate("/error/server-error");
+      }
     }
   };
 

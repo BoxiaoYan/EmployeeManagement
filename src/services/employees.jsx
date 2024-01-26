@@ -24,8 +24,8 @@ export const fetchEmployeeByStatus = async (
     setDisplayEmployees(employees);
   } catch (error) {
     switch (error.message) {
-      case "Authentification Failed":
-        navigate("/error/not-authorized");
+      case "Authentication failed":
+        // navigate("/error/not-authorized");
         break;
       default:
         navigate("/error/server-error");
