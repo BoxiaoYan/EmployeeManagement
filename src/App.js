@@ -19,6 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
+          <Route index element={<HiringManagementPage />} />
           <Route path="/hiring-management" element={<HiringManagementPage />} />
         </Route>
         <Route path="/registration/:token" element={<Registration />} />

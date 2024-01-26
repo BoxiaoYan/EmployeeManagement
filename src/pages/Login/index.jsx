@@ -1,60 +1,55 @@
-import { UserOutlined } from '@ant-design/icons';
-import Authform from '../../components/Authform';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { authUser,setCurrentUser } from '../../app/userSlice';
-import { useEffect } from 'react';
+import { UserOutlined } from "@ant-design/icons";
+import Authform from "../../components/Authform";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { authUser, setCurrentUser } from "../../app/userSlice";
+import { useEffect } from "react";
 
 export default function Login() {
-
   const fields = [
     {
-      placeholder: 'Username',
-      name: 'username',
-      type: 'text',
+      placeholder: "Username",
+      name: "username",
+      type: "text",
       prefix: <UserOutlined />,
-      rules:[{
-        required:true,
-        message:"Username cannot be empty"
-      }]
+      rules: [
+        {
+          required: true,
+          message: "Username cannot be empty",
+        },
+      ],
     },
     {
-      placeholder: 'Password',
-      name: 'password',
-      type: 'password',
-      rules:[{
-        required:true,
-        message:"Password cannot be empty"
-      }]
-    }
+      placeholder: "Password",
+      name: "password",
+      type: "password",
+      rules: [
+        {
+          required: true,
+          message: "Password cannot be empty",
+        },
+      ],
+    },
   ];
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(()=>{
+  useEffect(() => {
     // Skip login if token is valid
-  }, [])
+  }, []);
 
   const onSubmit = async (data) => {
-    console.log('Data before authentication:', data);
-  
-    try {
-      const user = await dispatch(authUser(data));
-      console.log('User after authentication:', user);
-  
-      if (user.payload) {
-        console.log('Successful login');
-        dispatch(setCurrentUser(user.payload));
-        navigate('/');
-      } else {
-        alert('Invalid username password');
-      }
-    } catch (err) {
-      console.error('Authentication failed:', err);
+    const response = await dispatch(authUser(data));
+    if (!response.error) {
+      console.log("Successful login");
+      dispatch(setCurrentUser(response.payload));
+      navigate(location.state?.from || "/");
+    } else {
+      alert("Invalid username password");
     }
   };
-
 
   return (
     <div>

@@ -4,18 +4,17 @@ export const fetchEmployeeByStatus = async (
   status,
   setEmployees,
   setDisplayEmployees,
-  navigate,
-  userToken
+  navigate
 ) => {
   try {
     const response = status
       ? await apiCall({
           url: `/api/employees_status/${status}`,
-          method: "GET", undefined, userToken
+          method: "GET",
         })
       : await apiCall({
           url: "/api/employees_reg_status",
-          method: "GET", undefined, userToken
+          method: "GET",
         });
     const employees = response.employees.map((employee) => ({
       key: employee.email,
@@ -25,8 +24,8 @@ export const fetchEmployeeByStatus = async (
     setDisplayEmployees(employees);
   } catch (error) {
     switch (error.message) {
-      case "Authentification Failed":
-        navigate("/error/not-authorized");
+      case "Authentication failed":
+        // navigate("/error/not-authorized");
         break;
       default:
         navigate("/error/server-error");

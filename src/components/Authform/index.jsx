@@ -17,7 +17,6 @@ export default function AuthForm({ buttonText, onSubmit, title, fields }) {
                 prefix={field.prefix}
                 size="large"
                 rules={field.rules}
-                defaultValue={field.defaultValue}
                 readOnly
               />
             ) : field.type === "text" ? (

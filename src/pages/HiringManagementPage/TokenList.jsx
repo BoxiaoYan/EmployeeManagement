@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Table, Divider } from "antd";
 import { pageTableColumns } from "./dataFormat";
@@ -15,7 +14,6 @@ export default function TokenList({ search, setSearch }) {
   const [displayEmployees, setDisplayEmployees] = useState([]);
 
   const navigate = useNavigate();
-  const userToken = useSelector((state) => state.user.user.token || null);
 
   useEffect(() => {
     // Fetch empoyees
@@ -23,8 +21,7 @@ export default function TokenList({ search, setSearch }) {
       undefined,
       setEmployees,
       setDisplayEmployees,
-      navigate,
-      userToken
+      navigate
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh]);
@@ -54,7 +51,7 @@ export default function TokenList({ search, setSearch }) {
       </div>
       <div className={styles.table}>
         <Table
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize: 5 }}
           columns={pageTableColumns}
           dataSource={displayEmployees}
         />
