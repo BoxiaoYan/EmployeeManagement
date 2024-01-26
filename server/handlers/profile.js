@@ -23,7 +23,11 @@ exports.saveProfile = async function (req, res, next) {
         .json({ message: "User profile is saved successfully" });
     }
   } catch (error) {
-    return next(error);
+    if (error.message.includes("Profile validation failed")) {
+      return next({ status: 400, message: "Profile validation failed" });
+    } else {
+      return next(error);
+    }
   }
 };
 
