@@ -266,7 +266,7 @@ function OnboardingApplication() {
 
     
     // 读取头像图片文件
-    const avatarBlob = await fetch(avatarURL.path).then((res) => res.blob());
+    const avatarBlob = await fetch(avatarURL?.path).then((res) => res.blob());
     const avatarData = await new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -277,7 +277,7 @@ function OnboardingApplication() {
     });
 
     // 读取驾照文件
-    const DLBlob = await fetch(DLURL.path).then((res) => res.blob());
+    const DLBlob = await fetch(DLURL?.path).then((res) => res.blob());
     const DLData = await new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -288,7 +288,7 @@ function OnboardingApplication() {
     });
 
     // 读取其他文件（auth 文件）
-    const authBlob = await fetch(authURL.path).then((res) => res.blob());
+    const authBlob = await fetch(authURL?.path).then((res) => res.blob());
     const authData = await new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -298,7 +298,7 @@ function OnboardingApplication() {
       reader.readAsArrayBuffer(authBlob);
     });
 
-    const f1Blob = await fetch(uploadedF1.name).then((res) => res.blob());
+    const f1Blob = await fetch(uploadedF1?.name).then((res) => res.blob());
     const f1Data = await new Promise((resolve) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -316,9 +316,9 @@ function OnboardingApplication() {
         preferredName: preferredName,
       },
       picture: {
-        data: avatarData,
-        contentType: avatarBlob.type,
-        fileName: avatarURL.name
+        data: avatarData !== undefined ? avatarData : null,
+        contentType: avatarURL !== null ? avatarURL?.type : null,
+        fileName: avatarURL !== null ? avatarURL?.name : null,
       },
       personalInfo: {
         ssn: SSN,
@@ -352,21 +352,21 @@ function OnboardingApplication() {
       emergencyContacts: emergencies,
       documents: [
         {
-          data: DLData,
-          contentType: DLBlob.type,
-          fileName: DLURL.name
+          data: DLData !== undefined ? DLData : null,
+          contentType: DLURL?.type,
+          fileName: DLURL?.name
         }
         ,
         {
-          data: authData,
-          contentType: authBlob.type,
-          fileName: authURL.name
+          data: authData !== undefined ? authData : null,
+          contentType: authURL?.type,
+          fileName: authURL?.name
         }
         ,
         {
-          data: f1Data,
-          contentType: f1Blob.type,
-          fileName: uploadedF1.name
+          data: f1Data !== undefined ? f1Data : null,
+          contentType: uploadedF1?.type,
+          fileName: uploadedF1?.name
         }
       ]
     }
@@ -469,8 +469,8 @@ function OnboardingApplication() {
 
           setEmergencies(profile.emergencyContacts);
 
-        } else if (response.data.status === 404) {
-          console.log("The profile does not exist", response.data.error);
+        } else if (response.data.status === 201) {
+          console.log("The profile does not exist", response.data.message);
         } else {
           console.log("???");
         }

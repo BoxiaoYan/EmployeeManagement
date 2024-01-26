@@ -17,14 +17,8 @@ const profileSchema = new mongoose.Schema({
 
   // b. Profile picture
   picture: { 
-    data: {
-      type: Buffer,      // 存储二进制数据的 Buffer 类型
-      required: true,
-    },
-    contentType: {
-      type: String,      // 存储文件类型（如 'application/pdf'）
-      required: true,
-    },
+    data: Buffer,
+    contentType: String,
     filename: String
   },
 
@@ -85,14 +79,8 @@ const profileSchema = new mongoose.Schema({
   // j. Documents
   documents: [
     {
-      data: {
-        type: Buffer,      // 存储二进制数据的 Buffer 类型
-        required: true,
-      },
-      contentType: {
-        type: String,      // 存储文件类型（如 'application/pdf'）
-        required: true,
-      },
+      data: Buffer,
+      contentType: String,
       filename: String
     },
   ],

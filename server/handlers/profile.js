@@ -34,7 +34,7 @@ exports.getOneProfile = async function (req, res, next) {
     if (userProfile) {
       return res.status(200).json({ status: 200, profile: userProfile, message: "User profile is found"});
     } else {
-      return res.status(404).json({ error: "User profile is not found" });
+      return res.status(201).json({ status: 201, message: "User profile is not found" });
     }
   } catch (error) {
     return next(error);
