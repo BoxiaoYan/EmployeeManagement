@@ -1,62 +1,102 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Typography } from "antd";
-import styles from "./style.module.css";
 import { useSelector } from "react-redux";
 import { FaFilePdf } from "react-icons/fa";
-import FileUpload from "./FileUpload";
+import { fetchVisaStatus } from "../../services/visa";
+
+import FileTable from "./FileTable";
+
+import styles from "./style.module.css";
 
 export default function VisaStatusManagement() {
   const { Title, Text } = Typography;
+  const [fileChange, setFileChange] = useState(false);
+  const [feedback, setFeedback] = useState("");
   const [optRecStatus, setOptRecStatus] = useState("Unsubmitted");
-  const [eadStatus, setEadStatus] = useState("approved");
-  const [i983Status, setI983Status] = useState("approved");
-  const [i20Status, setI20Status] = useState("");
+  const [eadStatus, setEadStatus] = useState("Unsubmitted");
+  const [i983Status, setI983Status] = useState("Unsubmitted");
+  const [i20Status, setI20Status] = useState("Unsubmitted");
 
   const userID = useSelector((state) => state.user.user.id || null);
 
-  // need check auth(token)
-  // need to check work auth -> opt (if the button to this page will only be visible for opt employee,then it's optional )
+  useEffect(() => {
+    fetchVisaStatus(
+      userID,
+      setOptRecStatus,
+      setEadStatus,
+      setI983Status,
+      setI20Status
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fileChange]);
 
-  //  need fetch and set optRec status,
-  //  if status is rejected,, fetch and set hr feedback
-  //  if status is approved, when the submit click, sent ead to backend
-
-  //  need fetch and set ead status,
-  //  if status is rejected,, fetch and set hr feedback
-
-  //  need to send i983 to backend once submit
-
-  //  fetch and set i983 status,
-  //  if status is rejected,, fetch and set hr feedback
-  // if status is approved, when the submit click, sent i20 to backend
-
-  //  need fetch and set i20 status,
-  //  if status is rejected,, fetch and set hr feedback
-
-  // current status would be 4 type: ''(never sent to HR), approved, rejected, pending
-
-  const handleOptEadSubmit = (e) => {
-    e.preventDefault();
-    //need to check if the OPTEAD is successfully sent to hr, then set to pending
-    setEadStatus("pending");
+  const refresh = () => {
+    setFileChange(!fileChange);
   };
 
-  const handleI983Submit = (e) => {
-    e.preventDefault();
-    //need to check if the I983 is successfully sent to hr, then set to pending
-    setI983Status("pending");
-  };
+  const optRecStatusProps = {
+    userID,
+    title: "OPT Receipt",
+    filename: "opt_receipt",
+    status: optRecStatus,
+    message: {
+      unsubmitted: "Please upload a copy of your OPT Receipt.", 
+      pending: "Pending: Waiting for HR to approve your OPT Receipt",
+      rejected: "Rejected: " + feedback,
+      approved: "Approved",
+    },
+    isDisable: false,
+    refresh,
+    extraFile: undefined
+  }
 
-  const handleI20Submit = (e) => {
-    e.preventDefault();
-    //need to check if the i20 is successfully sent to hr, then set to pending
-    setI20Status("pending");
-  };
+  const eadStatusProps = {
+    userID,
+    title: "OPT EAD",
+    filename: "opt_ead",
+    status: eadStatus,
+    message: {
+      unsubmitted: "Please upload a copy of your OPT EAD.", 
+      pending: "Pending: Waiting for HR to approve your OPT EAD",
+      rejected: "Rejected: " + feedback,
+      approved: "Approved",
+    },
+    isDisable: optRecStatus !== "Approved",
+    refresh,
+    extraFile: undefined
+  }
 
-  //   optReceipt: visaFileSchema,
-  //   optEAD: visaFileSchema,
-  //   i983: visaFileSchema,
-  //   i20: visaFileSchema,
+  const i983StatusProps = {
+    userID,
+    title: "I-983",
+    filename: "i938",
+    status: i983Status,
+    message: {
+      unsubmitted: "Please upload a copy of your I-983.", 
+      pending: "Pending: Waiting for HR to approve your I-983",
+      rejected: "Rejected: " + feedback,
+      approved: "Approved: Please send the I-983 along with all necessary documents to your school and upload the new I-20",
+    },
+    isDisable: eadStatus !== "Approved",
+    refresh,
+    extraFile: undefined
+  }
+
+  const i20StatusProps = {
+    userID,
+    title: "I-20",
+    filename: "i20",
+    status: i20Status,
+    message: {
+      unsubmitted: "Please upload a copy of your I-20.", 
+      pending: "Pending: Waiting for HR to approve your I-20",
+      rejected: "Rejected: " + feedback,
+      approved: "All documents have been approved",
+    },
+    isDisable: i983Status !== "Approved" ,
+    refresh,
+    extraFile: undefined
+  }
 
   return (
     <div className={styles.container}>
@@ -64,72 +104,14 @@ export default function VisaStatusManagement() {
         <Title>Visa Status Management</Title>
         <Text italic>Please follow the document order one by one.</Text>
         {/* opt receipt */}
-        <div className={styles.section}>
-          <Text strong>OPT Receipt</Text>
-          <Text>
-            {optRecStatus === "Unsubmitted"
-              ? "Please upload a copy of your OPT Receipt."
-              : optRecStatus === "Pending"
-              ? "Waiting for HR to approve your OPT Receipt"
-              : optRecStatus === "Rejected"
-              ? `Rejected. ${"resubmit"}`
-              : eadStatus === "Approved"
-              ? "Approved"
-              : "Approved, Please upload a copy of your OPT EAD."}
-          </Text>
-          {(optRecStatus === "Unsubmitted" || optRecStatus === "Rejected") && (
-            <FileUpload filename="optReceipt" userID={userID} />
-          )}
-
-          {/* {optRecStatus !== "Unsubmitted" ? (
-            <Text>status: {optRecStatus}</Text>
-          ) : (
-            <Text>status: Not submitted</Text>
-          )}
-          {optRecStatus === "pending" ? (
-            <Text>Waiting for HR to approve your OPT Receipt</Text>
-          ) : optRecStatus === "rejected" ? (
-            <Text>HR feedback</Text>
-          ) : optRecStatus === "approved" && eadStatus === "rejected" ? (
-            <form className={styles.submitForm} onSubmit={handleOptEadSubmit}>
-              <Text>Please upload a copy of your OPT EAD.</Text>
-              <input type="file" name="optead" />
-              <input type="submit" value="Submit" />
-            </form>
-          ) : optRecStatus === "approved" && eadStatus === "approved" ? (
-            <></>
-          ) : optRecStatus === "approved" && eadStatus !== "pending" ? (
-            <form className={styles.submitForm} onSubmit={handleOptEadSubmit}>
-              <Text>Please upload a copy of your OPT EAD.</Text>
-              <input type="file" name="optead" />
-              <input type="submit" value="Submit" />
-            </form>
-          ) : (
-            <></>
-          )} */}
-        </div>
+        <FileTable props={optRecStatusProps}/>
 
         {/* optead */}
-        <div className={styles.section}>
-          <Text strong>OPT EAD</Text>
-          {eadStatus !== "" ? (
-            <Text>status: {eadStatus}</Text>
-          ) : (
-            <Text>status: Not submitted</Text>
-          )}
-          {eadStatus === "pending" ? (
-            <Text>Waiting for HR to approve your OPT EAD</Text>
-          ) : eadStatus === "rejected" ? (
-            <Text>HR feedback</Text>
-          ) : eadStatus === "approved" ? (
-            <Text>Please download and fill out the I-983 form</Text>
-          ) : (
-            <></>
-          )}
-        </div>
+        <FileTable props={eadStatusProps}/>
 
         {/* i-983 */}
-        <div className={styles.section}>
+        <FileTable props={i983StatusProps}/>
+        {/* <div className={styles.section}>
           <Text strong>I-983</Text>
           {i983Status !== "" ? (
             <Text>status: {i983Status}</Text>
@@ -153,7 +135,7 @@ export default function VisaStatusManagement() {
           ) : i983Status === "approved" &&
             eadStatus === "approved" &&
             optRecStatus === "approved" ? (
-            <form className={styles.submitForm} onSubmit={handleI20Submit}>
+            <form className={styles.submitForm} onSubmit={() => {}}>
               <Text>
                 Please send the I-983 along with all necessary documents to your
                 school and upload the new I-20
@@ -162,7 +144,7 @@ export default function VisaStatusManagement() {
               <input type="submit" />
             </form>
           ) : eadStatus === "approved" ? (
-            <form className={styles.submitForm} onSubmit={handleI983Submit}>
+            <form className={styles.submitForm} onSubmit={() => {}}>
               <input type="file" name="i983Form" />
               <input type="submit" />
             </form>
@@ -172,26 +154,10 @@ export default function VisaStatusManagement() {
               submit i-983.
             </Text>
           )}
-        </div>
+        </div> */}
 
         {/* i-20 */}
-        <div className={styles.section}>
-          <Text strong>I-20</Text>
-          {i20Status !== "" ? (
-            <Text>status: {i20Status}</Text>
-          ) : (
-            <Text>status: Not submitted</Text>
-          )}
-          {i20Status === "pending" ? (
-            <Text>Waiting for HR to approve your I-20</Text>
-          ) : i20Status === "rejected" ? (
-            <Text>HR feedback</Text>
-          ) : i20Status === "approved" ? (
-            <Text>All documents have been approved.</Text>
-          ) : (
-            <></>
-          )}
-        </div>
+        <FileTable props={i20StatusProps}/>
       </div>
     </div>
   );

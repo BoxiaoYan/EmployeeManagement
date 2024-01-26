@@ -6,7 +6,7 @@ const userVisaSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  optReceipt: {
+  opt_receipt: {
     data: Buffer,
     contentType: String,
     feedback: String,
@@ -16,7 +16,7 @@ const userVisaSchema = new mongoose.Schema({
       default: "Unsubmitted",
     },
   },
-  optEAD: {
+  opt_ead: {
     data: Buffer,
     contentType: String,
     feedback: String,
