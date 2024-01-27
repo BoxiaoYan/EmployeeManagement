@@ -12,7 +12,13 @@ export default function NotAuthorized() {
       title="403"
       subTitle="Sorry, you are not authorized to access this page."
       extra={
-        <Link to={position === "hr" ? "/" : "/visa-status-management"}>
+        <Link
+          to={
+            position === "hr"
+              ? "/employee-profile-summary"
+              : "/onboarding-application"
+          }
+        >
           <Button type="primary" size="large">
             Back Home
           </Button>

@@ -1,12 +1,13 @@
-import { UserOutlined, MailOutlined } from "@ant-design/icons";
-import Authform from "../../components/Authform";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { registerUser } from "../../app/userSlice";
+import { message } from "antd";
+import { UserOutlined, MailOutlined } from "@ant-design/icons";
 
+import { registerUser } from "../../app/userSlice";
 import { verifyRegLink } from "../../services/auth";
 
+import Authform from "../../components/Authform";
 import RegLinkExpired from "../ErrorPages/RegLinkExpired";
 
 export default function Registration() {
@@ -63,16 +64,16 @@ export default function Registration() {
     // Dispatch registerUser action
     const response = await dispatch(registerUser({ ...data, email }));
     if (!response.error) {
-      alert("You have successfully registered. Please log in.");
+      message.success("You have successfully registered. Please log in.");
       navigate("/login");
     } else {
       const error = response.payload;
       console.log(error);
       if (error === "User is already registered") {
-        alert("You have already registered. Please log in.");
+        message.error("You have already registered. Please log in.");
         navigate("/login");
       } else if (error === "Username is already existed") {
-        alert("Username is already existed.");
+        message.error("Username is already existed.");
       } else {
         navigate("/error/server-error");
       }

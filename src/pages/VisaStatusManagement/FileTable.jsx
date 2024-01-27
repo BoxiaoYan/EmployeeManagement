@@ -1,6 +1,7 @@
 import { Typography } from "antd";
 import { FaFilePdf } from "react-icons/fa";
 
+import PDF from "../../components/PDF";
 import FileUpload from "../../components/FileUpload";
 
 import styles from "./style.module.css";
@@ -37,11 +38,8 @@ export default function FileTable({ props }) {
       </Text>
       {extraFile && !isDisable && (
         <div className={styles.pdf}>
-          {extraFile.map((file, index) => (
-            <a key={index} href={file.link} download={file.name}>
-              <FaFilePdf />
-              <span>{file.name}</span>
-            </a>
+          {extraFile.map((filename, index) => (
+            <PDF key={index} filename={filename} userID={userID} />
           ))}
         </div>
       )}
@@ -54,15 +52,11 @@ export default function FileTable({ props }) {
         />
       )}
       {(status === "Pending" || status === "Approved") && (
-        <a
-          key={title}
+        <PDF
           className={styles.uploadFile}
-          href={`${BASE_URL}/api/get_file/${filename}/${userID}`}
-          download={`${filename}.pdf`}
-        >
-          <FaFilePdf />
-          <span>{`${filename}.pdf`}</span>
-        </a>
+          filename={filename}
+          userID={userID}
+        />
       )}
     </div>
   );

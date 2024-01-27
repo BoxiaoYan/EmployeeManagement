@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import { Layout } from "antd";
 import { blue, gray } from "@ant-design/colors";
 
+import Navbar from "../Navbar";
+
 export default function MainLayout() {
   const headerStyle = useMemo(
     () => ({
@@ -31,8 +33,8 @@ export default function MainLayout() {
     []
   );
 
-  const { isAuthenticated } = useSelector((state) => state.user);
   const location = useLocation();
+  const { isAuthenticated } = useSelector((state) => state.user);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname }} />;
@@ -40,7 +42,9 @@ export default function MainLayout() {
 
   return (
     <Layout>
-      <Layout.Header style={headerStyle}></Layout.Header>
+      <Layout.Header style={headerStyle}>
+        <Navbar />
+      </Layout.Header>
       <Layout.Content style={contentStyle}>
         <Outlet />
       </Layout.Content>

@@ -12,7 +12,13 @@ export default function ErrorPage() {
       title="500"
       subTitle="Sorry, something went wrong."
       extra={
-        <Link to={position === "hr" ? "/" : "/visa-status-management"}>
+        <Link
+          to={
+            position === "hr"
+              ? "/employee-profile-summary"
+              : "/onboarding-application"
+          }
+        >
           <Button type="primary" size="large">
             Back Home
           </Button>

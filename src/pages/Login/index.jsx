@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
@@ -38,12 +38,11 @@ export default function Login() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     // Skip login if token is valid
     verifySession(navigate);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSubmit = async (data) => {
@@ -52,9 +51,11 @@ export default function Login() {
       message.success("Successful login");
       dispatch(setCurrentUser(response.payload));
       const position = response.payload.position;
+      console.log(position);
       navigate(
-        location.state?.from ||
-          (position === "hr" ? "/hiring-management" : "/visa-status-management")
+        position === "hr"
+          ? "/employee-profile-summary"
+          : "/onboarding-application"
       );
     } else {
       message.error("Invalid username password");

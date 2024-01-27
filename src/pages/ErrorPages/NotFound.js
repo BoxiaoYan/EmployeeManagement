@@ -12,7 +12,13 @@ export default function NotFound() {
       title="404"
       subTitle="Sorry, the page you visited does not exist."
       extra={
-        <Link to={position === "hr" ? "/" : "/visa-status-management"}>
+        <Link
+          to={
+            position === "hr"
+              ? "/employee-profile-summary"
+              : "/onboarding-application"
+          }
+        >
           <Button type="primary" size="large">
             Back Home
           </Button>

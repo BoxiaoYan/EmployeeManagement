@@ -2,8 +2,9 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./components/Layout";
+import EmployeeProfileSummary from "./pages/EmployeeProfileSummary";
 import HiringManagementPage from "./pages/HiringManagementPage";
-import VisaStatusManagement from './pages/VisaStatusManagement';
+import VisaStatusManagement from "./pages/VisaStatusManagement";
 
 import NotFound from "./pages/ErrorPages/NotFound";
 import NotAuthorized from "./pages/ErrorPages/NotAuthorized";
@@ -20,9 +21,27 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<HiringManagementPage />} />
-          <Route path="/hiring-management" element={<HiringManagementPage />} />
-          <Route path="/visa-status-management" element={<VisaStatusManagement/>} />
+          {/* Employee pages */}
+          <Route
+            path="/onboarding-application"
+            element={<>onboarding application</>}
+          />
+          <Route path="/personal-profile" element={<>personal application</>} />
+          <Route path="/visa-status" element={<VisaStatusManagement />} />
+          {/* Hr pages */}
+          <Route
+            path="/employee-profile-summary"
+            element={<EmployeeProfileSummary />}
+          />
+          <Route path="/employee-profile" element={<>employee-profile</>} />
+          <Route
+            path="/employee-visa-status"
+            element={<>employee-visa-status</>}
+          />
+          <Route
+            path="/employee-hiring-status"
+            element={<HiringManagementPage />}
+          />
         </Route>
         <Route path="/registration/:token" element={<Registration />} />
         <Route path="/login" element={<Login />} />

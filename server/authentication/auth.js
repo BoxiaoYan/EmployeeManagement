@@ -36,7 +36,9 @@ exports.hrAuth = async function (req, res, next) {
 exports.employeeAuth = async function (req, res, next) {
   try {
     const token = req.headers.authorization.split(" ")[1];
+    console.log(token)
     const decoded = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+    console.log(decoded)
     if (decoded.position === "employee") {
       return next();
     } else {

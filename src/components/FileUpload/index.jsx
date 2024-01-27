@@ -4,7 +4,6 @@ import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 
 const FileUpload = ({ filename, userID, url, refresh }) => {
-
   const onChange = (info) => {
     if (info.file.status === "done") {
       message.success(`${info.file.name} file uploaded successfully`);
@@ -15,10 +14,14 @@ const FileUpload = ({ filename, userID, url, refresh }) => {
 
   const customRequest = async ({ file, onSuccess, onError }) => {
     const data = { filename, file, contentType: file.type, userID };
+    console.log(data);
     try {
       // Backend api call to save the file
       await axios.post(url, data, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       refresh();
       onSuccess();

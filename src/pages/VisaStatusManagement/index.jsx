@@ -91,10 +91,7 @@ export default function VisaStatusManagement() {
     },
     isDisable: eadStatus !== "Approved",
     refresh,
-    extraFile: [
-      { name: "empty_template.pdf", link: "/blank.pdf" },
-      { name: "sample_template.pdf", link: "/blank.pdf" },
-    ],
+    extraFile: ["empty_template", "sample_template"],
   };
 
   const i20StatusProps = {
