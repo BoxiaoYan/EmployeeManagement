@@ -9,8 +9,8 @@ const profileSchema = new mongoose.Schema({
 
   // a. Name
   name: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    firstName: { type: String },
+    lastName: { type: String },
     middleName: String,
     preferredName: String,
   },
@@ -23,56 +23,56 @@ const profileSchema = new mongoose.Schema({
   },
 
   // c. Email
-  email: { type: String, unique: true, required: true },
+  email: { type: String, unique: true},
 
   // d. SSN, date of birth, gender
   personalInfo: {
-    ssn: { type: Number, required: true },
-    birthday: { type: Date, required: true },
-    gender: { type: String, required: true },
+    ssn: { type: Number },
+    birthday: { type: Date },
+    gender: { type: String },
   },
 
   // e. Address
   address: {
-    street: { type: String, required: true },
+    street: { type: String },
     apt: { type: String },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zip: { type: String, required: true },
+    city: { type: String },
+    state: { type: String },
+    zip: { type: String },
   },
 
   // f. Contact info
   phone: {
-    cellPhone: { type: Number, required: true },
+    cellPhone: { type: Number },
     workPhone: Number,
   },
 
   // g. Employment
   employment: {
-    visa: { type: String, required: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    visa: { type: String },
+    startDate: { type: Date },
+    endDate: { type: Date },
   },
 
   // h. Reference
   reference: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    firstName: { type: String },
+    lastName: { type: String },
     middleName: String,
     phone: String,
     email: String,
-    relationship: { type: String, required: true },
+    relationship: { type: String },
   },
 
   // i. Emergency contacts
   emergencyContacts: [
     {
-      firstName: { type: String, required: true },
-      lastName: { type: String, required: true },
+      firstName: { type: String },
+      lastName: { type: String  },
       middleName: String,
       phone: String,
       email: String,
-      relationship: { type: String, required: true },
+      relationship: { type: String  },
     },
   ],
 

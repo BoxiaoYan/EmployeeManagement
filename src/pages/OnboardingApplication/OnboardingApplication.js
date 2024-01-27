@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import moment from "moment-timezone";
-import Datetime from "react-datetime";
+
 import { useDropzone } from 'react-dropzone';
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 import "./OnboardingApplication.css";
 
@@ -28,7 +30,7 @@ function OnboardingApplication() {
   const [gender, setGender] = useState("");
   const [email, setEmail] = useState("");
   const [SSN, setSSN] = useState("");
-  const [birthDate, setBirthDate] = useState("");
+  const [birthDate, setBirthDate] = useState(new Date(2000, 0, 1));
 
   const [address, setAddress] = useState("");
   const [apt, setApt] = useState("");
@@ -42,8 +44,8 @@ function OnboardingApplication() {
   const [isCitizen, setIsCitizen] = useState("");
   const [title, setTitle] = useState("");
   const [finalVisa, setFinalVisa] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(new Date(2000, 0, 1));
+  const [endDate, setEndDate] = useState(new Date(2000, 0, 1))
 
   const [refFirstName, setRefFirstName] = useState("");
   const [refLastName, setRefLastName] = useState("");
@@ -262,6 +264,18 @@ function OnboardingApplication() {
     } else if (lastName.trim() === "") {
       alert("Please enter your last name");
       return;
+    } else if (gender === "") {
+      alert("Please enter the gender");
+      return;
+    } else if (SSN.trim() === "" || /^\d{3}-\d{2}-\d{4}$/.test(SSN) === false){
+      alert("Please enter your SSN in the correct format");
+      return;
+    } else if (zipCode.trim() === "" || /^\d{5}$/.test(zipCode) === false) {
+      alert("Please enter your zipcode in the correct format");
+      return;
+    } else if (emergencies[0].relationship.trim() === "" || emergencies[1].relationship.trim() === "") {
+      alert("Please enter the relationship of your emergency contacts");
+      return;
     }
 
     
@@ -320,6 +334,7 @@ function OnboardingApplication() {
         contentType: avatarURL !== null ? avatarURL?.type : null,
         fileName: avatarURL !== null ? avatarURL?.name : null,
       },
+      email: email,
       personalInfo: {
         ssn: SSN,
         birthday: birthDate,
@@ -669,18 +684,17 @@ function OnboardingApplication() {
                   <Col className="mb-3">
                     <Form.Group id="birthday">
                       <Form.Label>Date of Birth</Form.Label>
-                        <InputGroup>
-                          <InputGroup.Text><CalendarIcon /></InputGroup.Text>
-                          <Form.Control 
-                            required 
-                            type="text"
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                            value={birthDate}
-                            onChange={(e) => setBirthDate(e.target.value)} 
-                            placeholder="mm/dd/yyyy" />
-                        </InputGroup>
-                      </Form.Group>
+                      <DatePicker
+                        showIcon
+                        selected={birthDate}
+                        onChange={(date) => {setBirthDate(date); console.log(date)}}
+                        dateFormat="MM/dd/yyyy"
+                        readOnly={step === "Pending" ? true : false}
+                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        closeOnScroll={true}
+                        monthsShown={2}
+                      />
+                    </Form.Group>
                   </Col>
                 </Row>
 
@@ -815,7 +829,7 @@ function OnboardingApplication() {
                         type="text" 
                         value={cellPhone}
                         onChange={(e) => setCellPhone(e.target.value)}
-                        placeholder="xxx-xx-xxxx"
+                        placeholder="xxx-xxx-xxxx"
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }} 
                       />
@@ -828,7 +842,7 @@ function OnboardingApplication() {
                         type="text" 
                         value={workPhone}
                         onChange={(e) => setWorkPhone(e.target.value)}
-                        placeholder="xxx-xx-xxxx" 
+                        placeholder="xxx-xxx-xxxx" 
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                       />
@@ -840,7 +854,7 @@ function OnboardingApplication() {
                 <Row>
                   <Col className="mb-3">
                     <Form.Group className="mb-2">
-                      <Form.Label>Are you ciziten/green card holder?</Form.Label>
+                      <Form.Label>Ciziten/PR?</Form.Label>
                       <Form.Select 
                         id="visa-state" 
                         defaultValue={""}
@@ -914,34 +928,46 @@ function OnboardingApplication() {
                   <Col className="mb-3">
                     <Form.Group id="start-date">
                       <Form.Label>Visa Start Date</Form.Label>
-                        <InputGroup>
-                          <InputGroup.Text><CalendarIcon /></InputGroup.Text>
-                          <Form.Control 
-                            required 
-                            type="text"
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)} 
-                            placeholder="mm/dd/yyyy" />
-                        </InputGroup>
-                      </Form.Group>
+                      <DatePicker
+                        showIcon
+                        selected={startDate}
+                        onChange={(date) => {
+                          if (date < endDate) {
+                            setStartDate(date); 
+                            console.log(date);
+                          } else {
+                            alert("Please select a date earlier than the end date");
+                          }
+                        }}
+                        dateFormat="MM/dd/yyyy"
+                        readOnly={step === "Pending" ? true : false}
+                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        closeOnScroll={true}
+                        monthsShown={2}
+                      />
+                    </Form.Group>
                   </Col>
                   <Col className="mb-3">
                     <Form.Group id="end-date">
                       <Form.Label>Visa End Date</Form.Label>
-                        <InputGroup>
-                          <InputGroup.Text><CalendarIcon /></InputGroup.Text>
-                          <Form.Control 
-                            required 
-                            type="text"
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)} 
-                            placeholder="mm/dd/yyyy" />
-                        </InputGroup>
-                      </Form.Group>
+                      <DatePicker
+                        showIcon
+                        selected={endDate}
+                        onChange={(date) => {
+                          if (date > startDate) {
+                            setEndDate(date); 
+                            console.log(date);
+                          } else {
+                            alert("Please select a date later than the start date");
+                          }
+                        }}
+                        dateFormat="MM/dd/yyyy"
+                        readOnly={step === "Pending" ? true : false}
+                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        closeOnScroll={true}
+                        monthsShown={2}
+                      />
+                    </Form.Group>
                   </Col>
                 </Row>
 
