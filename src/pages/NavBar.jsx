@@ -5,8 +5,12 @@ import { useSelector } from 'react-redux';
 
 const Navbar = () => {
     const position = useSelector((state) => state.user.user.position);
+    const username = useSelector((state) => state.user.user.username);
 
     console.log("current position: " + position);
+    console.log("current username: " + username);
+
+
     return (
 
         <nav>

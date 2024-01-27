@@ -45,7 +45,7 @@ export default function Login() {
     if (!response.error) {
       console.log("Successful login");
       dispatch(setCurrentUser(response.payload));
-      navigate(location.state?.from || "/");
+      navigate(location.state?.from || "/hiring-management");
     } else {
       alert("Invalid username password");
     }

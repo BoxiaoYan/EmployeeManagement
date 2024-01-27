@@ -32,3 +32,29 @@ export const fetchVisaStatus = async (
     // }
   }
 };
+
+
+// Approve a document
+export const approveDocument = async (documentId) => {
+
+  return new Promise((resolve, reject) => {
+
+  });
+};
+
+// Reject a document with feedback
+export const rejectDocument = async (documentId, feedback) => {
+
+  return new Promise((resolve, reject) => {
+
+  });
+};
+
+// Send a notification to an employee
+export const sendNotification = async (userId) => {
+
+  return new Promise((resolve, reject) => {
+
+  });
+};
+
