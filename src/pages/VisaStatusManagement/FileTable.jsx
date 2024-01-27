@@ -24,7 +24,7 @@ export default function FileTable({ props }) {
   return (
     <div className={styles.section}>
       <Text className={styles.title}>{title}</Text>
-      <Text className={styles.message}>
+      <Text c>
         {isDisable
           ? "Waiting for last file to be approved."
           : status === "Unsubmitted"

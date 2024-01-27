@@ -114,7 +114,9 @@ export default function VisaStatusManagement() {
     <div className={styles.container}>
       <div className={styles.table}>
         <Title>Visa Status Management</Title>
-        <Text italic>Please follow the document order one by one.</Text>
+        <Text className={styles.message} italic>
+          Please follow the document order one by one.
+        </Text>
         {/* opt receipt */}
         <FileTable props={optRecStatusProps} />
         {/* optead */}
