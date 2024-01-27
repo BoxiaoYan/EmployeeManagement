@@ -65,7 +65,7 @@ export default function EmployeeProfileSummary() {
 
   return (
     <>
-      {/** TODO: navigation bar */}
+      <div className={styles.title}>Employee Profile Summary</div>
       <div className={styles.searchBar}>
         <Input
           value={search}

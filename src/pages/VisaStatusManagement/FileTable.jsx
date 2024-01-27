@@ -1,5 +1,4 @@
 import { Typography } from "antd";
-import { FaFilePdf } from "react-icons/fa";
 
 import PDF from "../../components/PDF";
 import FileUpload from "../../components/FileUpload";
