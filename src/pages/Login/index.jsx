@@ -1,9 +1,13 @@
-import { UserOutlined } from "@ant-design/icons";
-import Authform from "../../components/Authform";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { authUser, setCurrentUser } from "../../app/userSlice";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate, useLocation } from "react-router-dom";
+import { message } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+
+import { authUser, setCurrentUser } from "../../app/userSlice";
+import { verifySession } from "../../services/auth";
+
+import Authform from "../../components/Authform";
 
 export default function Login() {
   const fields = [
@@ -38,16 +42,22 @@ export default function Login() {
 
   useEffect(() => {
     // Skip login if token is valid
+    verifySession(navigate);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSubmit = async (data) => {
     const response = await dispatch(authUser(data));
     if (!response.error) {
-      console.log("Successful login");
+      message.success("Successful login");
       dispatch(setCurrentUser(response.payload));
-      navigate(location.state?.from || "/");
+      const position = response.payload.position;
+      navigate(
+        location.state?.from ||
+          (position === "hr" ? "/hiring-management" : "/visa-status-management")
+      );
     } else {
-      alert("Invalid username password");
+      message.error("Invalid username password");
     }
   };
 

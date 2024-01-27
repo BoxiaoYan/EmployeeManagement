@@ -4,6 +4,13 @@
   margin: auto;
 }
 
+.title {
+  width: 95%;
+  margin: auto;
+  font-size: 24px;
+  font-weight: 500;
+}
+
 .text {
   width: 95%;
   margin: auto;

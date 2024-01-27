@@ -8,12 +8,29 @@ export const register = async (data) => {
   });
 };
 
-export const signIn = async (data) => {
+export const login = async (data) => {
   return await apiCall({
-    url: "/api/auth/signin",
+    url: "/api/auth/login",
     method: "POST",
     data,
   });
+};
+
+export const verifySession = async (navigate) => {
+  try {
+    const response = await apiCall({
+      url: "/api/auth/verify_session",
+      method: "POST",
+    });
+    if (response.token) {
+      localStorage.setItem("token", response.token);
+      navigate(
+        response.position === "hr"
+          ? "/hiring-management"
+          : "/visa-status-management"
+      );
+    }
+  } catch (error) {}
 };
 
 export const verifyRegLink = async (token, setEmail, setErrorMsg) => {

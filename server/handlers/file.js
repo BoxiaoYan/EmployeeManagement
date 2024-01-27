@@ -60,11 +60,21 @@ exports.getUserVisaStatus = async (req, res, next) => {
       userVisa = await db.Visa.create({ user: userID });
     }
 
+    const { opt_receipt, opt_ead, i983, i20 } = userVisa;
+
+    const feedback =
+      i20.feedback ||
+      i983.feedback ||
+      opt_ead.feedback ||
+      opt_receipt.feedback ||
+      "";
+
     const visaStatus = {
-      opt_receipt: userVisa.opt_receipt.status,
-      opt_ead: userVisa.opt_ead.status,
-      i983: userVisa.i983.status,
-      i20: userVisa.i20.status,
+      opt_receipt: opt_receipt.status,
+      opt_ead: opt_ead.status,
+      i983: i983.status,
+      i20: i20.status,
+      feedback,
     };
     return res.status(200).json({ visaStatus });
   } catch (error) {

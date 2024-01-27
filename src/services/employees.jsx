@@ -25,7 +25,7 @@ export const fetchEmployeeByStatus = async (
   } catch (error) {
     switch (error.message) {
       case "Authentication failed":
-        // navigate("/error/not-authorized");
+        navigate("/error/not-authorized");
         break;
       default:
         navigate("/error/server-error");
@@ -34,22 +34,22 @@ export const fetchEmployeeByStatus = async (
   }
 };
 
-export const sendRegistrationLink = async (data, setErrorMsg, reFetch) => {
+export const sendRegistrationLink = async (data, message, reFetch) => {
   try {
-    const response = await apiCall({
+    await apiCall({
       url: "/api/generate_registration_link",
       method: "POST",
       data,
     });
-    console.log(response.regLink);
+    message.success("Registration token is sent");
     reFetch();
   } catch (error) {
     switch (error.message) {
       case "User is already registered":
-        setErrorMsg("User is already registered");
+        message.error("User is already registered");
         break;
       default:
-        setErrorMsg("Server Error");
+        message.error("Server Error");
         break;
     }
   }

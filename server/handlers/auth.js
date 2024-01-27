@@ -1,12 +1,15 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
 
-exports.signin = async function (req, res, next) {
+exports.login = async function (req, res, next) {
   try {
     // find the user
     const user = await db.User.findOne({
       username: req.body.username,
     });
+    if (!user) {
+      return next({ status: 400, message: "Invalid Username / Password" });
+    }
     const { id, email, username, position, appStatus } = user;
     // verify password
     const isMatch = await user.comparePassWord(req.body.password);
@@ -26,6 +29,21 @@ exports.signin = async function (req, res, next) {
   }
 };
 
+exports.verifySession = async function (req, res, next) {
+  try {
+    // If user session is avalible
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const { id, position } = decoded;
+    const newToken = jwt.sign({ id, position }, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1d",
+    });
+    return res.status(200).json({ token: newToken, position });
+  } catch (error) {
+    return res.status(200).json({});
+  }
+};
+
 exports.register = async function (req, res, next) {
   try {
     const { email, username, password } = req.body;
@@ -42,12 +60,7 @@ exports.register = async function (req, res, next) {
     user.password = password;
     user.appStatus = "UnSubmitted";
     await user.save();
-    // Generate login token
-    // const { id, position, appStatus } = user;
-    // const token = jwt.sign({ id, position }, process.env.JWT_SECRET_KEY, {
-    //   expiresIn: "1d",
-    // });
-    return res.status(200).json({ message: "Successfully registered"});
+    return res.status(200).json({ message: "Successfully registered" });
   } catch (error) {
     // Username already exist
     if (error.code === 11000) {

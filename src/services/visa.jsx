@@ -6,7 +6,8 @@ export const fetchVisaStatus = async (
   setEadStatus,
   setI983Status,
   setI20Status,
-//   navigate
+  setFeedback,
+  navigate
 ) => {
   try {
     const response = await apiCall({
@@ -17,8 +18,9 @@ export const fetchVisaStatus = async (
     setEadStatus(response.visaStatus.opt_ead);
     setI983Status(response.visaStatus.i983);
     setI20Status(response.visaStatus.i20);
+    setFeedback(response.visaStatus.feedback);
   } catch (error) {
-    console.log(error.message)
+    console.log(error.message);
     // switch (error.message) {
     //   case "Authentification Failed":
     //     navigate("/error/not-authorized");

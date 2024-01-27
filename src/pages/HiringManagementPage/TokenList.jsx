@@ -41,6 +41,7 @@ export default function TokenList({ search, setSearch }) {
 
       <Divider style={{ color: "black" }} />
 
+      <div className={styles.title}>Registration Token History</div>
       <SearchBar
         storageId="hiringManagementSearch"
         search={search}

@@ -1,8 +1,5 @@
-import { useState, useEffect } from "react";
 import { Typography } from "antd";
-import { useSelector } from "react-redux";
 import { FaFilePdf } from "react-icons/fa";
-import { fetchVisaStatus } from "../../services/visa";
 
 import FileUpload from "../../components/FileUpload";
 
@@ -26,8 +23,8 @@ export default function FileTable({ props }) {
 
   return (
     <div className={styles.section}>
-      <Text strong>{title}</Text>
-      <Text>
+      <Text className={styles.title}>{title}</Text>
+      <Text className={styles.message}>
         {isDisable
           ? "Waiting for last file to be approved."
           : status === "Unsubmitted"
@@ -38,28 +35,35 @@ export default function FileTable({ props }) {
           ? message.rejected
           : message.approved}
       </Text>
-      <div className={styles.upload}>
-        {status !== "Approved" && !isDisable && (
-          <FileUpload
-            filename={filename}
-            userID={userID}
-            url={postUrl}
-            refresh={refresh}
-          />
-        )}
-        <br />
-        <br />
-        {(status === "Pending" || status === "Approved") && (
-          <a
-            key={title}
-            href={`${BASE_URL}/api/get_file/${filename}/${status}`}
-            download={`${filename}.pdf`}
-          >
-            <FaFilePdf />
-            <span>{`${filename}.pdf`}</span>
-          </a>
-        )}
-      </div>
+      {extraFile && !isDisable && (
+        <div className={styles.pdf}>
+          {extraFile.map((file, index) => (
+            <a key={index} href={file.link} download={file.name}>
+              <FaFilePdf />
+              <span>{file.name}</span>
+            </a>
+          ))}
+        </div>
+      )}
+      {status !== "Approved" && !isDisable && (
+        <FileUpload
+          filename={filename}
+          userID={userID}
+          url={postUrl}
+          refresh={refresh}
+        />
+      )}
+      {(status === "Pending" || status === "Approved") && (
+        <a
+          key={title}
+          className={styles.uploadFile}
+          href={`${BASE_URL}/api/get_file/${filename}/${userID}`}
+          download={`${filename}.pdf`}
+        >
+          <FaFilePdf />
+          <span>{`${filename}.pdf`}</span>
+        </a>
+      )}
     </div>
   );
 }
