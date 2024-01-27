@@ -1,46 +1,7 @@
-// import React from "react";
-// import { Link } from "react-router-dom";
-// import { useSelector } from "react-redux";
-
-// import styles from "./style.module.css";
-
-// const Navbar = () => {
-//   const position = useSelector((state) => state.user.user.position);
-
-//   console.log("current position: " + position);
-//   return (
-//     <div className={styles.navbar}>
-//       <div className="navbar-title">Employee Management</div>
-//       {position === "employee" ? (
-//         <>
-//           <li>
-//             <Link to="/personal-information">Personal Information</Link>
-//           </li>
-//           <li>
-//             <Link to="/visa-status-management">Visa Status Management</Link>
-//           </li>
-//           <li>
-//             <Link to="/logout">Logout</Link>
-//           </li>
-//         </>
-//       ) : position === "hr" ? (
-//         <>
-//           <Link to="/">Home</Link>
-//           <Link to="/employee-profiles">Employee Profiles</Link>
-//           <Link to="/visa-status-management">Visa Status Management</Link>
-//           <Link to="/hiring-management">Hiring Management</Link>
-//           <Link to="/logout">Logout</Link>
-//         </>
-//       ) : null}
-//     </div>
-//   );
-// };
-
-// export default Navbar;
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { UserOutlined } from "@ant-design/icons";
 
 import { logOutUser } from "../../app/userSlice";
 
@@ -49,6 +10,7 @@ import styles from "./style.module.css";
 export default function Navbar() {
   const dispatch = useDispatch();
   const position = useSelector((state) => state.user.user.position);
+  const username = useSelector((state) => state.user.user.username);
 
   const handleLogout = () => {
     dispatch(logOutUser());
@@ -56,7 +18,9 @@ export default function Navbar() {
 
   return (
     <div className={styles.layout}>
-      <div className={styles.title}>Employee Management</div>
+      <div className={styles.title}>
+        <UserOutlined /> <span style={{marginLeft: 8}}>{username}</span>
+      </div>
 
       <div style={{ display: "flex", alignItems: "center" }}>
         {position === "hr" ? (
