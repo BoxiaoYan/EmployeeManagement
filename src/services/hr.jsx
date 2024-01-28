@@ -27,6 +27,9 @@ export const fetchEmployeeByStatus = async (
       case "Authentication failed":
         navigate("/error/not-authorized");
         break;
+      case "Token Expired":
+        navigate("/error/session-expired");
+        break;
       default:
         navigate("/error/server-error");
         break;
@@ -34,7 +37,12 @@ export const fetchEmployeeByStatus = async (
   }
 };
 
-export const sendRegistrationLink = async (data, message, reFetch) => {
+export const sendRegistrationLink = async (
+  data,
+  message,
+  navigate,
+  reFetch
+) => {
   try {
     await apiCall({
       url: "/api/generate_registration_link",
@@ -45,6 +53,12 @@ export const sendRegistrationLink = async (data, message, reFetch) => {
     reFetch();
   } catch (error) {
     switch (error.message) {
+      case "Authentication failed":
+        navigate("/error/not-authorized");
+        break;
+      case "Token Expired":
+        navigate("/error/session-expired");
+        break;
       case "User is already registered":
         message.error("User is already registered");
         break;

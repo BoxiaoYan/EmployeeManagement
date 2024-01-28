@@ -63,3 +63,12 @@ container{
   margin-top: 2px;
   margin-left: 2px;
 }
+
+.notOPT {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5%;
+  font-size: 30px;
+  gap: 10px;
+}

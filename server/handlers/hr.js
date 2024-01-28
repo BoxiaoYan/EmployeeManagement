@@ -16,7 +16,7 @@ exports.getEmployeeByStatus = async (req, res, next) => {
 exports.getEmployeeByRegStatus = async (req, res, next) => {
   try {
     const employees = await db.User.find(
-      { position: { $ne: 'hr' } },
+      { position: { $ne: "hr" } },
       "email fullName regLink appStatus"
     );
     res.status(200).json({ employees });

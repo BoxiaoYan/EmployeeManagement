@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input, Button, message } from "antd";
 
-import { sendRegistrationLink } from "../../services/employees";
+import { sendRegistrationLink } from "../../services/hr";
 import styles from "./style.module.css";
 
 export default function SendRegistrationToken({ refresh, setRefresh }) {
@@ -17,12 +18,14 @@ export default function SendRegistrationToken({ refresh, setRefresh }) {
   const [emailStatus, setEmailStatus] = useState("");
   const [emailError, setEmailError] = useState("");
 
+  const navigate = useNavigate();
+
   const reFetch = () => setRefresh(!refresh);
 
   const handleSendRegLink = () => {
     if (fullName && email) {
       const data = { rootLink, email, fullName };
-      sendRegistrationLink(data, message, reFetch);
+      sendRegistrationLink(data, message, navigate, reFetch);
       setFullName("");
       setEmail("");
     } else {

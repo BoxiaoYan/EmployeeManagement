@@ -1,7 +1,7 @@
 import apiCall from "./api";
 
 export const fetchVisaStatus = async (
-  userID,
+  setIsOPT,
   setOptRecStatus,
   setEadStatus,
   setI983Status,
@@ -11,9 +11,12 @@ export const fetchVisaStatus = async (
 ) => {
   try {
     const response = await apiCall({
-      url: `/api/user_visa_status/${userID}`,
+      url: `/api/visa_status`,
       method: "GET",
     });
+    if (!response.visaStatus) {
+      return setIsOPT(false);
+    }
     setOptRecStatus(response.visaStatus.opt_receipt);
     setEadStatus(response.visaStatus.opt_ead);
     setI983Status(response.visaStatus.i983);
@@ -21,16 +24,16 @@ export const fetchVisaStatus = async (
     setFeedback(response.visaStatus.feedback);
   } catch (error) {
     console.log(error.message);
-    // switch (error.message) {
-    //   case "Authentification Failed":
-    //     navigate("/error/not-authorized");
-    //     break;
-    //   case "Token Expired":
-    //     navigate("/error/session-expired");
-    //     break;
-    //   default:
-    //     navigate("/error/server-error");
-    //     break;
-    // }
+    switch (error.message) {
+      case "Authentication failed":
+        navigate("/error/not-authorized");
+        break;
+      case "Token Expired":
+        navigate("/error/session-expired");
+        break;
+      default:
+        navigate("/error/server-error");
+        break;
+    }
   }
 };

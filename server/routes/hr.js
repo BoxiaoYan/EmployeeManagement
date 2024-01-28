@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { hrAuth } = require("../authentication/auth");
 const {
   getEmployeeByStatus,
   getEmployeeByRegStatus,
   generateRegLink,
-} = require("../handlers/user");
+} = require("../handlers/hr");
+const { hrAuth } = require("../authentication/auth");
 
 router.get("/employees_status/:status", hrAuth, getEmployeeByStatus);
 router.get("/employees_reg_status", hrAuth, getEmployeeByRegStatus);

@@ -43,12 +43,7 @@ export default function FileTable({ props }) {
         </div>
       )}
       {status !== "Approved" && !isDisable && (
-        <FileUpload
-          fileName={fileName}
-          userID={userID}
-          url={postUrl}
-          refresh={refresh}
-        />
+        <FileUpload fileName={fileName} url={postUrl} refresh={refresh} />
       )}
       {(status === "Pending" || status === "Approved") && (
         <PDF

@@ -14,7 +14,7 @@ export const fetchProfileSummary = async (
     setDisplayProfile(response.profileSummary);
   } catch (error) {
     switch (error.message) {
-      case "Authentification Failed":
+      case "Authentication failed":
         navigate("/error/not-authorized");
         break;
       case "Token Expired":

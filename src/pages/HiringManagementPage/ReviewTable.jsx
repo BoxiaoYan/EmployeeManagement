@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Table } from "antd";
 
 import { reviewTableColumns } from "./dataFormat";
-import { fetchEmployeeByStatus } from "../../services/employees";
+import { fetchEmployeeByStatus } from "../../services/hr";
 
 import SearchBar from "../../components/SearchBar";
 import styles from "./style.module.css";

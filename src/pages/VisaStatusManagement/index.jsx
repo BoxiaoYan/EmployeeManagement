@@ -9,7 +9,10 @@ import styles from "./style.module.css";
 
 export default function VisaStatusManagement() {
   const { Title, Text } = Typography;
+
   const [fileChange, setFileChange] = useState(false);
+
+  const [isOPT, setIsOPT] = useState(true);
   const [feedback, setFeedback] = useState("");
   const [optRecStatus, setOptRecStatus] = useState("Unsubmitted");
   const [eadStatus, setEadStatus] = useState("Unsubmitted");
@@ -30,7 +33,7 @@ export default function VisaStatusManagement() {
 
   useEffect(() => {
     fetchVisaStatus(
-      userID,
+      setIsOPT,
       setOptRecStatus,
       setEadStatus,
       setI983Status,
@@ -40,6 +43,15 @@ export default function VisaStatusManagement() {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileChange]);
+
+  if (!isOPT) {
+    return (
+      <div className={styles.notOPT}>
+        <div>Your work authentication is not OPT.</div>
+        <div>You don't need to upload any document.</div>
+      </div>
+    );
+  }
 
   const refresh = () => {
     setFileChange(!fileChange);
