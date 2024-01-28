@@ -3,6 +3,8 @@ const db = require("../models");
 
 exports.saveProfile = async function (req, res, next) {
   try {
+    console.log('Received Data:', req.body.profile); 
+
     const { userID, profile } = req.body;
     const userProfile = await db.Profile.findOne({ user: userID });
     if (userProfile) {
@@ -10,7 +12,7 @@ exports.saveProfile = async function (req, res, next) {
       await db.Profile.updateOne({ user: userID }, profile);
       return res
         .status(200)
-        .json({ status: 200, message: "User profile is updated successfully", email: profile.email});
+        .json({ status: 200, message: "User profile is updated successfully"});
     } else {
       // If user does not exist, create a new profile
       const newUserProfile = new db.Profile(profile);
@@ -21,7 +23,7 @@ exports.saveProfile = async function (req, res, next) {
       await user.save();
       return res
         .status(201)
-        .json({ status: 201, message: "User profile is saved successfully", email: profile.email });
+        .json({ status: 201, message: "User profile is saved successfully" });
     }
   } catch (error) {
     return next(error);

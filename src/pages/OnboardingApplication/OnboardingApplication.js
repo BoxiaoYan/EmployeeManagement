@@ -18,94 +18,250 @@ import { CalendarIcon } from '@chakra-ui/icons';
 import { set } from "mongoose";
 
 
+
 function OnboardingApplication() {
+  const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif']
+
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState("Pending");
+  const [step, setStep] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [middleName, setMiddleName] = useState("");
-  const [preferredName, setPreferredName] = useState("");
-  const [gender, setGender] = useState("");
-  const [email, setEmail] = useState("");
-  const [SSN, setSSN] = useState("");
-  const [birthDate, setBirthDate] = useState(new Date(2000, 0, 1));
+  const [firstName, setFirstName] = useState(() => {
+    const storedFirstName = localStorage.getItem("firstName");
+    return storedFirstName !== null ? storedFirstName : "";
+  });
+  const [lastName, setLastName] = useState(() => {
+    const storedLastName = localStorage.getItem("lastName");
+    return storedLastName !== null ? storedLastName : "";
+  });
+  const [middleName, setMiddleName] = useState(() => {
+    const storedMiddleName = localStorage.getItem("middleName");
+    return storedMiddleName !== null ? storedMiddleName : "";
+  });
+  const [preferredName, setPreferredName] = useState(() => {
+    const storedPreferredName = localStorage.getItem("preferredName");
+    return storedPreferredName !== null ? storedPreferredName : "";
+  });
+  const [gender, setGender] = useState(() => {
+    const storedGender = localStorage.getItem("gender");
+    return storedGender !== null ? storedGender : "";
+  });
+  const [SSN, setSSN] = useState(() => {
+    const storedSSN = localStorage.getItem("SSN");
+    return storedSSN !== null ? storedSSN : "";
+  });
+  const [birthDate, setBirthDate] = useState(() => {
+    const storedBirthDate = localStorage.getItem("birthDate");
+    return storedBirthDate !== null ? Date.parse(storedBirthDate) : new Date(2000, 0, 1);
+  });
 
-  const [address, setAddress] = useState("");
-  const [apt, setApt] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [zipCode, setZipCode] = useState("");
+  const [address, setAddress] = useState(() => {
+    const storedAddress = localStorage.getItem("address");
+    return storedAddress !== null ? storedAddress : "";
+  });
+  const [apt, setApt] = useState(() => {
+    const storedApt = localStorage.getItem("apt");
+    return storedApt !== null ? storedApt : "";
+  });
+  const [city, setCity] = useState(() => {
+    const storedCity = localStorage.getItem("city");
+    return storedCity !== null ? storedCity : "";
+  });
+  const [state, setState] = useState(() => {
+    const storedState = localStorage.getItem("state");
+    return storedState !== null ? storedState : "";
+  });
+  const [zipCode, setZipCode] = useState(() => {
+    const storedZipCode = localStorage.getItem("zipCode");
+    return storedZipCode !== null ? storedZipCode : "";
+  });
 
-  const [cellPhone, setCellPhone] = useState("");
-  const [workPhone, setWorkPhone] = useState("");
 
-  const [isCitizen, setIsCitizen] = useState("");
-  const [title, setTitle] = useState("");
-  const [finalVisa, setFinalVisa] = useState("");
-  const [startDate, setStartDate] = useState(new Date(2000, 0, 1));
-  const [endDate, setEndDate] = useState(new Date(2000, 0, 1))
+  const [cellPhone, setCellPhone] = useState(() => {
+    const storedCellPhone = localStorage.getItem("cellPhone");
+    return storedCellPhone !== null ? storedCellPhone : "";
+  });
+  const [workPhone, setWorkPhone] = useState(() => {
+    const storedWorkPhone = localStorage.getItem("workPhone");
+    return storedWorkPhone !== null ? storedWorkPhone : "";
+  });
 
-  const [refFirstName, setRefFirstName] = useState("");
-  const [refLastName, setRefLastName] = useState("");
-  const [refMiddleName, setRefMiddleName] = useState("");
-  const [refPhone, setRefPhone] = useState("");
-  const [refEmail, setRefEmail] = useState("");
-  const [refRelationship, setRefRelationship] = useState("");
 
-  const [emergencies, setEmergencies] = useState([
-    { firstName: '', lastName: '', middleName: '', phone: '', email: '', relationship: '' },
-  ]);
+  const [isCitizen, setIsCitizen] = useState(() => {
+    const storedIsCitizen = localStorage.getItem("isCitizen");
+    return storedIsCitizen !== null ? storedIsCitizen : "";
+  });
+  const [title, setTitle] = useState(() => {
+    const storedTitle = localStorage.getItem("title");
+    return storedTitle !== null ? storedTitle : "";
+  });
+  const [finalVisa, setFinalVisa] = useState(() => {
+    const storedFinalVisa = localStorage.getItem("finalVisa");
+    return storedFinalVisa !== null ? storedFinalVisa : "";
+  });
+  const [startDate, setStartDate] = useState(() => {
+    const storedStartDate = localStorage.getItem("startDate");
+    return storedStartDate !== null ? Date.parse(storedStartDate) : new Date(2000, 0, 1);
+  
+  });
+  const [endDate, setEndDate] = useState(() => {
+    const storedEndDate = localStorage.getItem("endDate");
+    return storedEndDate !== null ? Date.parse(storedEndDate) : new Date(2000, 0, 1);
+  })
+
+
+  const [refFirstName, setRefFirstName] = useState(() => {
+    const storedRefFirstName = localStorage.getItem("refFirstName");
+    return storedRefFirstName !== null ? storedRefFirstName : "";
+  });
+  const [refLastName, setRefLastName] = useState(() => {
+    const storedRefLastName = localStorage.getItem("refLastName");
+    return storedRefLastName !== null ? storedRefLastName : "";
+  });
+  const [refMiddleName, setRefMiddleName] = useState(() => {
+    const storedRefMiddleName = localStorage.getItem("refMiddleName");
+    return storedRefMiddleName !== null ? storedRefMiddleName : "";
+  });
+  const [refPhone, setRefPhone] = useState(() => {
+    const storedRefPhone = localStorage.getItem("refPhone");
+    return storedRefPhone !== null ? storedRefPhone : "";
+  });
+  const [refEmail, setRefEmail] = useState(() => {
+    const storedRefEmail = localStorage.getItem("refEmail");
+    return storedRefEmail !== null ? storedRefEmail : "";
+  });
+  const [refRelationship, setRefRelationship] = useState(() => {
+    const storedRefRelationship = localStorage.getItem("refRelationship");
+    return storedRefRelationship !== null ? storedRefRelationship : "";
+  });
+
+
+  const [emergencies, setEmergencies] = useState(() => {
+    const storedEmergencies = localStorage.getItem("emergencies");
+    return storedEmergencies !== null ? JSON.parse(storedEmergencies) : [{ firstName: '', lastName: '', middleName: '', phone: '', email: '', relationship: '' }];
+  });
 
 
   const [showImageModal, setShowImageModal] = useState(false);
   const [showLargeImage, setShowLargeImage] = useState(false);
   const [avatarImage, setAvatarImage] = useState(null);
-  const [avatarURL, setAvatarURL] = useState(null);
+  const [avatarBase64, setAvatarBase64] = useState("");
+  const [avatarType, setAvatarType] = useState("");
+  const [avatarFileName, setAvatarFileName] = useState("");
 
   const [showDLModal, setShowDLModal] = useState(false);
   const [showLargeDL, setShowLargeDL] = useState(false);
   const [driverID, setDriverID] = useState(null);
-  const [DLURL, setDLURL] = useState(null);
+  const [DLBase64, setDLBase64] = useState("");
+  const [DLType, setDLType] = useState("");
+  const [DLFileName, setDLFileName] = useState("");
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showLargeAuth, setShowLargeAuth] = useState(false);
   const [workAuth, setWorkAuth] = useState(null);
-  const [authURL, setAuthURL] = useState(null);
+  const [authBase64, setAuthBase64] = useState("");
+  const [authType, setAuthType] = useState("");
+  const [authFileName, setAuthFileName] = useState("");
 
-  const [uploadedF1, setUploadedF1] = useState(null);
+  const [uploadedF1, setUploadedF1] = useState();
 
 
   const user_status = useSelector((state) => state.user.appStatus);
+  const user_email = useSelector((state) => state.user.email);
   const user_id = localStorage.getItem("userID");
-  const user_email = localStorage.getItem("email");
   const user_token = localStorage.getItem("token");
 
 
-  const handleDownload = () => {};
-
   const handleShowImageModal = () => setShowImageModal(true);
   const handleCloseImageModal = () => setShowImageModal(false);
-  
-
   const onImageDrop = (acceptedFiles) => {
     console.log('Files dropped:', acceptedFiles);
     const file = acceptedFiles[0];
     if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-      setAvatarImage(URL.createObjectURL(file));
-      setAvatarURL(file);
-      handleCloseImageModal();
-      console.log('Uploaded file:', avatarURL, avatarImage);
+      if (file.size / 1024 / 1024 >= 3) {
+        console.log('Image must smaller than 3MB!');
+        alert('Image must smaller than 3MB!');
+      } else {
+        console.log(file);
+        setAvatarImage(URL.createObjectURL(file));
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          console.log('Base64:', reader.result);
+          setAvatarBase64(reader.result);
+          console.log('type:', file.type);
+          setAvatarType(file.type);
+          console.log('name:', file.name);
+          setAvatarFileName(file.name);
+        }
+        reader.onerror = () => {
+          console.log("Error:", reader.error);
+        }
+        reader.onabort = () => {
+          console.log('file reading was aborted');
+        }
+        handleCloseImageModal();
+        console.log('Uploaded file:', file);
+      }
     } else {
       alert('Invalid file format. Please upload a JPG/JPEG image.');
     }
   };
   const { getRootProps: getRootProps1, getInputProps: getInputProps1 } = useDropzone({ 
     onDrop: onImageDrop, 
-    accept: 'image/jpeg, image/jpg' 
+    accept: 'image/jpeg, image/jpg, application/pdf',
+    multiple: false,  
   });
 
+
+
+  const handleShowDLModal = () => setShowDLModal(true);
+  const handleCloseDLModal = () => setShowDLModal(false);
+  const onDLDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+      // setDriverID(URL.createObjectURL(file));
+      // setDLURL(file);
+      // console.log('Uploaded file:', DLURL, driverID);
+      handleCloseDLModal();
+    } else {
+      alert('Invalid file format. Please upload a JPG/JPEG image');
+    }
+  };
+  const { getRootProps: getRootProps2, getInputProps: getInputProps2 } = useDropzone({ 
+    onDrop: onDLDrop, 
+    accept: 'image/jpeg, image/jpg'
+  });
+
+
+  
+
+
+  const handleShowAuthModal = () => setShowAuthModal(true);
+  const handleCloseAuthModal = () => setShowAuthModal(false);
+  const onAuthDrop = (acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+      // setWorkAuth(URL.createObjectURL(file));
+      // setAuthURL(file);
+      // console.log('Uploaded file:', authURL, workAuth);
+      handleCloseAuthModal();
+    } else {
+      alert('Invalid file format. Please upload a JPG/JPEG image');
+    }
+  };
+  const { getRootProps: getRootProps3, getInputProps: getInputProps3 } = useDropzone({ 
+    onDrop: onAuthDrop, 
+    accept: 'image/jpeg, image/jpg'
+  });
+
+
+
+  const handleDownload = () => {
+
+  }
+
+  
 
 
   const handleVisaUpload = (event) => {
@@ -125,6 +281,8 @@ function OnboardingApplication() {
       }
     }
   };
+
+  
 
  
 
@@ -206,58 +364,14 @@ function OnboardingApplication() {
       return newEmergencies;
     });
   };
+
+  useEffect(() => {
+    localStorage.setItem("emergencies", JSON.stringify(emergencies));
+  }, [emergencies]);
   
 
   
-
-  const handleShowDLModal = () => setShowDLModal(true);
-  const handleCloseDLModal = () => setShowDLModal(false);
-  const onDLDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-      setDriverID(URL.createObjectURL(file));
-      setDLURL(file);
-      console.log('Uploaded file:', DLURL, driverID);
-      handleCloseDLModal();
-    } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image');
-    }
-  };
-  const { getRootProps: getRootProps2, getInputProps: getInputProps2 } = useDropzone({ 
-    onDrop: onDLDrop, 
-    accept: 'image/jpeg, image/jpg'
-  });
-
-
-  
-
-
-  const handleShowAuthModal = () => setShowAuthModal(true);
-  const handleCloseAuthModal = () => setShowAuthModal(false);
-  const onAuthDrop = (acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-      setWorkAuth(URL.createObjectURL(file));
-      setAuthURL(file);
-      console.log('Uploaded file:', authURL, workAuth);
-      handleCloseAuthModal();
-    } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image');
-    }
-  };
-  const { getRootProps: getRootProps3, getInputProps: getInputProps3 } = useDropzone({ 
-    onDrop: onAuthDrop, 
-    accept: 'image/jpeg, image/jpg'
-  });
-
-  
-
-
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const checkBeforeSubmit = () => {
     if (firstName.trim() === "") {
       alert("Please enter your first name");
       return;
@@ -277,52 +391,22 @@ function OnboardingApplication() {
       alert("Please enter the relationship of your emergency contacts");
       return;
     }
+  }
 
+
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log(localStorage.getItem("email"));
+    checkBeforeSubmit();
+
+    console.log(typeof user_email);
     
-    // 读取头像图片文件
-    const avatarBlob = await fetch(avatarURL?.path).then((res) => res.blob());
-    const avatarData = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const buffer = Buffer.from(reader.result);
-        resolve(buffer);
-      };
-      reader.readAsArrayBuffer(avatarBlob);
-    });
-
-    // 读取驾照文件
-    const DLBlob = await fetch(DLURL?.path).then((res) => res.blob());
-    const DLData = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const buffer = Buffer.from(reader.result);
-        resolve(buffer);
-      };
-      reader.readAsArrayBuffer(DLBlob);
-    });
-
-    // 读取其他文件（auth 文件）
-    const authBlob = await fetch(authURL?.path).then((res) => res.blob());
-    const authData = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const buffer = Buffer.from(reader.result);
-        resolve(buffer);
-      };
-      reader.readAsArrayBuffer(authBlob);
-    });
-
-    const f1Blob = await fetch(uploadedF1?.name).then((res) => res.blob());
-    const f1Data = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const buffer = Buffer.from(reader.result);
-        resolve(buffer);
-      };
-      reader.readAsArrayBuffer(f1Blob);
-    });
 
     const formData = {
+      user: user_id,
       name: {
         firstName: firstName,
         lastName: lastName,
@@ -330,11 +414,10 @@ function OnboardingApplication() {
         preferredName: preferredName,
       },
       picture: {
-        data: avatarData !== undefined ? avatarData : null,
-        contentType: avatarURL !== null ? avatarURL?.type : null,
-        fileName: avatarURL !== null ? avatarURL?.name : null,
+        data: avatarBase64,
+        contentType: avatarType,
       },
-      email: email,
+      email: user_email,
       personalInfo: {
         ssn: SSN,
         birthday: birthDate,
@@ -367,24 +450,17 @@ function OnboardingApplication() {
       emergencyContacts: emergencies,
       documents: [
         {
-          data: DLData !== undefined ? DLData : null,
-          contentType: DLURL?.type,
-          fileName: DLURL?.name
-        }
-        ,
+          data: DLBase64,
+          contentType: DLType,
+        },
         {
-          data: authData !== undefined ? authData : null,
-          contentType: authURL?.type,
-          fileName: authURL?.name
-        }
-        ,
-        {
-          data: f1Data !== undefined ? f1Data : null,
-          contentType: uploadedF1?.type,
-          fileName: uploadedF1?.name
-        }
+          data: authBase64,
+          contentType: authType,
+        },
       ]
     }
+
+
 
     try {
       const response = await axios.post(
@@ -398,14 +474,16 @@ function OnboardingApplication() {
       );
       if (response.data.status === 201) {
         console.log("Success in submitting the profile:", response.data.message);
-        console.log(response.data.email);
-        if (step === "Rejected" || step === "UnSubmitted") {
+        if (step === "UnSubmitted") {
           setStep("Pending");
         }
       } else if (response.data.status === 200) {
-        console.log("The profile already exists");
+        console.log("The profile already exists. Updated.");
+        if (step === "Rejected") {
+          setStep("Pending");
+        }
       } else {
-        console.error("Fail in submitting the profile:", response.data.message);
+        console.log("Fail in submitting the profile:", response.data.message);
       }
     } catch (error) {
       console.error("Error for submitting the profile:", error.message);
@@ -414,10 +492,14 @@ function OnboardingApplication() {
 
 
 
+
+  useEffect(() => {
+    console.log("avatarImage is", avatarImage);
+  }, [avatarImage]);
+
   useEffect(() => {
     setIsLoading(true);
     setStep(user_status);
-    setEmail(user_email);
     console.log("userStatus is", user_status);
     console.log("userEmail is", user_email);
 
@@ -434,24 +516,6 @@ function OnboardingApplication() {
         );
         if (response.data.status === 200) {
           const profile = response.data.profile;
-
-          // 将二进制数据转换为 Blob
-          const avatar_blob = new Blob([response.data.picture.data], { type: 'image/jpeg; image/jpg' });
-          // 将 Blob 转换为预览 URL
-          const image_Url = URL.createObjectURL(avatar_blob);
-          setAvatarImage(image_Url);
-
-          const DL_blob = new Blob([response.data.documents[0].data], { type: 'image/jpeg; image/jpg' });
-          const DL_Url = URL.createObjectURL(DL_blob);
-          setDriverID(DL_Url);
-
-          const auth_blob = new Blob([response.data.documents[1].data], { type: 'image/jpeg; image/jpg' });
-          const auth_Url = URL.createObjectURL(auth_blob);
-          setWorkAuth(auth_Url);
-
-          const f1_blob = new Blob([response.data.documents[2].data], { type: 'image/jpeg; image/jpg' });
-          const f1_Url = URL.createObjectURL(f1_blob);
-          setUploadedF1(f1_Url);
 
           setFirstName(profile.name.firstName);
           setLastName(profile.name.lastName);
@@ -483,6 +547,8 @@ function OnboardingApplication() {
           setRefRelationship(profile.reference.relationship);
 
           setEmergencies(profile.emergencyContacts);
+
+          console.log("Setting done.")
 
         } else if (response.data.status === 201) {
           console.log("The profile does not exist", response.data.message);
@@ -535,7 +601,7 @@ function OnboardingApplication() {
                     <h5 className="my-4">General information</h5>
                   </Col>
                   <Col className="mb-3">
-                    <div>
+                  <div>
                       <div className="avatar-container" onClick={handleShowImageModal}>
                         {avatarImage && <Image src={avatarImage} alt="Avatar" roundedCircle />}
                         {!avatarImage && <div className="avatar-placeholder">
@@ -589,7 +655,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={firstName} 
-                        onChange={(e) => {setFirstName(e.target.value); console.log(firstName)}} />
+                        onChange={(e) => {setFirstName(e.target.value); localStorage.setItem("firstName", e.target.value); console.log(e.target.value)}} />
                     </Form.Group>
                   </Col>
                   <Col className="mb-3">
@@ -601,7 +667,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={lastName}
-                        onChange={(e) => {setLastName(e.target.value); console.log(lastName)}} 
+                        onChange={(e) => {setLastName(e.target.value); localStorage.setItem("lastName", e.target.value); console.log(lastName)}} 
                       />
                     </Form.Group>
                   </Col>
@@ -613,7 +679,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={middleName}
-                        onChange={(e) => setMiddleName(e.target.value)} 
+                        onChange={(e) => {setMiddleName(e.target.value); localStorage.setItem("middleName", e.target.value)}} 
                       />
                     </Form.Group>
                   </Col>
@@ -627,7 +693,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={preferredName}
-                        onChange={(e) => setPreferredName(e.target.value)} 
+                        onChange={(e) => {setPreferredName(e.target.value); localStorage.setItem("preferredName", e.target.value)}} 
                       />
                     </Form.Group>
                   </Col>
@@ -640,7 +706,7 @@ function OnboardingApplication() {
                         disabled={step === "Pending" ? true : false} 
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         defaultValue={gender}
-                        onChange={(e) => {setGender(e.target.value); console.log(gender)}}
+                        onChange={(e) => {setGender(e.target.value); localStorage.setItem("gender", e.target.value); console.log(gender)}}
                       >
                         <option value=""></option>
                         <option value="male">Male</option>
@@ -663,8 +729,7 @@ function OnboardingApplication() {
                         type="text"
                         readOnly={true}
                         style={{ backgroundColor: '#f2f2f2'}}
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={user_email} 
                         placeholder="prefix@mail.suffix" />
                     </Form.Group>
                   </Col>
@@ -677,7 +742,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={SSN}
-                        onChange={(e) => setSSN(e.target.value)} 
+                        onChange={(e) => {setSSN(e.target.value); localStorage.setItem("SSN", e.target.value)}} 
                         placeholder="xxx-xx-xxxx" />
                     </Form.Group>
                   </Col>
@@ -687,8 +752,7 @@ function OnboardingApplication() {
                       <DatePicker
                         showIcon
                         selected={birthDate}
-                        onChange={(date) => {setBirthDate(date); console.log(date)}}
-                        dateFormat="MM/dd/yyyy"
+                        onChange={(date) => {setBirthDate(date); localStorage.setItem("birthDate", date); console.log(birthDate)}}
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         closeOnScroll={true}
@@ -709,7 +773,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                        onChange={(e) => {setAddress(e.target.value); localStorage.setItem("address", e.target.value)}}
                       />
                     </Form.Group>
                   </Col>
@@ -721,7 +785,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={apt}
-                        onChange={(e) => setApt(e.target.value)}
+                        onChange={(e) => {setApt(e.target.value); localStorage.setItem("apt", e.target.value)}}
                       />
                     </Form.Group>
                   </Col>
@@ -737,7 +801,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={city}
-                        onChange={(e) => setCity(e.target.value)}
+                        onChange={(e) => {setCity(e.target.value); localStorage.setItem("city", e.target.value)}}
                       />
                     </Form.Group>
                   </Col>
@@ -749,7 +813,7 @@ function OnboardingApplication() {
                         defaultValue={state}
                         disabled={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                        onChange={(e) => {setState(e.target.value); console.log(state)}}
+                        onChange={(e) => {setState(e.target.value); localStorage.setItem("state", e.target.value); console.log(state)}}
                       >
                         <option value=""></option>
                         <option value="AL">Alabama</option>
@@ -814,7 +878,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
+                        onChange={(e) => {setZipCode(e.target.value); localStorage.setItem("zipCode", e.target.value)}}
                       />
                     </Form.Group>
                   </Col>
@@ -828,7 +892,7 @@ function OnboardingApplication() {
                       <Form.Control 
                         type="text" 
                         value={cellPhone}
-                        onChange={(e) => setCellPhone(e.target.value)}
+                        onChange={(e) => {setCellPhone(e.target.value); localStorage.setItem("cellPhone", e.target.value)}}
                         placeholder="xxx-xxx-xxxx"
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }} 
@@ -841,7 +905,7 @@ function OnboardingApplication() {
                       <Form.Control 
                         type="text" 
                         value={workPhone}
-                        onChange={(e) => setWorkPhone(e.target.value)}
+                        onChange={(e) => {setWorkPhone(e.target.value); localStorage.setItem("workPhone", e.target.value)}}
                         placeholder="xxx-xxx-xxxx" 
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
@@ -857,10 +921,10 @@ function OnboardingApplication() {
                       <Form.Label>Ciziten/PR?</Form.Label>
                       <Form.Select 
                         id="visa-state" 
-                        defaultValue={""}
+                        defaultValue={isCitizen}
                         disabled={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                        onChange={(e) => setIsCitizen(e.target.value)}
+                        onChange={(e) => {setIsCitizen(e.target.value); localStorage.setItem("isCitizen", e.target.value); console.log(isCitizen)}}
                       >
                         <option value=""></option>
                         <option value="yes">Yes</option>
@@ -876,7 +940,7 @@ function OnboardingApplication() {
                         defaultValue={"greenCard"}
                         disabled={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                        onChange={(e) => {setTitle(e.target.value); console.log(title)}}
+                        onChange={(e) => {setTitle(e.target.value); localStorage.setItem("title", e.target.value); console.log(title)}}
                       >
                         <option value="greenCard">Green Card</option>
                         <option value="citizen">Citizen</option>
@@ -892,7 +956,7 @@ function OnboardingApplication() {
                         defaultValue={"H1-B"}
                         disabled={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={(e) => {setTitle(e.target.value); localStorage.setItem("title", e.target.value); console.log(title)}}
                       >
                         <option value="H1-B">H1-B</option>
                         <option value="L2">L2</option>
@@ -909,7 +973,7 @@ function OnboardingApplication() {
                       <Form.Control 
                         type="text" 
                         value={finalVisa}
-                        onChange={(e) => {setFinalVisa(e.target.value); console.log(finalVisa)}}
+                        onChange={(e) => {setFinalVisa(e.target.value); console.log(finalVisa); localStorage.setItem("finalVisa", e.target.value)}}
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                       />
@@ -933,13 +997,13 @@ function OnboardingApplication() {
                         selected={startDate}
                         onChange={(date) => {
                           if (date < endDate) {
-                            setStartDate(date); 
+                            setStartDate(date);
+                            localStorage.setItem("startDate", date); 
                             console.log(date);
                           } else {
                             alert("Please select a date earlier than the end date");
                           }
                         }}
-                        dateFormat="MM/dd/yyyy"
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         closeOnScroll={true}
@@ -956,12 +1020,12 @@ function OnboardingApplication() {
                         onChange={(date) => {
                           if (date > startDate) {
                             setEndDate(date); 
+                            localStorage.setItem("endDate", date);
                             console.log(date);
                           } else {
                             alert("Please select a date later than the start date");
                           }
                         }}
-                        dateFormat="MM/dd/yyyy"
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         closeOnScroll={true}
@@ -982,7 +1046,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={refFirstName}
-                        onChange={(e) => setRefFirstName(e.target.value)}
+                        onChange={(e) => {setRefFirstName(e.target.value); localStorage.setItem("refFirstName", e.target.value)}}
                       />
                     </Form.Group>
                   </Col>
@@ -995,7 +1059,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={refLastName}
-                        onChange={(e) => setRefLastName(e.target.value)}
+                        onChange={(e) => {setRefLastName(e.target.value); localStorage.setItem("refLastName", e.target.value)}}
                       />
                     </Form.Group>
                   </Col>
@@ -1007,7 +1071,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={refMiddleName}
-                        onChange={(e) => setRefMiddleName(e.target.value)}
+                        onChange={(e) => {setRefMiddleName(e.target.value); localStorage.setItem("refMiddleName", e.target.value)}}
                       />
                     </Form.Group>
                   </Col>
@@ -1022,7 +1086,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={refPhone}
-                        onChange={(e) => setRefPhone(e.target.value)}
+                        onChange={(e) => {setRefPhone(e.target.value); localStorage.setItem("refPhone", e.target.value)}}
                         placeholder="xxx-xxx-xxxx" 
                       />
                     </Form.Group>
@@ -1036,7 +1100,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={refEmail}
-                        onChange={(e) => setRefEmail(e.target.value)}
+                        onChange={(e) => {setRefEmail(e.target.value); localStorage.setItem("refEmail", e.target.value)}}
                         placeholder="prefix@mail.suffix" 
                       />
                     </Form.Group>
@@ -1049,7 +1113,7 @@ function OnboardingApplication() {
                         readOnly={step === "Pending" ? true : false}
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
                         value={refRelationship}
-                        onChange={(e) => setRefRelationship(e.target.value)}
+                        onChange={(e) => {setRefRelationship(e.target.value); localStorage.setItem("refRelationship", e.target.value)}}
                         placeholder="Supervisor, colleague, etc." 
                       />
                     </Form.Group>
@@ -1157,157 +1221,7 @@ function OnboardingApplication() {
 
                 <h4 className="my-4">Additional files(Optional)</h4>
                 <Row>
-                  <Col className="mb-3">
-                    <div>
-                      <Col>
-                        <Row>
-                          <h5>Profile Picture</h5>
-                        </Row>
-                        <Row>
-                          <div className="avatar-container" onClick={handleShowImageModal}>
-                            {avatarImage && <Image src={avatarImage} alt="Avatar" roundedCircle />}
-                            {!avatarImage && <div className="avatar-placeholder">
-                              {step === "Pending" ? "Avatar?" : "Upload Avatar"}
-                            </div>}
-                          </div>
-                        </Row>
-                      </Col>
-
-                      <Modal show={showImageModal} onHide={handleCloseImageModal}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>{step === "Pending" ? "Download or View" : "Upload Avatar"}</Modal.Title>
-                        </Modal.Header>
-                        {step !== "Pending" && <Modal.Body>
-                          <div {...getRootProps1()} className="dropzone">
-                            <input {...getInputProps1()} />
-                            <p>Drop new image here, or click to select a file</p>
-                          </div>
-                        </Modal.Body>}
-                        <Modal.Footer>
-                          <Dropdown>
-                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                              Options
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                              {step === "Pending" && <Dropdown.Item onClick={handleDownload}>Download</Dropdown.Item>}
-                              <Dropdown.Item onClick={() => {setShowLargeImage(true)}}>View Large Image</Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>
-      
-                          <Modal show={showLargeImage} onHide={() => setShowLargeImage(false)}>
-                            <Modal.Header closeButton>
-                              <Modal.Title>Large Image</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                              <img src={avatarImage} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
-                            </Modal.Body>
-                            <Modal.Footer/>
-                          </Modal>
-                        </Modal.Footer>
-                      </Modal>
-                    </div>
-                  </Col>
-                  <Col className="mb-3">
-                    <div>
-                      <Col>
-                        <Row>
-                          <h5>Driver License</h5>
-                        </Row>
-                        <Row>
-                          <div className="avatar-container" onClick={handleShowDLModal}>
-                            {driverID && <Image src={driverID} alt="Avatar" roundedCircle />}
-                            {!driverID && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
-                              {step === "Pending" ? "Driver License?" : "Upload Driver License"}
-                            </div>}
-                          </div>
-                        </Row>
-                      </Col>
-
-                      <Modal show={showDLModal} onHide={handleCloseDLModal}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>{step === "Pending" ? "Download or View" : "Driver License Settings"}</Modal.Title>
-                        </Modal.Header>
-                        {step !== "Pending" && <Modal.Body>
-                          <div {...getRootProps2()} className="dropzone">
-                            <input {...getInputProps2()} />
-                            <p>Drop new image here, or click to select a file</p>
-                          </div>
-                        </Modal.Body>}
-                        <Modal.Footer>
-                          <Dropdown>
-                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                              Options
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                              {step === "Pending" && <Dropdown.Item onClick={handleDownload}>Download</Dropdown.Item>}
-                              <Dropdown.Item onClick={() => {setShowLargeDL(true)}}>View Large Image</Dropdown.Item>
-                            </Dropdown.Menu>
-                            
-                          </Dropdown>
-                          <Modal show={showLargeDL} onHide={() => setShowLargeDL(false)}>
-                            <Modal.Header closeButton>
-                              <Modal.Title>Large DL</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                              <img src={driverID} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
-                            </Modal.Body>
-                            <Modal.Footer/>
-                          </Modal>
-                        </Modal.Footer>
-                      </Modal>
-                    </div>
-                  </Col>
-                  <Col className="mb-3">
-                    <div>
-                      <Col>
-                        <Row>
-                          <h5>Work Authorization</h5>
-                        </Row>
-                        <Row>
-                          <div className="avatar-container" onClick={handleShowAuthModal}>
-                            {workAuth && <Image src={workAuth} alt="Avatar" roundedCircle />}
-                            {!workAuth && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
-                              {step === "Pending" ? "Work Authorization?" : "Upload Work Authorization"}
-                            </div>}
-                          </div>
-                        </Row>
-                      </Col>
-
-                      <Modal show={showAuthModal} onHide={handleCloseAuthModal}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>{step === "Pending" ? "Download or View" : "Driver License Settings"}</Modal.Title>
-                        </Modal.Header>
-                        {step !== "Pending" && <Modal.Body>
-                          <div {...getRootProps3()} className="dropzone">
-                            <input {...getInputProps3()} />
-                            <p>Drop new image here, or click to select a file</p>
-                          </div>
-                        </Modal.Body>}
-                        <Modal.Footer>
-                          <Dropdown>
-                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                              Options
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                              {step === "Pending" && <Dropdown.Item onClick={handleDownload}>Download</Dropdown.Item>}
-                              <Dropdown.Item onClick={() => {setShowLargeAuth(true)}}>View Large Image</Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>
-                          <Modal show={showLargeAuth} onHide={() => setShowLargeAuth(false)}>
-                            <Modal.Header closeButton>
-                              <Modal.Title>Large Auth</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                              <img src={workAuth} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
-                            </Modal.Body>
-                            <Modal.Footer/>
-                          </Modal>
-                        </Modal.Footer>
-                      </Modal>
-                    </div>
-                  </Col>
+                  
                 </Row>
 
               </Card.Body>

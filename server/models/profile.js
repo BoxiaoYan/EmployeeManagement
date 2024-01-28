@@ -11,15 +11,15 @@ const profileSchema = new mongoose.Schema({
   name: {
     firstName: { type: String },
     lastName: { type: String },
-    middleName: String,
-    preferredName: String,
+    middleName: { type: String },
+    preferredName: { type: String }
   },
 
   // b. Profile picture
   picture: { 
-    data: Buffer,
-    contentType: String,
-    filename: String
+    data: { type: String },
+    contentType: { type: String },
+    fileName: { type: String },
   },
 
   // c. Email
@@ -27,7 +27,7 @@ const profileSchema = new mongoose.Schema({
 
   // d. SSN, date of birth, gender
   personalInfo: {
-    ssn: { type: Number },
+    ssn: { type: String },
     birthday: { type: Date },
     gender: { type: String },
   },
@@ -43,8 +43,8 @@ const profileSchema = new mongoose.Schema({
 
   // f. Contact info
   phone: {
-    cellPhone: { type: Number },
-    workPhone: Number,
+    cellPhone: { type: String },
+    workPhone: { type: String }
   },
 
   // g. Employment
@@ -58,9 +58,9 @@ const profileSchema = new mongoose.Schema({
   reference: {
     firstName: { type: String },
     lastName: { type: String },
-    middleName: String,
-    phone: String,
-    email: String,
+    middleName: { type : String },
+    phone: { type: String },
+    email: { type: String },
     relationship: { type: String },
   },
 
@@ -69,19 +69,19 @@ const profileSchema = new mongoose.Schema({
     {
       firstName: { type: String },
       lastName: { type: String  },
-      middleName: String,
-      phone: String,
-      email: String,
-      relationship: { type: String  },
+      middleName: { type: String  },
+      phone: { type: String  },
+      email: { type: String  },
+      relationship: { type: String },
     },
   ],
 
   // j. Documents
   documents: [
     {
-      data: Buffer,
-      contentType: String,
-      filename: String
+      data: { type: String },
+      contentType: { type: String },
+      fileName: { type: String },
     },
   ],
 });
