@@ -14,7 +14,6 @@ const FileUpload = ({ filename, userID, url, refresh }) => {
 
   const customRequest = async ({ file, onSuccess, onError }) => {
     const data = { filename, file, contentType: file.type, userID };
-    console.log(data);
     try {
       // Backend api call to save the file
       await axios.post(url, data, {
