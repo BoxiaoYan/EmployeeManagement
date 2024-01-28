@@ -9,75 +9,79 @@ const profileSchema = new mongoose.Schema({
 
   // a. Name
   name: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    middleName: String,
-    preferredName: String,
+    firstName: { type: String },
+    lastName: { type: String },
+    middleName: { type: String },
+    preferredName: { type: String },
   },
 
   // b. Profile picture
-  pictrue: { data: Buffer, contentType: String },
+  picture: {
+    data: { type: String },
+    contentType: { type: String },
+    fileName: { type: String },
+  },
 
   // c. Email
-  email: { type: String, unique: true, required: true },
+  email: { type: String, unique: true },
 
   // d. SSN, date of birth, gender
   personalInfo: {
-    ssn: { type: Number, required: true },
-    birthday: { type: Date, required: true },
-    gender: { type: String, required: true },
+    ssn: { type: String },
+    birthday: { type: Date },
+    gender: { type: String },
   },
 
   // e. Address
   address: {
-    street: { type: String, required: true },
-    apt: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zip: { type: String, required: true },
+    street: { type: String },
+    apt: { type: String },
+    city: { type: String },
+    state: { type: String },
+    zip: { type: String },
   },
 
   // f. Contact info
   phone: {
-    cellPhone: { type: Number, required: true },
-    workPhone: Number,
+    cellPhone: { type: String },
+    workPhone: { type: String },
   },
 
   // g. Employment
   employment: {
-    visa: { type: String, required: true },
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
+    visa: { type: String },
+    startDate: { type: Date },
+    endDate: { type: Date },
   },
 
   // h. Reference
   reference: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    middleName: String,
-    phone: String,
-    email: String,
-    relationship: { type: String, required: true },
+    firstName: { type: String },
+    lastName: { type: String },
+    middleName: { type: String },
+    phone: { type: String },
+    email: { type: String },
+    relationship: { type: String },
   },
 
   // i. Emergency contacts
   emergencyContacts: [
     {
-      firstName: { type: String, required: true },
-      lastName: { type: String, required: true },
-      middleName: String,
-      phone: String,
-      email: String,
-      relationship: { type: String, required: true },
+      firstName: { type: String },
+      lastName: { type: String },
+      middleName: { type: String },
+      phone: { type: String },
+      email: { type: String },
+      relationship: { type: String },
     },
   ],
 
   // j. Documents
   documents: [
     {
-      type: String,
-      data: Buffer,
-      contentType: String,
+      fileName: { type: String },
+      data: { type: String },
+      contentType: { type: String },
     },
   ],
 });

@@ -3,16 +3,16 @@ const db = require("../models");
 exports.saveFile = async (req, res, next) => {
   try {
     const fileBuffer = req.file.buffer;
-    const { filename, contentType, userID } = req.body;
+    const { fileName, contentType, userID } = req.body;
     let userVisa = await db.Visa.findOne({ user: userID });
 
     if (!userVisa) {
       userVisa = await db.Visa.create({ user: userID });
     }
 
-    userVisa[filename].data = fileBuffer;
-    userVisa[filename].contentType = contentType;
-    userVisa[filename].status = "Pending";
+    userVisa[fileName].data = fileBuffer;
+    userVisa[fileName].contentType = contentType;
+    userVisa[fileName].status = "Pending";
     await userVisa.save();
     res.status(200).json({ message: "File is saved" });
   } catch (error) {
@@ -23,7 +23,7 @@ exports.saveFile = async (req, res, next) => {
 
 exports.getFile = async (req, res, next) => {
   try {
-    const { filename, userID } = req.params;
+    const { fileName, userID } = req.params;
 
     // Find the user's visa information
     const userVisa = await db.Visa.findOne({ user: userID });
@@ -33,14 +33,14 @@ exports.getFile = async (req, res, next) => {
     }
 
     // Retrieve the file data
-    const fileData = userVisa[filename].data;
-    const contentType = userVisa[filename].contentType;
+    const fileData = userVisa[fileName].data;
+    const contentType = userVisa[fileName].contentType;
 
     // Set the response headers
     res.setHeader("Content-Type", contentType);
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename=${filename}.pdf`
+      `attachment; filename=${fileName}.pdf`
     );
 
     // Send the file data as the response

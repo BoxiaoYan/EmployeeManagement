@@ -48,7 +48,7 @@ export default function VisaStatusManagement() {
   const optRecStatusProps = {
     userID,
     title: "OPT Receipt",
-    filename: "opt_receipt",
+    fileName: "opt_receipt",
     status: optRecStatus,
     message: {
       unsubmitted: "Please upload a copy of your OPT Receipt.",
@@ -64,7 +64,7 @@ export default function VisaStatusManagement() {
   const eadStatusProps = {
     userID,
     title: "OPT EAD",
-    filename: "opt_ead",
+    fileName: "opt_ead",
     status: eadStatus,
     message: {
       unsubmitted: "Please upload a copy of your OPT EAD.",
@@ -80,7 +80,7 @@ export default function VisaStatusManagement() {
   const i983StatusProps = {
     userID,
     title: "I-983",
-    filename: "i983",
+    fileName: "i983",
     status: i983Status,
     message: {
       unsubmitted: "Please download and fill out the I-983 form.",
@@ -97,7 +97,7 @@ export default function VisaStatusManagement() {
   const i20StatusProps = {
     userID,
     title: "I-20",
-    filename: "i20",
+    fileName: "i20",
     status: i20Status,
     message: {
       unsubmitted: "Please upload a copy of your I-20.",

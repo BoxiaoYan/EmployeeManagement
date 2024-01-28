@@ -5,6 +5,7 @@ import Layout from "./components/Layout";
 import EmployeeProfileSummary from "./pages/EmployeeProfileSummary";
 import HiringManagementPage from "./pages/HiringManagementPage";
 import VisaStatusManagement from "./pages/VisaStatusManagement";
+import HrVisaStatusManagement from "./pages/HrVisaStatusManagement";
 
 import NotFound from "./pages/ErrorPages/NotFound";
 import NotAuthorized from "./pages/ErrorPages/NotAuthorized";
@@ -36,7 +37,7 @@ function App() {
           <Route path="/employee-profile" element={<>employee-profile</>} />
           <Route
             path="/employee-visa-status"
-            element={<>employee-visa-status</>}
+            element={<HrVisaStatusManagement />}
           />
           <Route
             path="/employee-hiring-status"

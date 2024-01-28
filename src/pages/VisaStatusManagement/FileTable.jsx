@@ -9,7 +9,7 @@ export default function FileTable({ props }) {
   const {
     userID,
     title,
-    filename,
+    fileName,
     status,
     message,
     isDisable,
@@ -24,7 +24,7 @@ export default function FileTable({ props }) {
   return (
     <div className={styles.section}>
       <Text className={styles.title}>{title}</Text>
-      <Text c>
+      <Text className={styles.message}>
         {isDisable
           ? "Waiting for last file to be approved."
           : status === "Unsubmitted"
@@ -37,14 +37,14 @@ export default function FileTable({ props }) {
       </Text>
       {extraFile && !isDisable && (
         <div className={styles.pdf}>
-          {extraFile.map((filename, index) => (
-            <PDF key={index} filename={filename} userID={userID} />
+          {extraFile.map((fileName, index) => (
+            <PDF key={index} fileName={fileName} userID={userID} />
           ))}
         </div>
       )}
       {status !== "Approved" && !isDisable && (
         <FileUpload
-          filename={filename}
+          fileName={fileName}
           userID={userID}
           url={postUrl}
           refresh={refresh}
@@ -53,7 +53,7 @@ export default function FileTable({ props }) {
       {(status === "Pending" || status === "Approved") && (
         <PDF
           className={styles.uploadFile}
-          filename={filename}
+          fileName={fileName}
           userID={userID}
         />
       )}

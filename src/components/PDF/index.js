@@ -1,15 +1,15 @@
 import { message } from "antd";
 import { FaFilePdf } from "react-icons/fa";
 
-export default function PDF({ filename, userID }) {
+export default function PDF({ fileName, userID }) {
   const BASE_URL = `http://localhost:${process.env.PORT || 8080}`;
 
-  const downloadFile = (filename, userID) => {
+  const downloadFile = (fileName, userID) => {
     const headers = {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     };
 
-    const fileUrl = `${BASE_URL}/api/get_file/${filename}/${userID}`;
+    const fileUrl = `${BASE_URL}/api/get_file/${fileName}/${userID}`;
 
     fetch(fileUrl, { headers })
       .then((response) => {
@@ -22,7 +22,7 @@ export default function PDF({ filename, userID }) {
         const url = window.URL.createObjectURL(new Blob([blob]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", `${filename}.pdf`);
+        link.setAttribute("download", `${fileName}.pdf`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -34,9 +34,9 @@ export default function PDF({ filename, userID }) {
 
   return (
     // eslint-disable-next-line jsx-a11y/anchor-is-valid
-    <a onClick={() => downloadFile(filename, userID)}>
+    <a onClick={() => downloadFile(fileName, userID)}>
       <FaFilePdf />
-      <span>{`${filename}.pdf`}</span>
+      <span>{`${fileName}.pdf`}</span>
     </a>
   );
 }

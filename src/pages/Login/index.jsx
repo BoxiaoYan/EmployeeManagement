@@ -51,7 +51,6 @@ export default function Login() {
       message.success("Successful login");
       dispatch(setCurrentUser(response.payload));
       const position = response.payload.position;
-      console.log(position);
       navigate(
         position === "hr"
           ? "/employee-profile-summary"
