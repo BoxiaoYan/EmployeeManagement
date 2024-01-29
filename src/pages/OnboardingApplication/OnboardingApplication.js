@@ -1,21 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import { useDropzone } from 'react-dropzone';
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import DatePicker from "react-datepicker";
+
+import { logOutUser } from "../../app/userSlice";
 
 import "react-datepicker/dist/react-datepicker.css";
 
 import "./OnboardingApplication.css";
 
 import { Col, Row, Card, Form, Button, InputGroup, Container, Table,  Modal, Image, Dropdown } from 'react-bootstrap';
-// import { Worker, Viewer } from '@react-pdf-viewer/core';
+import { Worker, Viewer } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 import { CalendarIcon } from '@chakra-ui/icons';
-import { set } from "mongoose";
+import { now, set } from "mongoose";
 
 
 
@@ -23,7 +27,6 @@ function OnboardingApplication() {
   const imageMimeTypes = ['image/jpeg', 'image/png', 'images/gif']
 
   const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
 
   const [firstName, setFirstName] = useState(() => {
@@ -144,32 +147,48 @@ function OnboardingApplication() {
 
   const [showImageModal, setShowImageModal] = useState(false);
   const [showLargeImage, setShowLargeImage] = useState(false);
-  const [avatarImage, setAvatarImage] = useState(null);
   const [avatarBase64, setAvatarBase64] = useState("");
   const [avatarType, setAvatarType] = useState("");
   const [avatarFileName, setAvatarFileName] = useState("");
 
   const [showDLModal, setShowDLModal] = useState(false);
   const [showLargeDL, setShowLargeDL] = useState(false);
-  const [driverID, setDriverID] = useState(null);
   const [DLBase64, setDLBase64] = useState("");
   const [DLType, setDLType] = useState("");
   const [DLFileName, setDLFileName] = useState("");
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showLargeAuth, setShowLargeAuth] = useState(false);
-  const [workAuth, setWorkAuth] = useState(null);
   const [authBase64, setAuthBase64] = useState("");
   const [authType, setAuthType] = useState("");
   const [authFileName, setAuthFileName] = useState("");
 
-  const [uploadedF1, setUploadedF1] = useState();
+  const [showF1Modal, setShowF1Modal] = useState(false);
+  const [showLargeF1, setShowLargeF1] = useState(false);
+  const [F1Base64, setF1Base64] = useState("");
+  const [F1Type, setF1Type] = useState("");
+  const [F1FileName, setF1FileName] = useState("");
+
+  const [step, setStep] = useState("UnSubmitted");
 
 
-  const user_status = useSelector((state) => state.user.appStatus);
   const user_email = useSelector((state) => state.user.email);
-  const user_id = localStorage.getItem("userID");
+  const user_id = useSelector((state) => state.user.user);
   const user_token = localStorage.getItem("token");
+  const user_position = localStorage.getItem("position");
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+
+
+
+
+
+
+
+
+
 
 
   const handleShowImageModal = () => setShowImageModal(true);
@@ -177,13 +196,12 @@ function OnboardingApplication() {
   const onImageDrop = (acceptedFiles) => {
     console.log('Files dropped:', acceptedFiles);
     const file = acceptedFiles[0];
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'application/pdf')) {
       if (file.size / 1024 / 1024 >= 3) {
         console.log('Image must smaller than 3MB!');
         alert('Image must smaller than 3MB!');
       } else {
         console.log(file);
-        setAvatarImage(URL.createObjectURL(file));
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
@@ -204,13 +222,14 @@ function OnboardingApplication() {
         console.log('Uploaded file:', file);
       }
     } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image.');
+      alert('Invalid file format. Please upload a JPG/JPEG image or pdf.');
     }
   };
   const { getRootProps: getRootProps1, getInputProps: getInputProps1 } = useDropzone({ 
     onDrop: onImageDrop, 
     accept: 'image/jpeg, image/jpg, application/pdf',
-    multiple: false,  
+    multiple: false, 
+    maxSize: 3 * 1024 * 1024,  
   });
 
 
@@ -219,18 +238,40 @@ function OnboardingApplication() {
   const handleCloseDLModal = () => setShowDLModal(false);
   const onDLDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-      // setDriverID(URL.createObjectURL(file));
-      // setDLURL(file);
-      // console.log('Uploaded file:', DLURL, driverID);
-      handleCloseDLModal();
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'application/pdf')) {
+      if (file.size / 1024 / 1024 >= 3) {
+        console.log('Image must smaller than 3MB!');
+        alert('Image must smaller than 3MB!');
+      } else {
+        console.log(file);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          console.log('Base64:', reader.result);
+          setDLBase64(reader.result);
+          console.log('type:', file.type);
+          setDLType(file.type);
+          console.log('name:', file.name);
+          setDLFileName(file.name);
+        }
+        reader.onerror = () => {
+          console.log("Error:", reader.error);
+        }
+        reader.onabort = () => {
+          console.log('file reading was aborted');
+        }
+        handleCloseDLModal();
+        console.log('Uploaded file:', file);
+      }
     } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image');
+      alert('Invalid file format. Please upload a JPG/JPEG image or pdf.');
     }
   };
   const { getRootProps: getRootProps2, getInputProps: getInputProps2 } = useDropzone({ 
     onDrop: onDLDrop, 
-    accept: 'image/jpeg, image/jpg'
+    accept: 'image/jpeg, image/jpg, application/pdf',
+    multiple: false,  
+    maxSize: 3 * 1024 * 1024, 
   });
 
 
@@ -241,46 +282,93 @@ function OnboardingApplication() {
   const handleCloseAuthModal = () => setShowAuthModal(false);
   const onAuthDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
-    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-      // setWorkAuth(URL.createObjectURL(file));
-      // setAuthURL(file);
-      // console.log('Uploaded file:', authURL, workAuth);
-      handleCloseAuthModal();
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'application/pdf')) {
+      if (file.size / 1024 / 1024 >= 3) {
+        console.log('Image must smaller than 3MB!');
+        alert('Image must smaller than 3MB!');
+      } else {
+        console.log(file);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          console.log('Base64:', reader.result);
+          setAuthBase64(reader.result);
+          console.log('type:', file.type);
+          setAuthType(file.type);
+          console.log('name:', file.name);
+          setAuthFileName(file.name);
+        }
+        reader.onerror = () => {
+          console.log("Error:", reader.error);
+        }
+        reader.onabort = () => {
+          console.log('file reading was aborted');
+        }
+        handleCloseAuthModal();
+        console.log('Uploaded file:', file);
+        }
     } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image');
+      alert('Invalid file format. Please upload a JPG/JPEG image or pdf.');
     }
-  };
+  }
   const { getRootProps: getRootProps3, getInputProps: getInputProps3 } = useDropzone({ 
     onDrop: onAuthDrop, 
-    accept: 'image/jpeg, image/jpg'
+    accept: 'image/jpeg, image/jpg, application/pdf',
+    multiple: false, 
+    maxSize: 3 * 1024 * 1024,  
   });
 
 
 
-  const handleDownload = () => {
-
+  const handleShowF1Modal = () => setShowF1Modal(true);
+  const handleCloseF1Modal = () => setShowF1Modal(false);
+  const onF1Drop = (e) => {
+    const file = e.target.files[0];
+    console.log(file);
+    if (file.size / 1024 / 1024 >= 3) {
+      console.log('Image must smaller than 3MB!');
+      alert('Image must smaller than 3MB!');
+    } else {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log('Base64:', reader.result);
+        setF1Base64(reader.result);
+        console.log('type:', file.type);
+        setF1Type(file.type);
+        console.log('name:', file.name);
+        setF1FileName(file.name);    
+      }
+      reader.onerror = () => {
+        console.log("Error:", reader.error);
+      }
+      reader.onabort = () => {
+        console.log('file reading was aborted');
+      }
+      console.log('Uploaded file:', file);
+    }
   }
+
+
+  const newPlugin = defaultLayoutPlugin();
+  const handleDownload = (base64_url, fileName) => {
+    const downloadLink = document.createElement('a');
+    downloadLink.href = base64_url;
+    downloadLink.download = fileName;
+
+    // 触发点击事件
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    // 移除下载链接
+    document.body.removeChild(downloadLink);
+  };
+  
 
   
 
 
-  const handleVisaUpload = (event) => {
-    const uploadedFile = event.target.files[0];
-
-    if (uploadedFile) {
-      // Check file extension
-      const allowedExtensions = ['jpg', 'jpeg'];
-      const fileExtension = uploadedFile.name.split('.').pop().toLowerCase();
-
-      if (allowedExtensions.includes(fileExtension)) {
-        // Process the uploaded file (you can upload it to the server or handle it as needed)
-        console.log('Uploaded file:', uploadedFile);
-        setUploadedF1(uploadedFile);
-      } else {
-        alert('Invalid file type. Allowed types: jpg, jpeg');
-      }
-    }
-  };
+  
 
   
 
@@ -387,10 +475,20 @@ function OnboardingApplication() {
     } else if (zipCode.trim() === "" || /^\d{5}$/.test(zipCode) === false) {
       alert("Please enter your zipcode in the correct format");
       return;
-    } else if (emergencies[0].relationship.trim() === "" || emergencies[1].relationship.trim() === "") {
-      alert("Please enter the relationship of your emergency contacts");
-      return;
     }
+
+    emergencies.forEach((emergency, index) => {
+      if (emergency.firstName.trim() === "") {
+        alert(`Please enter the first name of the emergency contact ${index + 1}`);
+        return;
+      } else if (emergency.lastName.trim() === "") {
+        alert(`Please enter the last name of the emergency contact ${index + 1}`);
+        return;
+      } else if (emergency.relationship.trim() === "") {
+        alert(`Please enter the relationship of the emergency contact ${index + 1}`);
+        return;
+      }
+    });
   }
 
 
@@ -403,10 +501,12 @@ function OnboardingApplication() {
     checkBeforeSubmit();
 
     console.log(typeof user_email);
+    console.log(refEmail);
+    console.log(emergencies[0].email);
+    console.log(emergencies[1].email);
     
 
-    const formData = {
-      user: user_id,
+    const profile = {
       name: {
         firstName: firstName,
         lastName: lastName,
@@ -416,8 +516,8 @@ function OnboardingApplication() {
       picture: {
         data: avatarBase64,
         contentType: avatarType,
+        fileName: avatarFileName,
       },
-      email: user_email,
       personalInfo: {
         ssn: SSN,
         birthday: birthDate,
@@ -430,6 +530,7 @@ function OnboardingApplication() {
         state: state,
         zip: zipCode,
       },
+      email: user_email,
       phone: {
         cellPhone: cellPhone,
         workPhone: workPhone,
@@ -452,11 +553,18 @@ function OnboardingApplication() {
         {
           data: DLBase64,
           contentType: DLType,
+          fileName: DLFileName,
         },
         {
           data: authBase64,
           contentType: authType,
+          fileName: authFileName,
         },
+        {
+          data: F1Base64,
+          contentType: F1Type,
+          fileName: F1FileName,
+        }
       ]
     }
 
@@ -464,24 +572,21 @@ function OnboardingApplication() {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/save_profile`, {user_id, formData},
+        `http://localhost:8080/api/save_profile`, {profile},
         {
           headers: {
             "Content-Type": 'multipart/form-data',
-            Authorization: `${user_token}`,
+            Authorization: `Bearer ${user_token}`,
           },
         }
       );
-      if (response.data.status === 201) {
+      if (response.status === 201) {
         console.log("Success in submitting the profile:", response.data.message);
-        if (step === "UnSubmitted") {
-          setStep("Pending");
-        }
-      } else if (response.data.status === 200) {
-        console.log("The profile already exists. Updated.");
-        if (step === "Rejected") {
-          setStep("Pending");
-        }
+        localStorage.setItem("userStatus", response.data.newStatus);
+        setStep(response.data.newStatus);
+        alert("Your application has been submitted successfully!");
+      } else if (response.status === 200) {
+        alert("Your application was updated successfully!");
       } else {
         console.log("Fail in submitting the profile:", response.data.message);
       }
@@ -491,17 +596,26 @@ function OnboardingApplication() {
   };
 
 
-
-
   useEffect(() => {
-    console.log("avatarImage is", avatarImage);
-  }, [avatarImage]);
+    if (step === "Finished") {
+      if (user_position === "hr") { 
+        navigate("/hr-profile");
+      } else {
+        navigate("/personal-profile");
+      }
+    }
 
-  useEffect(() => {
     setIsLoading(true);
-    setStep(user_status);
-    console.log("userStatus is", user_status);
+
+    console.log("user_id is", user_id);
+
+    const now_status = localStorage.getItem("appStatus");
+    setStep(now_status);
+    console.log("now_status is: ", now_status);
+
+    console.log("userStatus is", now_status);
     console.log("userEmail is", user_email);
+    console.log("refemail is", refEmail);
 
     const fetchProfile = async () => {
       try {
@@ -523,7 +637,7 @@ function OnboardingApplication() {
           setPreferredName(profile.name.preferredName);
           setGender(profile.personalInfo.gender);
           setSSN(profile.personalInfo.ssn);
-          setBirthDate(profile.personalInfo.birthday);
+          setBirthDate(new Date(profile.personalInfo.birthday));
 
           setAddress(profile.address.street);
           setApt(profile.address.apt);
@@ -536,8 +650,8 @@ function OnboardingApplication() {
 
           setIsCitizen(profile.employment.visa === "citizen" || profile.employment.visa === "greenCard" ? "Yes" : "No");
           setTitle(profile.employment.visa);
-          setStartDate(profile.employment.startDate);
-          setEndDate(profile.employment.endDate);
+          setStartDate(new Date(profile.employment.startDate));
+          setEndDate(new Date(profile.employment.endDate));
 
           setRefFirstName(profile.reference.firstName);
           setRefLastName(profile.reference.lastName);
@@ -547,6 +661,25 @@ function OnboardingApplication() {
           setRefRelationship(profile.reference.relationship);
 
           setEmergencies(profile.emergencyContacts);
+
+
+          setAvatarBase64(profile.picture.data);
+          setAvatarType(profile.picture.contentType);
+          setAvatarFileName(profile.picture.fileName);
+
+          setDLBase64(profile.documents[0].data);
+          setDLType(profile.documents[0].contentType);
+          setDLFileName(profile.documents[0].fileName);
+
+          setAuthBase64(profile.documents[1].data);
+          setAuthType(profile.documents[1].contentType);
+          setAuthFileName(profile.documents[1].fileName);
+
+          setF1Base64(profile.documents[2].data);
+          setF1Type(profile.documents[2].contentType);
+          setF1FileName(profile.documents[2].fileName);
+
+
 
           console.log("Setting done.")
 
@@ -566,10 +699,16 @@ function OnboardingApplication() {
 
   }, []);
 
+  const handleLogOut = () => {
+    dispatch(logOutUser());
+    navigate("/signin");
+  }
+
 
 
   return (
     <div className="all-onboarding-application">
+      <Button onClick={handleLogOut}>Log out</Button>
       {step === "Rejected" && 
         <>
           <div className="custom-textbox-rejected" onClick={() => {setShowFeedback(true)}}>
@@ -587,7 +726,7 @@ function OnboardingApplication() {
         </>
       }
       {step === "Pending"  && <div className="custom-textbox-pending">
-        Your application has been submitted and is currently pending. You can download files by clicking those round gray areas.
+        This application has been submitted and is currently pending. You can download files by clicking those round image areas.
       </div>}
       
       <h2 style={{textAlign: 'center', paddingTop: '10vh'}}>Onboarding Application Form</h2>
@@ -603,8 +742,8 @@ function OnboardingApplication() {
                   <Col className="mb-3">
                   <div>
                       <div className="avatar-container" onClick={handleShowImageModal}>
-                        {avatarImage && <Image src={avatarImage} alt="Avatar" roundedCircle />}
-                        {!avatarImage && <div className="avatar-placeholder">
+                        {avatarBase64 && <Image src={avatarBase64} alt="Avatar" roundedCircle />}
+                        {!avatarBase64 && <div className="avatar-placeholder">
                           {step === "Pending" ? "Avatar?" : "Upload Avatar"}
                         </div>}
                       </div>
@@ -626,7 +765,7 @@ function OnboardingApplication() {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              {step === "Pending" && <Dropdown.Item onClick={handleDownload}>Download</Dropdown.Item>}
+                              {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>}
                               <Dropdown.Item onClick={() => {setShowLargeImage(true)}}>View Large Image</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
@@ -635,7 +774,7 @@ function OnboardingApplication() {
                               <Modal.Title>Large Image</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
-                              <img src={avatarImage} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                              <img src={avatarBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
                             </Modal.Body>
                             <Modal.Footer/>
                           </Modal>
@@ -701,7 +840,7 @@ function OnboardingApplication() {
                   <Col className="mb-3">
                     <Form.Group id="gender">
                       <Form.Label>Gender</Form.Label>
-                      <Form.Select 
+                      {step !== "Pending" && <Form.Select 
                         id="gender-select" 
                         disabled={step === "Pending" ? true : false} 
                         style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
@@ -715,7 +854,15 @@ function OnboardingApplication() {
                         <option value="non-binary">Non-binary</option>
                         <option value="other">Other</option>
                         <option value="not to disclose">I wish not to disclose</option>
-                      </Form.Select>
+                      </Form.Select>}
+
+                      {step === "Pending" && <Form.Control 
+                        required 
+                        type="text"
+                        readOnly={true}
+                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        value={gender}
+                      />}
                     </Form.Group>
                   </Col>
                 </Row>
@@ -808,7 +955,7 @@ function OnboardingApplication() {
                   <Col className="mb-3">
                     <Form.Group className="mb-2">
                       <Form.Label>State</Form.Label>
-                      <Form.Select 
+                      {step !== "Pending" && <Form.Select 
                         id="state" 
                         defaultValue={state}
                         disabled={step === "Pending" ? true : false}
@@ -867,7 +1014,14 @@ function OnboardingApplication() {
                         <option value="WV">West Virginia</option>
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
-                      </Form.Select>
+                      </Form.Select>}
+                      {step === "Pending" && '#f2f2f2' && <Form.Control 
+                        required 
+                        type="text" 
+                        readOnly={step === "Pending" ? true : false}
+                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        value={state}
+                      />}
                     </Form.Group>
                   </Col>
                   <Col className="mb-3">
@@ -914,10 +1068,10 @@ function OnboardingApplication() {
                   </Col>
                 </Row>
 
-                <h5 className="my-4">Visa State</h5>
+                <h5 className="my-4">Visa Status</h5>
                 <Row>
                   <Col className="mb-3">
-                    <Form.Group className="mb-2">
+                    {step !== "Pending" && <Form.Group className="mb-2">
                       <Form.Label>Ciziten/PR?</Form.Label>
                       <Form.Select 
                         id="visa-state" 
@@ -930,9 +1084,18 @@ function OnboardingApplication() {
                         <option value="yes">Yes</option>
                         <option value="no">No</option>
                       </Form.Select>
-                    </Form.Group>
+                    </Form.Group>}
+                    {step === "Pending" && <Form.Group className="mb-2">
+                      <Form.Label>Visa status</Form.Label>
+                      <Form.Control 
+                        type="text" 
+                        value={title}
+                        readOnly={step === "Pending" ? true : false}
+                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                      />
+                    </Form.Group>}
                   </Col>
-                  {isCitizen === "yes" && <Col className="mb-3">
+                  {step !== "Pending" && isCitizen === "yes" && <Col className="mb-3">
                     <Form.Group className="mb-2">
                       <Form.Label>Auth Type</Form.Label>
                       <Form.Select 
@@ -948,7 +1111,7 @@ function OnboardingApplication() {
                     </Form.Group>
                   </Col>
                   }
-                  {isCitizen === "no" && <Col className="mb-3">
+                  {step !== "Pending" && isCitizen === "no" && <Col className="mb-3">
                     <Form.Group className="mb-2">
                       <Form.Label>Auth Type</Form.Label>
                       <Form.Select 
@@ -967,7 +1130,7 @@ function OnboardingApplication() {
                     </Form.Group>
                   </Col>
                   }
-                  {isCitizen === "no" && title === "Other" && <Col className="mb-3">
+                  {step !== "Pending" && isCitizen === "no" && title === "Other" && <Col className="mb-3">
                     <Form.Group id="comment-title">
                       <Form.Label>Please specify visa title</Form.Label>
                       <Form.Control 
@@ -980,13 +1143,106 @@ function OnboardingApplication() {
                     </Form.Group>
                   </Col>
                   }
-                  {isCitizen === "no" && title === "F1-CPT/OPT" && <Col className="mb-3">
-                  <Form className="mt-4 mx-auto">
-                    <Form.Group controlId="fileUpload">
-                      <Form.Control type="file" accept=".pdf, .jpg, .jpeg" onChange={handleVisaUpload} />
-                    </Form.Group>
-                  </Form>
-                  </Col>}
+                  {step !== "Pending" && isCitizen === "no" && title === "F1-CPT/OPT" && 
+                  <Col>                
+                    <Form className="mx-auto">
+                      <Form.Group id="fileUpload">
+                        <Form.Label>Upload F-1 Receipt</Form.Label>
+                        <Row>
+                          <Col>
+                            <Form.Control type="file" accept=".pdf, .jpg, .jpeg" onChange={onF1Drop} />
+                          </Col>
+                          {F1Base64 && 
+                            <Col>
+                              <Button variant="Danger" onClick={() => {setShowF1Modal(true); console.log("uploadedF1 is: ", F1Base64)}}>Options</Button>
+                              <Modal show={showF1Modal} onHide={handleCloseF1Modal}>
+                                <Modal.Header closeButton>
+                                  <Modal.Title>{step === "Pending" ? "Download or View" : "F1 Settings"}</Modal.Title>
+                                </Modal.Header>
+
+                                <Modal.Footer>
+                                  <Dropdown>
+                                    <Dropdown.Toggle variant="Light" id="dropdown-basic">
+                                      Options
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                      {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(F1Base64, F1FileName)}>Download</Dropdown.Item>}
+                                      <Dropdown.Item onClick={() => {setShowLargeF1(true)}}>View Large Image</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                  </Dropdown>
+
+                                  <Modal show={showLargeF1} onHide={() => setShowLargeF1(false)}>
+                                    <Modal.Header closeButton>
+                                      <Modal.Title>Large F1</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                      {F1Type === "application/pdf" && <div className="pdf-container">
+                                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                          <Viewer fileUrl={F1Base64} plugins={[newPlugin]} />
+                                        </Worker>
+                                      </div>}
+                                      {F1Type === "image/jpeg" || F1Type === "image/jeg" && 
+                                        <img src={F1Base64} alt="Large F1" style={{ width: '100%', height: 'auto' }} 
+                                      />}
+                                    </Modal.Body>
+                                    <Modal.Footer/>
+                                  </Modal>
+                                </Modal.Footer>
+                              </Modal>
+                            </Col>
+                          }
+                        </Row>
+                      </Form.Group>
+                    </Form>
+                  </Col>
+                  }
+                  {step === "Pending" && title === "F1-CPT/OPT" && <Col>                
+                    <Form className="mx-auto">
+                      <Form.Group id="fileUpload">
+                        <Form.Label>F-1 Receipt</Form.Label>
+                        <Row>
+                            <Col>
+                              <Button variant="Danger" onClick={() => {setShowF1Modal(true); console.log("uploadedF1 is: ", F1Base64)}}>Download or View</Button>
+                              <Modal show={showF1Modal} onHide={handleCloseF1Modal}>
+                                <Modal.Header closeButton>
+                                  <Modal.Title>{step === "Pending" ? "Download or View" : "F1 Settings"}</Modal.Title>
+                                </Modal.Header>
+
+                                <Modal.Footer>
+                                  <Dropdown>
+                                    <Dropdown.Toggle variant="Light" id="dropdown-basic">
+                                      Options
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                      {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(F1Base64, F1FileName)}>Download</Dropdown.Item>}
+                                      <Dropdown.Item onClick={() => {setShowLargeF1(true)}}>View Large Image</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                  </Dropdown>
+
+                                  <Modal show={showLargeF1} onHide={() => setShowLargeF1(false)}>
+                                    <Modal.Header closeButton>
+                                      <Modal.Title>Large F1</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                      {F1Type === "application/pdf" && <div className="pdf-container">
+                                        <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+                                          <Viewer fileUrl={F1Base64} plugins={[newPlugin]} />
+                                        </Worker>
+                                      </div>}
+                                      {F1Type === "image/jpeg" || F1Type === "image/jeg" && 
+                                        <img src={F1Base64} alt="Large F1" style={{ width: '100%', height: 'auto' }} 
+                                      />}
+                                    </Modal.Body>
+                                    <Modal.Footer/>
+                                  </Modal>
+                                </Modal.Footer>
+                              </Modal>
+                            </Col>
+                        </Row>
+                      </Form.Group>
+                    </Form>
+                  </Col>
+                  }
                 </Row>
                 <Row>
                   <Col className="mb-3">
@@ -1207,21 +1463,152 @@ function OnboardingApplication() {
                         </Form.Group>
                       </Col>
                     </Row>
-                    {index > 0 && <Button variant="danger" onClick={() => {removeEmergencyBlock(index); console.log(emergencies)}} className="mb-3">
+                    {step !== "Pending" && index > 0 && <Button variant="danger" onClick={() => {removeEmergencyBlock(index); console.log(emergencies)}} className="mb-3">
                       Remove Emergency Contact
                     </Button>}
 
                   </div>
                 ))}
-                <Button variant="primary" onClick={addEmergencyBlock} className="mt-3">
+                {step !== "Pending" && <Button variant="primary" onClick={addEmergencyBlock} className="mt-3">
                   Add Emergency Contact
-                </Button>
+                </Button>}
 
                 <hr/>
 
                 <h4 className="my-4">Additional files(Optional)</h4>
                 <Row>
-                  
+                  <Col className="mb-3">
+                    <div>
+                      <div className="avatar-container" onClick={handleShowImageModal}>
+                        {avatarBase64 && <Image src={avatarBase64} alt="Avatar" roundedCircle />}
+                        {!avatarBase64 && <div className="avatar-placeholder">
+                          {step === "Pending" ? "Avatar?" : "Upload Avatar"}
+                        </div>}
+                      </div>
+
+                      <Modal show={showImageModal} onHide={handleCloseImageModal}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>{step === "Pending" ? "Download or View" : "Upload Avatar"}</Modal.Title>
+                        </Modal.Header>
+                        {step !== "Pending" && <Modal.Body>
+                          <div {...getRootProps1()} className="dropzone">
+                            <input {...getInputProps1()} />
+                            <p>Drop new image here, or click to select a file</p>
+                          </div>
+                        </Modal.Body>}
+                        <Modal.Footer>
+                          <Dropdown>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                              Options
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                              {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>}
+                              <Dropdown.Item onClick={() => {setShowLargeImage(true)}}>View Large Image</Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                          {/* <Button variant="secondary" onClick={handleCloseImageModal}>
+                            Close
+                          </Button> */}
+                          <Modal show={showLargeImage} onHide={() => setShowLargeImage(false)}>
+                            <Modal.Header closeButton>
+                              <Modal.Title>Large Image</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                              <img src={avatarBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                            </Modal.Body>
+                            <Modal.Footer/>
+                          </Modal>
+                        </Modal.Footer>
+                      </Modal>
+                    </div>
+                  </Col>
+                  <Col className="mb-3">
+                    <div>
+                      <div className="avatar-container" onClick={handleShowDLModal}>
+                        {DLBase64 && <Image src={DLBase64} alt="Avatar" roundedCircle />}
+                        {!DLBase64 && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
+                          {step === "Pending" ? "Driver License?" : "Upload Driver License"}
+                        </div>}
+                      </div>
+
+                      <Modal show={showDLModal} onHide={handleCloseDLModal}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>{step === "Pending" ? "Download or View" : "Driver License Settings"}</Modal.Title>
+                        </Modal.Header>
+                        {step !== "Pending" && <Modal.Body>
+                          <div {...getRootProps2()} className="dropzone">
+                            <input {...getInputProps2()} />
+                            <p>Drop new image here, or click to select a file</p>
+                          </div>
+                        </Modal.Body>}
+                        <Modal.Footer>
+                          <Dropdown>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                              Options
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                              {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(DLBase64, DLFileName)}>Download</Dropdown.Item>}
+                              <Dropdown.Item onClick={() => {setShowLargeDL(true)}}>View Large Image</Dropdown.Item>
+                            </Dropdown.Menu>
+                            
+                          </Dropdown>
+                          <Modal show={showLargeDL} onHide={() => setShowLargeDL(false)}>
+                            <Modal.Header closeButton>
+                              <Modal.Title>Large DL</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                              <img src={DLBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                            </Modal.Body>
+                            <Modal.Footer/>
+                          </Modal>
+                        </Modal.Footer>
+                      </Modal>
+                    </div>
+                  </Col>
+                  <Col className="mb-3">
+                    <div>
+                      <div className="avatar-container" onClick={handleShowAuthModal}>
+                        {authBase64 && <Image src={authBase64} alt="Avatar" roundedCircle />}
+                        {!authBase64 && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
+                          {step === "Pending" ? "Work Authorization?" : "Upload Work Authorization"}
+                        </div>}
+                      </div>
+
+                      <Modal show={showAuthModal} onHide={handleCloseAuthModal}>
+                        <Modal.Header closeButton>
+                          <Modal.Title>{step === "Pending" ? "Download or View" : "Driver License Settings"}</Modal.Title>
+                        </Modal.Header>
+                        {step !== "Pending" && <Modal.Body>
+                          <div {...getRootProps3()} className="dropzone">
+                            <input {...getInputProps3()} />
+                            <p>Drop new image here, or click to select a file</p>
+                          </div>
+                        </Modal.Body>}
+                        <Modal.Footer>
+                          <Dropdown>
+                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                              Options
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                              {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(authBase64, authFileName)}>Download</Dropdown.Item>}
+                              <Dropdown.Item onClick={() => {setShowLargeAuth(true)}}>View Large Image</Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                          <Modal show={showLargeAuth} onHide={() => setShowLargeAuth(false)}>
+                            <Modal.Header closeButton>
+                              <Modal.Title>Large Auth</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                              <img src={authBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                            </Modal.Body>
+                            <Modal.Footer/>
+                          </Modal>
+                        </Modal.Footer>
+                      </Modal>
+                    </div>
+                  </Col>
                 </Row>
 
               </Card.Body>
@@ -1235,8 +1622,6 @@ function OnboardingApplication() {
         </Row>
       </Container>
     </div>
-    
-  );
-}
-
+    );
+  }
 export default OnboardingApplication;

@@ -1,20 +1,23 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { signIn, register } from "../services/auth";
+import { login, register } from "../services/auth";
 import { addError, removeError } from "./errorSlice";
 
 const initialState = {
   isAuthenticated: false,
   user: {},
+  userID: null,
   status: "idle",
   appStatus: "",
-  email: ""
+  email: "",
+  position: "",
+  
 };
 
 export const authUser = createAsyncThunk(
   "currentUser/authUser",
   async (data, thunkAPI) => {
     try {
-      const user = await signIn(data);
+      const user = await login(data);
       console.log("User data after signin:", user);
       // Save data in localStorage
       localStorage.setItem("userID", user.id);
@@ -55,6 +58,7 @@ const userSlice = createSlice({
     setCurrentUser: (state, action) => {
       state.isAuthenticated = !!Object.keys(action.payload).length;
       state.user = action.payload;
+      state.userID = action.payload;
     },
     setCurrentUserStatus: (state, action) => {
       state.appStatus = action.payload;
@@ -62,21 +66,59 @@ const userSlice = createSlice({
     setCurrentUserEmail: (state, action) => {
       state.email = action.payload;
     },
+    setCurrentUserPosition: (state, action) => {
+      state.position = action.payload;
+    },
     logOutUser: (state, action) => {
       state.isAuthenticated = false;
       state.user = {};
+      state.userID = null;
       state.status = "idle";
       state.appStatus = "";
       state.email = "";
+      state.position = "";
       // Remove user information
       localStorage.removeItem("userID");
       localStorage.removeItem("position");
       localStorage.removeItem("appStatus");
       localStorage.removeItem("token");
       localStorage.removeItem("email");
+      localStorage.removeItem("position");
+
       // Remove data in employee profile page
       localStorage.removeItem("profileSummaryPage");
       localStorage.removeItem("profileSummarySearch");
+
+      localStorage.removeItem("firstName");
+      localStorage.removeItem("lastName");
+      localStorage.removeItem("middleName");
+      localStorage.removeItem("preferredName");
+      localStorage.removeItem("SSN");
+      localStorage.removeItem("birthDate");
+      localStorage.removeItem("gender");
+
+      localStorage.removeItem("address");
+      localStorage.removeItem("apt");
+      localStorage.removeItem("city");
+      localStorage.removeItem("state");
+      localStorage.removeItem("zipCode");
+
+      localStorage.removeItem("isCitizen");
+      localStorage.removeItem("title");
+      localStorage.removeItem("startDate");
+      localStorage.removeItem("endDate");
+
+      localStorage.removeItem("refFirstName");
+      localStorage.removeItem("refLastName");
+      localStorage.removeItem("refMiddleName");
+      localStorage.removeItem("refEmail");
+      localStorage.removeItem("refPhone");
+      localStorage.removeItem("refRelationship");
+
+      localStorage.removeItem("emergencies");
+
+      localStorage.removeItem("cellPhone");
+      localStorage.removeItem("workPhone");
       // Remove data in hiring management page
       localStorage.removeItem("hiringManagementTab1");
       localStorage.removeItem("hiringManagementTab2");
@@ -109,6 +151,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setCurrentUser, setCurrentUserStatus, setCurrentUserEmail, logOutUser } = userSlice.actions;
+export const { setCurrentUser, setCurrentUserStatus, setCurrentUserEmail, setCurrentUserPosition, logOutUser } = userSlice.actions;
 
 export default userSlice.reducer;

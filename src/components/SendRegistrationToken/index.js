@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input, Button, Alert } from "antd";
 
-import { sendRegistrationLink } from "../../services/employees";
+import { sendRegistrationLink } from "../../services/hr";
 import styles from "./style.module.css";
 
 export default function SendRegistrationToken({ refresh, setRefresh }) {

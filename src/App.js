@@ -31,29 +31,29 @@ const theme = extendBaseTheme({
 
 function App() {
   return (
-    <ChakraBaseProvider theme={theme}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/home" element={(<>Welcome to the Home Page</>)} />
-          <Route path="/registration/:token" element={<Registration/>} />
-          <Route path="/" element={<Login/>} />
-          <Route path="/signin" element={<Login/>} />
+      <ChakraBaseProvider theme={theme}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/home" element={(<>Welcome to the Home Page</>)} />
+            <Route path="/registration/:token" element={<Registration/>} />
+            <Route path="/" element={<Login/>} />
+            <Route path="/signin" element={<Login/>} />
 
-          <Route path="/hiring" element={<HiringManagementPage />} />
-          <Route path="/error">
-            <Route path="/error/server-error" element={<ServerError />} />
-            <Route path="/error/not-authorized" element={<NotAuthorized />} />
-            <Route path="/error/session-expired" element={<SessionExpired />} />
-          </Route>
+            <Route path="/hiring" element={<HiringManagementPage />} />
+            <Route path="/error">
+              <Route path="/error/server-error" element={<ServerError />} />
+              <Route path="/error/not-authorized" element={<NotAuthorized />} />
+              <Route path="/error/session-expired" element={<SessionExpired />} />
+            </Route>
 
-          <Route path="/summary" element={<EmployeeProfileSummary />} />
-          <Route path="/onboarding-application" element={<OnboardingApplication />} />
-          <Route path="/personal-profile" element={<PersonalInformation />} />
-          <Route path="*" element={<NotFound />} />
-          <Route path="/HR-profile" element={<HRInformation />} />
-        </Routes>
-      </BrowserRouter>
-    </ChakraBaseProvider>
+            <Route path="/summary" element={<EmployeeProfileSummary />} />
+            <Route path="/onboarding-application" element={<OnboardingApplication />} />
+            <Route path="/personal-profile" element={<PersonalInformation />} />
+            <Route path="*" element={<NotFound />} />
+            <Route path="/hr-profile" element={<HRInformation />} />
+          </Routes>
+        </BrowserRouter>
+      </ChakraBaseProvider>
   );
 }
 
