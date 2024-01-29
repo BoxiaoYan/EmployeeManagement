@@ -77,6 +77,7 @@
 //     return next(error);
 //   }
 // };
+
 const db = require("../models");
 
 exports.saveProfile = async function (req, res, next) {
@@ -141,6 +142,7 @@ exports.getOneProfile = async function (req, res, next) {
     }
 
     const userProfile = await db.Profile.findOne({ user: userID });
+    console.log('userProfile:', userProfile);
     if (userProfile) {
       return res.status(200).json({ status: 200, profile: userProfile, message: "User profile is found" });
     } else {

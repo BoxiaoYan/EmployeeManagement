@@ -576,7 +576,7 @@ function OnboardingApplication() {
         {
           headers: {
             "Content-Type": 'multipart/form-data',
-            Authorization: `Bearer ${user_token}`,
+            Authorization: `${user_token}`,
           },
         }
       );
@@ -620,11 +620,11 @@ function OnboardingApplication() {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/${user_id}`,
+          `http://localhost:8080/api/profile/${user_id}`,
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${user_token}`,
+              Authorization: `${user_token}`,
             },
           }
         );
