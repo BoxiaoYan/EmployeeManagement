@@ -11,7 +11,7 @@ exports.getUserVisaStatus = async (req, res, next) => {
         .status(200)
         .json({ message: "Please fill out your profile first" });
     }
-    if (userProfile.employment.visa !== "F1(CPT/OPT)") {
+    if (userProfile.employment.visa !== "F1-CPT/OPT") {
       return res
         .status(200)
         .json({
