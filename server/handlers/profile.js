@@ -135,14 +135,14 @@ exports.getOneProfile = async function (req, res, next) {
     const verify = req.verify;
     const userID = req.params?.userID;
     
-    // // Verify if userID belongs to current user / user is hr
-    // if (verify.userID !== userID && verify.position !== "hr") {
-    //   return next({ status: 401, message: "Authentication failed" });
-    // }
+    // Verify if userID belongs to current user / user is hr
+    if (verify.userID !== userID && verify.position !== "hr") {
+      return next({ status: 401, message: "Authentication failed" });
+    }
 
     const userProfile = await db.Profile.findOne({ user: userID });
     if (userProfile) {
-      return res.status(200).json({ profile: userProfile });
+      return res.status(200).json({ status: 200, profile: userProfile, message: "User profile is found" });
     } else {
       return res.status(201).json({ status: 201, message: "User profile is not found" });
     }

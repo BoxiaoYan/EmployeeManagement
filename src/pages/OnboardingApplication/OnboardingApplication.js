@@ -173,7 +173,7 @@ function OnboardingApplication() {
 
 
   const user_email = useSelector((state) => state.user.email);
-  const user_id = useSelector((state) => state.user.user);
+  const user_id = useSelector((state) => state.user.user.id);
   const user_token = localStorage.getItem("token");
   const user_position = localStorage.getItem("position");
 
@@ -620,11 +620,11 @@ function OnboardingApplication() {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/profile/${user_id}`,
+          `http://localhost:8080/api/${user_id}`,
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `${user_token}`,
+              Authorization: `Bearer ${user_token}`,
             },
           }
         );
