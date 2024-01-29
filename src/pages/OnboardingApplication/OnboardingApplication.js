@@ -576,7 +576,7 @@ function OnboardingApplication() {
         {
           headers: {
             "Content-Type": 'multipart/form-data',
-            Authorization: `${user_token}`,
+            Authorization: `Bearer ${user_token}`,
           },
         }
       );
@@ -586,6 +586,9 @@ function OnboardingApplication() {
         setStep(response.data.newStatus);
         alert("Your application has been submitted successfully!");
       } else if (response.status === 200) {
+        console.log("Success in updating the profile:", response.data.message);
+        localStorage.setItem("userStatus", response.data.newStatus);
+        setStep(response.data.newStatus);
         alert("Your application was updated successfully!");
       } else {
         console.log("Fail in submitting the profile:", response.data.message);
@@ -624,7 +627,7 @@ function OnboardingApplication() {
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `${user_token}`,
+              Authorization: `Bearer ${user_token}`,
             },
           }
         );
