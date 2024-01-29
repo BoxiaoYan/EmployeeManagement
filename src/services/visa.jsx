@@ -10,12 +10,13 @@ export const fetchVisaStatus = async (
   navigate
 ) => {
   try {
+    setIsOPT("");
     const response = await apiCall({
       url: `/api/visa_status`,
       method: "GET",
     });
-    if (!response.visaStatus) {
-      return setIsOPT(false);
+    if (response.message) {
+      return setIsOPT(response.message);
     }
     setOptRecStatus(response.visaStatus.opt_receipt);
     setEadStatus(response.visaStatus.opt_ead);

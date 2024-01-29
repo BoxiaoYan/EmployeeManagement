@@ -12,7 +12,7 @@ export default function VisaStatusManagement() {
 
   const [fileChange, setFileChange] = useState(false);
 
-  const [isOPT, setIsOPT] = useState(true);
+  const [notOPT, setNotOPT] = useState("");
   const [feedback, setFeedback] = useState("");
   const [optRecStatus, setOptRecStatus] = useState("Unsubmitted");
   const [eadStatus, setEadStatus] = useState("Unsubmitted");
@@ -33,7 +33,7 @@ export default function VisaStatusManagement() {
 
   useEffect(() => {
     fetchVisaStatus(
-      setIsOPT,
+      setNotOPT,
       setOptRecStatus,
       setEadStatus,
       setI983Status,
@@ -43,15 +43,6 @@ export default function VisaStatusManagement() {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileChange]);
-
-  if (!isOPT) {
-    return (
-      <div className={styles.notOPT}>
-        <div>Your work authentication is not OPT.</div>
-        <div>You don't need to upload any document.</div>
-      </div>
-    );
-  }
 
   const refresh = () => {
     setFileChange(!fileChange);
@@ -122,7 +113,13 @@ export default function VisaStatusManagement() {
     extraFile: undefined,
   };
 
-  return (
+  return notOPT ? (
+    <div className={styles.notOPT}>
+      {notOPT.split("\n").map((line, index) => (
+        <div key={index}>{line}</div>
+      ))}
+    </div>
+  ) : (
     <div className={styles.container}>
       <div className={styles.table}>
         <Title>Visa Status Management</Title>

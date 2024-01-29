@@ -6,9 +6,18 @@ exports.getUserVisaStatus = async (req, res, next) => {
 
     // Check if employee is OPT visa
     const userProfile = await db.Profile.findOne({ user: userID });
-    console.log(userProfile.employment.visa)
+    if (!userProfile) {
+      return res
+        .status(200)
+        .json({ message: "Please fill out your profile first" });
+    }
     if (userProfile.employment.visa !== "F1(CPT/OPT)") {
-      return res.status(200).json({});
+      return res
+        .status(200)
+        .json({
+          message:
+            "Your work authentication is not OPT.\nYou don't need to upload any document.",
+        });
     }
 
     let userVisa = await db.Visa.findOne({ user: userID });

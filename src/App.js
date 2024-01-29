@@ -28,7 +28,7 @@ function App() {
             element={<>onboarding application</>}
           />
           <Route path="/personal-profile" element={<>personal application</>} />
-          <Route path="/c" element={<VisaStatusManagement />} />
+          <Route path="/visa-status" element={<VisaStatusManagement />} />
           {/* Hr pages */}
           <Route
             path="/employee-profile-summary"
