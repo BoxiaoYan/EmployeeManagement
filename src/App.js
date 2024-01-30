@@ -14,49 +14,32 @@ import NotFound from "./pages/ErrorPages/NotFound";
 import ErrorBoundary from "./pages/ErrorPages/ErrorBoundary";
 
 
-import './App.css';
-import {
-  ChakraBaseProvider,
-  extendBaseTheme,
-  theme as chakraTheme,
-} from '@chakra-ui/react';
-
-const { CalendarIcon } = chakraTheme.components
-
-const theme = extendBaseTheme({
-  components: {
-    CalendarIcon
-  },
-})
-
 function App() {
   return (
-      <ChakraBaseProvider theme={theme}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/home" element={(<>Welcome to the Home Page</>)} />
-            <Route path="/registration/:token" element={<Registration/>} />
-            <Route path="/" element={<Login/>} />
-            <Route path="/login" element={<Login/>} />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/home" element={(<>Welcome to the Home Page</>)} />
+          <Route path="/registration/:token" element={<Registration/>} />
+          <Route path="/" element={<Login/>} />
+          <Route path="/login" element={<Login/>} />
 
-            <Route path="/error">
-              <Route path="/error/server-error" element={<ServerError />} />
-              <Route path="/error/not-authorized" element={<NotAuthorized />} />
-              <Route path="/error/session-expired" element={<SessionExpired />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
+          <Route path="/error">
+            <Route path="/error/server-error" element={<ServerError />} />
+            <Route path="/error/not-authorized" element={<NotAuthorized />} />
+            <Route path="/error/session-expired" element={<SessionExpired />} />
+          </Route>
+          <Route path="*" element={<NotFound />} />
 
-            {/* <Route path="/test" element={<TestRedux />} /> */}
+          {/* <Route path="/test" element={<TestRedux />} /> */}
 
-            <Route path="/hiring-management" element={<HiringManagementPage />} />
-            <Route path="/summary" element={<EmployeeProfileSummary />} />
-            <Route path="/onboarding-application/:employee_id" element={<OnboardingApplication />} />
-            <Route path="/personal-profile/:employee_id" element={<PersonalInformation />} />
-            <Route path="/employee-profile-summary"element={<EmployeeProfileSummary />}/>
-            <Route path="/hr-profile" element={<HRInformation />} />
-          </Routes>
-        </BrowserRouter>
-      </ChakraBaseProvider>
+          <Route path="/hiring-management" element={<HiringManagementPage />} />
+          <Route path="/summary" element={<EmployeeProfileSummary />} />
+          <Route path="/onboarding-application/:employee_id" element={<OnboardingApplication />} />
+          <Route path="/personal-profile/:employee_id" element={<PersonalInformation />} />
+          <Route path="/employee-profile-summary"element={<EmployeeProfileSummary />}/>
+          <Route path="/hr-profile" element={<HRInformation />} />
+        </Routes>
+      </BrowserRouter>
   );
 }
 

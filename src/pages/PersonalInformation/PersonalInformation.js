@@ -15,10 +15,6 @@ import { Col, Row, Card, Form, Button, InputGroup, Container, Table,  Modal, Ima
 // import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 
-import { CalendarIcon } from '@chakra-ui/icons'
-import { set } from "mongoose";
-
-
 function PersonalInformation() {
   const [isLoading, setIsLoading] = useState(false);
 

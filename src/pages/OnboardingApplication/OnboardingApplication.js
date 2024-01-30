@@ -673,7 +673,7 @@ function OnboardingApplication() {
       if (user_position === "hr") { 
         navigate("/hr-profile");
       } else {
-        navigate("/personal-profile");
+        navigate(`/personal-profile/${employee_id}`);
       }
     }
 
@@ -749,6 +749,7 @@ function OnboardingApplication() {
           setStep(profile.appStatus);
           setRejectReason(profile.rejectReason);
 
+          console.log("The first name is", profile.name.firstName);
           console.log("employee app statu is", profile.appStatus);
           console.log("Setting done.")
 
