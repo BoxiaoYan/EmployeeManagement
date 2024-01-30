@@ -169,13 +169,16 @@ function OnboardingApplication() {
   const [F1Type, setF1Type] = useState("");
   const [F1FileName, setF1FileName] = useState("");
 
-  const [step, setStep] = useState("UnSubmitted");
+  const [step, setStep] = useState("");
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
 
 
   const user_email = useSelector((state) => state.user.user.email);
   const { employee_id } = useParams(); 
   const user_token = localStorage.getItem("token");
   const user_position = localStorage.getItem("position");
+  const is_hr = localStorage.getItem("position") === "hr" ? true : false;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -611,6 +614,60 @@ function OnboardingApplication() {
     }
   };
 
+  const handleApprove = async () => {
+    alert("You approved the application!");
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/set_employee_status`, {employee_id, newStatus: "Approved", reason: "Approved"},
+        {
+          headers: {
+            "Content-Type": 'application/json',
+            Authorization: `Bearer ${user_token}`,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        console.log("Success in approving the application:", response.data.message);
+      } else {
+        console.log("Fail in approving the application:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error for approving the application:", error.message);
+    }
+
+    navigate("/hiring-management");
+    
+  };
+
+  const handleReject = async () => {
+    alert("You rejected the application!");
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/set_employee_status`, {employee_id, newStatus: "Rejected", reason: rejectReason},
+        {
+          headers: {
+            "Content-Type": 'application/json',
+            Authorization: `Bearer ${user_token}`,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        console.log("Success in rejecting the application:", response.data.message);
+      } else {
+        console.log("Fail in rejecting the application:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error for rejecting the application:", error.message);
+    }
+
+    navigate("/hiring-management");
+
+  }
+
 
   useEffect(() => {
     if (step === "Finished") {
@@ -625,13 +682,11 @@ function OnboardingApplication() {
 
     console.log("employee_id is", employee_id);
 
-    const now_status = localStorage.getItem("appStatus");
-    setStep(now_status);
-    console.log("now_status is: ", now_status);
+    // const now_status = localStorage.getItem("appStatus");
+    // setStep(now_status);
+    // console.log("userStatus is", now_status);
 
-    console.log("userStatus is", now_status);
     console.log("userEmail is", user_email);
-    console.log("refemail is", refEmail);
 
     const fetchProfile = async () => {
       try {
@@ -695,7 +750,8 @@ function OnboardingApplication() {
           setF1Type(profile.documents[2].contentType);
           setF1FileName(profile.documents[2].fileName);
 
-
+          setStep(profile.appStatus);
+          setRejectReason(profile.rejectReason);
 
           console.log("Setting done.")
 
@@ -725,7 +781,7 @@ function OnboardingApplication() {
   return (
     <div className="all-onboarding-application">
       <Button onClick={handleLogOut}>Log out</Button>
-      {step === "Rejected" && 
+      {!is_hr && step === "Rejected" && 
         <>
           <div className="custom-textbox-rejected" onClick={() => {setShowFeedback(true)}}>
             Your previous application was rejected. Please click here for the feedback and resubmit your application.
@@ -735,18 +791,18 @@ function OnboardingApplication() {
               <Modal.Title>The feedback from HR</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <h5>Feedback</h5>
+              <h5>{rejectReason}</h5>
             </Modal.Body>
             <Modal.Footer/>
           </Modal>
         </>
       }
-      {step === "Pending"  && <div className="custom-textbox-pending">
+      {!is_hr && step === "Pending"  && <div className="custom-textbox-pending">
         This application has been submitted and is currently pending. You can download files by clicking those round image areas.
       </div>}
       
       <h2 style={{textAlign: 'center', paddingTop: '10vh'}}>Onboarding Application Form</h2>
-      <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+      <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4 mb-4">
         <Row>
           <Col xs={12} md={6} xl={10}>
             <Card className="bg-white shadow-sm mb-4" style={{ width : '80vw'}}>
@@ -768,7 +824,7 @@ function OnboardingApplication() {
                         <Modal.Header closeButton>
                           {step === "Pending" ? <Modal.Title>Download or View</Modal.Title> : <Modal.Title>Avatar Settings</Modal.Title>}
                         </Modal.Header>
-                        {step !== "Pending" && <Modal.Body>
+                        {(!is_hr && step !== "Pending") && <Modal.Body>
                           <div {...getRootProps1()} className="dropzone">
                             <input {...getInputProps1()} />
                             <p>Drop new image here, or click to select a file</p>
@@ -781,7 +837,7 @@ function OnboardingApplication() {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>}
+                              {(is_hr || step === "Pending") && <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>}
                               <Dropdown.Item onClick={() => {setShowLargeImage(true)}}>View Large Image</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
@@ -807,8 +863,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={firstName} 
                         onChange={(e) => {setFirstName(e.target.value); localStorage.setItem("firstName", e.target.value); console.log(e.target.value)}} />
                     </Form.Group>
@@ -819,8 +875,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={lastName}
                         onChange={(e) => {setLastName(e.target.value); localStorage.setItem("lastName", e.target.value); console.log(lastName)}} 
                       />
@@ -831,8 +887,8 @@ function OnboardingApplication() {
                       <Form.Label>Middle Name (Optional)</Form.Label>
                       <Form.Control 
                         type="text"
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={middleName}
                         onChange={(e) => {setMiddleName(e.target.value); localStorage.setItem("middleName", e.target.value)}} 
                       />
@@ -845,8 +901,8 @@ function OnboardingApplication() {
                       <Form.Label>Preferred Name (Optional)</Form.Label>
                       <Form.Control 
                         type="text"
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={preferredName}
                         onChange={(e) => {setPreferredName(e.target.value); localStorage.setItem("preferredName", e.target.value)}} 
                       />
@@ -856,10 +912,10 @@ function OnboardingApplication() {
                   <Col className="mb-3">
                     <Form.Group id="gender">
                       <Form.Label>Gender</Form.Label>
-                      {step !== "Pending" && <Form.Select 
+                      {(!is_hr && step !== "Pending") && <Form.Select 
                         id="gender-select" 
-                        disabled={step === "Pending" ? true : false} 
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        disabled={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         defaultValue={gender}
                         onChange={(e) => {setGender(e.target.value); localStorage.setItem("gender", e.target.value); console.log(gender)}}
                       >
@@ -872,11 +928,11 @@ function OnboardingApplication() {
                         <option value="I wish not to disclose">I wish not to disclose</option>
                       </Form.Select>}
 
-                      {step === "Pending" && <Form.Control 
+                      {(is_hr || step === "Pending") && <Form.Control 
                         required 
                         type="text"
-                        readOnly={true}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={gender}
                       />}
                     </Form.Group>
@@ -902,8 +958,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={SSN}
                         onChange={(e) => {setSSN(e.target.value); localStorage.setItem("SSN", e.target.value)}} 
                         placeholder="xxx-xx-xxxx" />
@@ -916,8 +972,8 @@ function OnboardingApplication() {
                         showIcon
                         selected={birthDate}
                         onChange={(date) => {setBirthDate(date); localStorage.setItem("birthDate", date); console.log(birthDate)}}
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         closeOnScroll={true}
                         monthsShown={2}
                       />
@@ -933,8 +989,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required 
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={address}
                         onChange={(e) => {setAddress(e.target.value); localStorage.setItem("address", e.target.value)}}
                       />
@@ -945,8 +1001,8 @@ function OnboardingApplication() {
                       <Form.Label>Building/Apt # (Optional)</Form.Label>
                       <Form.Control 
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={apt}
                         onChange={(e) => {setApt(e.target.value); localStorage.setItem("apt", e.target.value)}}
                       />
@@ -961,8 +1017,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={city}
                         onChange={(e) => {setCity(e.target.value); localStorage.setItem("city", e.target.value)}}
                       />
@@ -971,11 +1027,11 @@ function OnboardingApplication() {
                   <Col className="mb-3">
                     <Form.Group className="mb-2">
                       <Form.Label>State</Form.Label>
-                      {step !== "Pending" && <Form.Select 
+                      {(!is_hr && step !== "Pending") && <Form.Select 
                         id="state" 
                         defaultValue={state}
-                        disabled={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        disabled={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         onChange={(e) => {setState(e.target.value); localStorage.setItem("state", e.target.value); console.log(state)}}
                       >
                         <option value=""></option>
@@ -1031,11 +1087,11 @@ function OnboardingApplication() {
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
                       </Form.Select>}
-                      {step === "Pending" && '#f2f2f2' && <Form.Control 
+                      {(is_hr || step === "Pending") && '#f2f2f2' && <Form.Control 
                         required 
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={state}
                       />}
                     </Form.Group>
@@ -1045,8 +1101,8 @@ function OnboardingApplication() {
                       <Form.Label>Zipcode</Form.Label>
                       <Form.Control 
                         type="text"
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={zipCode}
                         onChange={(e) => {setZipCode(e.target.value); localStorage.setItem("zipCode", e.target.value)}}
                       />
@@ -1064,8 +1120,8 @@ function OnboardingApplication() {
                         value={cellPhone}
                         onChange={(e) => {setCellPhone(e.target.value); localStorage.setItem("cellPhone", e.target.value)}}
                         placeholder="xxx-xxx-xxxx"
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }} 
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                       />
                     </Form.Group>
                   </Col>
@@ -1077,8 +1133,8 @@ function OnboardingApplication() {
                         value={workPhone}
                         onChange={(e) => {setWorkPhone(e.target.value); localStorage.setItem("workPhone", e.target.value)}}
                         placeholder="xxx-xxx-xxxx" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                       />
                     </Form.Group>
                   </Col>
@@ -1087,13 +1143,13 @@ function OnboardingApplication() {
                 <h5 className="my-4">Visa Status</h5>
                 <Row>
                   <Col className="mb-3">
-                    {step !== "Pending" && <Form.Group className="mb-2">
+                    {(!is_hr && step !== "Pending") && <Form.Group className="mb-2">
                       <Form.Label>Ciziten/PR?</Form.Label>
                       <Form.Select 
                         id="visa-state" 
                         defaultValue={isCitizen}
-                        disabled={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        disabled={false}
+                        style={{ backgroundColor: 'white' }}
                         onChange={(e) => {setIsCitizen(e.target.value); localStorage.setItem("isCitizen", e.target.value); console.log(isCitizen)}}
                       >
                         <option value=""></option>
@@ -1101,24 +1157,24 @@ function OnboardingApplication() {
                         <option value="no">No</option>
                       </Form.Select>
                     </Form.Group>}
-                    {step === "Pending" && <Form.Group className="mb-2">
+                    {(is_hr || step === "Pending") && <Form.Group className="mb-2">
                       <Form.Label>Visa status</Form.Label>
                       <Form.Control 
                         type="text" 
                         value={title}
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={true}
+                        style={{ backgroundColor: '#f2f2f2'}}
                       />
                     </Form.Group>}
                   </Col>
-                  {step !== "Pending" && isCitizen === "yes" && <Col className="mb-3">
+                  {!is_hr && step !== "Pending" && isCitizen === "yes" && <Col className="mb-3">
                     <Form.Group className="mb-2">
                       <Form.Label>Auth Type</Form.Label>
                       <Form.Select 
                         id="auth-type" 
                         defaultValue={"greenCard"}
-                        disabled={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        disabled={false}
+                        style={{ backgroundColor: 'white' }}
                         onChange={(e) => {setTitle(e.target.value); localStorage.setItem("title", e.target.value); console.log(title)}}
                       >
                         <option value="greenCard">Green Card</option>
@@ -1127,14 +1183,14 @@ function OnboardingApplication() {
                     </Form.Group>
                   </Col>
                   }
-                  {step !== "Pending" && isCitizen === "no" && <Col className="mb-3">
+                  {!is_hr && step !== "Pending" && isCitizen === "no" && <Col className="mb-3">
                     <Form.Group className="mb-2">
                       <Form.Label>Auth Type</Form.Label>
                       <Form.Select 
                         id="auth-type" 
                         defaultValue={"H1-B"}
-                        disabled={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        disabled={false}
+                        style={{ backgroundColor:'white' }}
                         onChange={(e) => {setTitle(e.target.value); localStorage.setItem("title", e.target.value); console.log(title)}}
                       >
                         <option value="H1-B">H1-B</option>
@@ -1146,20 +1202,20 @@ function OnboardingApplication() {
                     </Form.Group>
                   </Col>
                   }
-                  {step !== "Pending" && isCitizen === "no" && title === "Other" && <Col className="mb-3">
+                  {!is_hr && step !== "Pending" && isCitizen === "no" && title === "Other" && <Col className="mb-3">
                     <Form.Group id="comment-title">
                       <Form.Label>Please specify visa title</Form.Label>
                       <Form.Control 
                         type="text" 
                         value={finalVisa}
                         onChange={(e) => {setFinalVisa(e.target.value); console.log(finalVisa); localStorage.setItem("finalVisa", e.target.value)}}
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={false}
+                        style={{ backgroundColor:'white' }}
                       />
                     </Form.Group>
                   </Col>
                   }
-                  {step !== "Pending" && isCitizen === "no" && title === "F1-CPT/OPT" && 
+                  {!is_hr && step !== "Pending" && isCitizen === "no" && title === "F1-CPT/OPT" && 
                   <Col>                
                     <Form className="mx-auto">
                       <Form.Group id="fileUpload">
@@ -1212,7 +1268,7 @@ function OnboardingApplication() {
                     </Form>
                   </Col>
                   }
-                  {step === "Pending" && title === "F1-CPT/OPT" && <Col>                
+                  {(is_hr || step === "Pending") && title === "F1-CPT/OPT" && <Col>                
                     <Form className="mx-auto">
                       <Form.Group id="fileUpload">
                         <Form.Label>F-1 Receipt</Form.Label>
@@ -1230,7 +1286,7 @@ function OnboardingApplication() {
                                       Options
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu>
-                                      {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(F1Base64, F1FileName)}>Download</Dropdown.Item>}
+                                      {F1Base64 && <Dropdown.Item onClick={() => handleDownload(F1Base64, F1FileName)}>Download</Dropdown.Item>}
                                       <Dropdown.Item onClick={() => {setShowLargeF1(true)}}>View Large Image</Dropdown.Item>
                                     </Dropdown.Menu>
                                   </Dropdown>
@@ -1276,8 +1332,8 @@ function OnboardingApplication() {
                             alert("Please select a date earlier than the end date");
                           }
                         }}
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         closeOnScroll={true}
                         monthsShown={2}
                       />
@@ -1298,8 +1354,8 @@ function OnboardingApplication() {
                             alert("Please select a date later than the start date");
                           }
                         }}
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         closeOnScroll={true}
                         monthsShown={2}
                       />
@@ -1315,8 +1371,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={refFirstName}
                         onChange={(e) => {setRefFirstName(e.target.value); localStorage.setItem("refFirstName", e.target.value)}}
                       />
@@ -1328,8 +1384,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={refLastName}
                         onChange={(e) => {setRefLastName(e.target.value); localStorage.setItem("refLastName", e.target.value)}}
                       />
@@ -1340,8 +1396,8 @@ function OnboardingApplication() {
                       <Form.Label>Reference Middle Name (Optional)</Form.Label>
                       <Form.Control 
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={refMiddleName}
                         onChange={(e) => {setRefMiddleName(e.target.value); localStorage.setItem("refMiddleName", e.target.value)}}
                       />
@@ -1355,8 +1411,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={refPhone}
                         onChange={(e) => {setRefPhone(e.target.value); localStorage.setItem("refPhone", e.target.value)}}
                         placeholder="xxx-xxx-xxxx" 
@@ -1369,8 +1425,8 @@ function OnboardingApplication() {
                       <Form.Control 
                         required
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={refEmail}
                         onChange={(e) => {setRefEmail(e.target.value); localStorage.setItem("refEmail", e.target.value)}}
                         placeholder="prefix@mail.suffix" 
@@ -1382,8 +1438,8 @@ function OnboardingApplication() {
                       <Form.Label>Relationship</Form.Label>
                       <Form.Control 
                         type="text" 
-                        readOnly={step === "Pending" ? true : false}
-                        style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                        readOnly={(is_hr || step === "Pending") ? true : false}
+                        style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                         value={refRelationship}
                         onChange={(e) => {setRefRelationship(e.target.value); localStorage.setItem("refRelationship", e.target.value)}}
                         placeholder="Supervisor, colleague, etc." 
@@ -1403,8 +1459,8 @@ function OnboardingApplication() {
                           <Form.Control 
                             required
                             type="text" 
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                            rreadOnly={(is_hr || step === "Pending") ? true : false}
+                            style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                             value={emergency.firstName}
                             onChange={(e) => {updateEmergencyFirstName(index, e.target.value); console.log(emergencies[index].firstName)}}
                           />
@@ -1416,8 +1472,8 @@ function OnboardingApplication() {
                           <Form.Control 
                             required
                             type="text" 
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                            readOnly={(is_hr || step === "Pending") ? true : false}
+                            style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                             value={emergency.lastName}
                             onChange={(e) => updateEmergencyLastName(index, e.target.value)}
                           />
@@ -1428,8 +1484,8 @@ function OnboardingApplication() {
                           <Form.Label>Middle Name {index + 1} (Optional)</Form.Label>
                           <Form.Control 
                             type="text" 
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                            readOnly={(is_hr || step === "Pending") ? true : false}
+                            style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                             value={emergency.middleName}
                             onChange={(e) => updateEmergencyMiddleName(index, e.target.value)}
                           />
@@ -1443,8 +1499,8 @@ function OnboardingApplication() {
                           <Form.Control 
                             required
                             type="text" 
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                            readOnly={(is_hr || step === "Pending") ? true : false}
+                            style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                             value={emergency.phone}
                             onChange={(e) => updateEmergencyPhone(index, e.target.value)}
                             placeholder="xxx-xxx-xxxx" 
@@ -1457,8 +1513,8 @@ function OnboardingApplication() {
                           <Form.Control 
                             required
                             type="text" 
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                            readOnly={(is_hr || step === "Pending") ? true : false}
+                            style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                             value={emergency.email}
                             onChange={(e) => updateEmergencyEmail(index, e.target.value)}
                             placeholder="prefix@mail.suffix" 
@@ -1470,8 +1526,8 @@ function OnboardingApplication() {
                           <Form.Label>Relationship</Form.Label>
                           <Form.Control 
                             type="text" 
-                            readOnly={step === "Pending" ? true : false}
-                            style={{ backgroundColor: step === "Pending" ? '#f2f2f2' : 'white' }}
+                            readOnly={(is_hr || step === "Pending") ? true : false}
+                            style={{ backgroundColor: (is_hr || step === "Pending") ? '#f2f2f2' : 'white' }}
                             value={emergency.relationship}
                             onChange={(e) => updateEmergencyRelationship(index, e.target.value)}
                             placeholder="Sibling, parent, spouse, etc." 
@@ -1479,13 +1535,13 @@ function OnboardingApplication() {
                         </Form.Group>
                       </Col>
                     </Row>
-                    {step !== "Pending" && index > 0 && <Button variant="danger" onClick={() => {removeEmergencyBlock(index); console.log(emergencies)}} className="mb-3">
+                    {(!is_hr && step !== "Pending") && index > 0 && <Button variant="danger" onClick={() => {removeEmergencyBlock(index); console.log(emergencies)}} className="mb-3">
                       Remove Emergency Contact
                     </Button>}
 
                   </div>
                 ))}
-                {step !== "Pending" && <Button variant="primary" onClick={addEmergencyBlock} className="mt-3">
+                {!is_hr && step !== "Pending" && <Button variant="primary" onClick={addEmergencyBlock} className="mt-3">
                   Add Emergency Contact
                 </Button>}
 
@@ -1498,15 +1554,15 @@ function OnboardingApplication() {
                       <div className="avatar-container" onClick={handleShowImageModal}>
                         {avatarBase64 && <Image src={avatarBase64} alt="Avatar" roundedCircle />}
                         {!avatarBase64 && <div className="avatar-placeholder">
-                          {step === "Pending" ? "Avatar?" : "Upload Avatar"}
+                          {(is_hr || step === "Pending") ? "Avatar?" : "Upload Avatar"}
                         </div>}
                       </div>
 
                       <Modal show={showImageModal} onHide={handleCloseImageModal}>
                         <Modal.Header closeButton>
-                          <Modal.Title>{step === "Pending" ? "Download or View" : "Upload Avatar"}</Modal.Title>
+                          <Modal.Title>{(is_hr || step === "Pending") ? "Download or View" : "Upload Avatar"}</Modal.Title>
                         </Modal.Header>
-                        {step !== "Pending" && <Modal.Body>
+                        {!is_hr && step !== "Pending" && <Modal.Body>
                           <div {...getRootProps1()} className="dropzone">
                             <input {...getInputProps1()} />
                             <p>Drop new image here, or click to select a file</p>
@@ -1519,7 +1575,7 @@ function OnboardingApplication() {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>}
+                              {(is_hr || step === "Pending") && <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>}
                               <Dropdown.Item onClick={() => {setShowLargeImage(true)}}>View Large Image</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
@@ -1544,15 +1600,15 @@ function OnboardingApplication() {
                       <div className="avatar-container" onClick={handleShowDLModal}>
                         {DLBase64 && <Image src={DLBase64} alt="Avatar" roundedCircle />}
                         {!DLBase64 && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
-                          {step === "Pending" ? "Driver License?" : "Upload Driver License"}
+                          {is_hr || step === "Pending" ? "Driver License?" : "Upload Driver License"}
                         </div>}
                       </div>
 
                       <Modal show={showDLModal} onHide={handleCloseDLModal}>
                         <Modal.Header closeButton>
-                          <Modal.Title>{step === "Pending" ? "Download or View" : "Driver License Settings"}</Modal.Title>
+                          <Modal.Title>{is_hr || step === "Pending" ? "Download or View" : "Driver License Settings"}</Modal.Title>
                         </Modal.Header>
-                        {step !== "Pending" && <Modal.Body>
+                        {!is_hr && step !== "Pending" && <Modal.Body>
                           <div {...getRootProps2()} className="dropzone">
                             <input {...getInputProps2()} />
                             <p>Drop new image here, or click to select a file</p>
@@ -1564,7 +1620,7 @@ function OnboardingApplication() {
                               Options
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                              {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(DLBase64, DLFileName)}>Download</Dropdown.Item>}
+                              {is_hr || step === "Pending" && <Dropdown.Item onClick={() => handleDownload(DLBase64, DLFileName)}>Download</Dropdown.Item>}
                               <Dropdown.Item onClick={() => {setShowLargeDL(true)}}>View Large Image</Dropdown.Item>
                             </Dropdown.Menu>
                             
@@ -1587,7 +1643,7 @@ function OnboardingApplication() {
                       <div className="avatar-container" onClick={handleShowAuthModal}>
                         {authBase64 && <Image src={authBase64} alt="Avatar" roundedCircle />}
                         {!authBase64 && <div className="avatar-placeholder" style={{textAlign: 'center'}}>
-                          {step === "Pending" ? "Work Authorization?" : "Upload Work Authorization"}
+                          {is_hr || step === "Pending" ? "Work Authorization?" : "Upload Work Authorization"}
                         </div>}
                       </div>
 
@@ -1595,7 +1651,7 @@ function OnboardingApplication() {
                         <Modal.Header closeButton>
                           <Modal.Title>{step === "Pending" ? "Download or View" : "Driver License Settings"}</Modal.Title>
                         </Modal.Header>
-                        {step !== "Pending" && <Modal.Body>
+                        {!is_hr && step !== "Pending" && <Modal.Body>
                           <div {...getRootProps3()} className="dropzone">
                             <input {...getInputProps3()} />
                             <p>Drop new image here, or click to select a file</p>
@@ -1608,7 +1664,7 @@ function OnboardingApplication() {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              {step === "Pending" && <Dropdown.Item onClick={() => handleDownload(authBase64, authFileName)}>Download</Dropdown.Item>}
+                              {is_hr || step === "Pending" && <Dropdown.Item onClick={() => handleDownload(authBase64, authFileName)}>Download</Dropdown.Item>}
                               <Dropdown.Item onClick={() => {setShowLargeAuth(true)}}>View Large Image</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>
@@ -1629,7 +1685,7 @@ function OnboardingApplication() {
 
               </Card.Body>
             </Card>
-            {(step === "UnSubmitted" || step === "Rejected") && <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft: '35vw'}}>
+            {!is_hr && (step === "UnSubmitted" || step === "Rejected") && <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingLeft: '35vw'}}>
               <Button variant="primary" onClick={handleSubmit}>
                 Submit Data
               </Button>
@@ -1637,6 +1693,27 @@ function OnboardingApplication() {
           </Col>
         </Row>
       </Container>
+
+      {/* Hr decision */}
+      {is_hr && <Row>
+        <Col>
+          <Button variant="primary" onClick={() => handleApprove()}>Approve</Button>
+        </Col>
+        <Col>
+          <Button variant="danger" onClick={() => setShowRejectModal(true)}>Reject</Button>
+          <Modal show={showRejectModal} onHide={() => setShowRejectModal(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>Reject Reason</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Control type="text" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="danger" onClick={() => handleReject()}>Reject</Button>
+            </Modal.Footer>
+          </Modal>
+        </Col>
+      </Row>}
     </div>
     );
   }

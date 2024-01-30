@@ -19,11 +19,13 @@ const {
   getEmployeeByStatus,
   getEmployeeByRegStatus,
   generateRegLink,
+  setEmployeeStatus
 } = require("../handlers/hr");
 const { hrAuth } = require("../authentication/auth");
 
 router.get("/employees_status/:status", hrAuth, getEmployeeByStatus);
 router.get("/employees_reg_status", hrAuth, getEmployeeByRegStatus);
 router.post("/generate_registration_link", hrAuth, generateRegLink);
+router.post("/set_employee_status", hrAuth, setEmployeeStatus);
 
 module.exports = router;

@@ -13,10 +13,10 @@ export const reviewTableColumns = [
   },
   {
     title: "View Application",
-    dataIndex: "id",
+    dataIndex: "_id",
     key: "view_app",
-    render: (id) => (
-      <Link to={`/onboarding-application/${id}`} target="_blank">
+    render: (_id) => (
+      <Link to={`/onboarding-application/${_id}`} target="_blank">
         View Application
       </Link>
     ),

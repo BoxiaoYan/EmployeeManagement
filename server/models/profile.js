@@ -87,6 +87,9 @@ const profileSchema = new mongoose.Schema({
 
   // k. appStatus
   appStatus: { type: String },
+
+  // l. rejectReason
+  rejectReason: { type: String },
 });
 
 const Profile = mongoose.model("Profile", profileSchema);
