@@ -16,7 +16,7 @@ export const reviewTableColumns = [
     dataIndex: "_id",
     key: "view_app",
     render: (id) => (
-      <Link to={`/profile/${id}`} target="_blank">
+      <Link to={`/onboarding-application/${id}`} target="_blank">
         View Application
       </Link>
     ),

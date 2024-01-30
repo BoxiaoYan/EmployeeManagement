@@ -9,7 +9,7 @@ import { logOutUser } from "../../app/userSlice";
 
 import styles from "./style.module.css";
 
-export default function Navbar() {
+export default function Navbar({userID}) {
   const dispatch = useDispatch();
   const navigator = useNavigate();
   const position = useSelector((state) => state.user.user.position);
@@ -41,7 +41,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <Link className={styles.text} to="/personal-profile">
+            <Link className={styles.text} to={`/personal-profile/${userID}`}>
               Personal Information
             </Link>
             <Link className={styles.text} to="/visa-status">

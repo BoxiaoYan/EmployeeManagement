@@ -661,6 +661,8 @@ function OnboardingApplication() {
       }
     } catch (error) {
       console.error("Error for rejecting the application:", error.message);
+    } finally {
+      setIsLoading(false);
     }
 
     navigate("/hiring-management");
@@ -760,12 +762,12 @@ function OnboardingApplication() {
         }
       } catch (err) {
         console.error("Error fetching product", err.message);
+      } finally {
+        setIsLoading(false);
       }
     }
 
     fetchProfile();
-
-    setIsLoading(false);
 
   }, []);
 
@@ -782,7 +784,7 @@ function OnboardingApplication() {
 
   return (
     <div className="all-onboarding-application">
-      {isLoading ? <h4>The page is loading.</h4>  : (<div className="onboarding-application">
+      {isLoading ? (<h2>The page is loading.</h2>) : (<div className="onboarding-application">
       <Navbar />
       {!is_hr && step === "Rejected" && 
         <>
@@ -1717,7 +1719,8 @@ function OnboardingApplication() {
           </Modal>
         </Col>
       </Row>}
-      </div>)}
+      </div>)
+      }
     </div>
     );
   }

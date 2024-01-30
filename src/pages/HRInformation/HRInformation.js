@@ -8,9 +8,9 @@ import Navbar from "../../components/Navbar";
 
 import { useNavigate } from "react-router-dom";
 import { fetchProfileSummary } from "../../services/profiles";
-import { set } from "mongoose";
 
 function HRInformation() {
+    const [isLoading, setIsLoading] = useState(false);
     const [search, setSearch] = useState("");
     const [profile, setProfile] = useState([]);
     const [displayProfile, setDisplayProfile] = useState([]);
@@ -29,8 +29,9 @@ function HRInformation() {
     };
 
     useEffect(() => {
-      fetchProfileSummary(setProfile, setDisplayProfile, navigate);
-      setTotalDatas(displayProfile.length);
+      setIsLoading(true);
+      fetchProfileSummary(setProfile, setDisplayProfile, setIsLoading, navigate);
+      setTotalDatas(profile.length);
     }, []);
 
     useEffect(() => {
@@ -115,6 +116,7 @@ function HRInformation() {
 
     return (
         <div className="all-HR-profiles">
+          {isLoading ? (<h2>The page is Loading...</h2>) : (<div>
             <div className="table-settings">
                 <Navbar/>
                 <Row style={{ marginLeft: '2rem', marginRight: '2rem'}} className="justify-content-between align-items-center mb-4 pt-4">
@@ -191,7 +193,7 @@ function HRInformation() {
                         Previous
                       </Pagination.Prev>
 
-                      {Array.from({ length: totalPages }, (value, index) => (
+                      {Array.from({ length: Math.ceil(displayProfile.length / itemsPerPage) }, (value, index) => (
                         <Pagination.Item
                           key={index + 1}
                           active={index + 1 === currentPage}
@@ -207,11 +209,12 @@ function HRInformation() {
                     </Pagination>
                   </Nav>
                   <small className="fw-bold">
-                    Showing <b>{currentPage !== totalPages ? itemsPerPage : totalDatas % itemsPerPage}</b> out of <b>{totalDatas}</b> entries
+                    Showing <b>{Math.min((currentPage !== totalPages ? itemsPerPage : totalDatas % itemsPerPage), displayProfile.length)}</b> out of <b>{displayProfile.length}</b> entries
                   </small>
                 </Card.Footer>
               </Card.Body>
             </Card>
+          </div>)}
         </div>
     );
 }

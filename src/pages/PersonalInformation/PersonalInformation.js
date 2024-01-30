@@ -413,6 +413,8 @@ function PersonalInformation() {
       }
     } catch (err) {
       console.error("Error fetching product", err.message);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -423,8 +425,6 @@ function PersonalInformation() {
     console.log("employee_id is", employee_id);
 
     fetchProfile();
-
-    setIsLoading(false);
   }, [])
 
 
@@ -479,625 +479,603 @@ function PersonalInformation() {
 
   return (
     <div className="all-personal-profile">
-      <Navbar />
-      <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
-        <Row>
-          <Col xs={12} md={6} xl={10}>
-            {is_not_hr && (isEdit ? (<Row className="mt-4 mb-4">
-              <Col>
-                <Button variant="primary" onClick={handleSave}>
-                  Save
-                </Button>
-              </Col>
-              <Col>
-                <Button variant="danger" onClick={() => {fetchProfile(); setIsEdit(false)}}>
-                  Cancel
-                </Button>
-              </Col>
-            </Row>) : (
-              <Row className="mt-4 mb-4">
-              <Col>
-                <Button variant="primary" onClick={() => setIsEdit(true)}>
-                  Edit
-                </Button>
-              </Col>
-            </Row>
-            ))}
+      {isLoading ? (<h2>The Page is Loading...</h2>) : (<div className="not-loading-personal-profile">
+        <Navbar userID={employee_id}/>
+        <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+          <Row>
+            <Col xs={12} md={6} xl={10}>
+              {is_not_hr && (isEdit ? (<Row className="mt-4 mb-4">
+                <Col>
+                  <Button variant="primary" onClick={handleSave}>
+                    Save
+                  </Button>
+                </Col>
+                <Col>
+                  <Button variant="danger" onClick={() => {fetchProfile(); setIsEdit(false)}}>
+                    Cancel
+                  </Button>
+                </Col>
+              </Row>) : (
+                <Row className="mt-4 mb-4">
+                <Col>
+                  <Button variant="primary" onClick={() => setIsEdit(true)}>
+                    Edit
+                  </Button>
+                </Col>
+              </Row>
+              ))}
 
-            <Card className="bg-white shadow-sm mb-4" style={{ width : '80vw'}}>
-              <Card.Body>
-                <Row>
-                  <Col className="mb-3">
-                    <h5 className="my-4">General information</h5>
-                  </Col>
-                  <Col className="mb-3">
-                    <div>
-                      <div className="avatar-container" onClick= {handleShowImageModal}>
-                        {avatarBase64 && <Image src={avatarBase64} alt="Avatar" roundedCircle />}
-                        {!avatarBase64 && <div className="avatar-placeholder">Upload Avatar</div>}
-                      </div>
+              <Card className="bg-white shadow-sm mb-4" style={{ width : '80vw'}}>
+                <Card.Body>
+                  <Row>
+                    <Col className="mb-3">
+                      <h5 className="my-4">Personal Information Page: General information</h5>
+                    </Col>
+                    <Col className="mb-3">
+                      <div>
+                        <div className="avatar-container" onClick= {handleShowImageModal}>
+                          {avatarBase64 && <Image src={avatarBase64} alt="Avatar" roundedCircle />}
+                          {!avatarBase64 && <div className="avatar-placeholder">Upload Avatar</div>}
+                        </div>
 
-                      <Modal show={showImageModal} onHide={handleCloseImageModal}>
-                        <Modal.Header closeButton>
-                          <Modal.Title>Avatar Settings</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          {is_not_hr && isEdit && <div {...getRootProps1()} className="dropzone">
-                            <input {...getInputProps1()} />
-                            <p>Drop new image here, or click to select a file</p>
-                          </div>}
-                        </Modal.Body>
-                        <Modal.Footer>
-                          {DLBase64 && <Dropdown>
-                            <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                              Options
-                            </Dropdown.Toggle>
-
-                            <Dropdown.Menu>
-                              <Dropdown.Item onClick={() => setShowBigImage(true)}>View Large Image</Dropdown.Item>
-                              <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>}
-                          <Button variant="secondary" onClick={handleCloseImageModal}>
-                            Close
-                          </Button>
-                          <Modal show={showBigImage} onHide={() => setShowBigImage(false)}>
-                            <Modal.Header closeButton>
-                              <Modal.Title>Large Image</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                              <img src={avatarBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
-                            </Modal.Body>
-                            <Modal.Footer/>
-                          </Modal>
-                        </Modal.Footer>
-                      </Modal>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="first-name">
-                      <Form.Label>First Name</Form.Label>
-                      <Form.Control 
-                        required 
-                        type="text"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }}
-                        value={firstName} 
-                        onChange={(e) => setFirstName(e.target.value)} />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="last-name">
-                      <Form.Label>Last Name</Form.Label>
-                      <Form.Control 
-                        required 
-                        type="text"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)} 
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="middle-name">
-                      <Form.Label>Middle Name (option)</Form.Label>
-                      <Form.Control 
-                        type="text"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        value={middleName}
-                        onChange={(e) => setMiddleName(e.target.value)} 
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="preferred-name">
-                      <Form.Label>Preferred Name (option)</Form.Label>
-                      <Form.Control 
-                        type="text"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
-                        value={preferredName}
-                        onChange={(e) => setPreferredName(e.target.value)} 
-                      />
-                    </Form.Group>
-                  </Col>
-
-                  <Col className="mb-3">
-                    {is_not_hr && isEdit ? (<Form.Group id="gender">
-                      <Form.Label>Gender</Form.Label>
-                      <Form.Select 
-                        id="gender-select" 
-                        disabled={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        defaultValue={gender}
-                        onChange={(e) => setGender(e.target.value)}
-                      >
-                        <option value=""></option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="transgender">Transgender</option>
-                        <option value="non-binary">Non-binary</option>
-                        <option value="other">Other</option>
-                        <option value="I wish not to disclose">I wish not to disclose</option>
-                      </Form.Select>
-                    </Form.Group>) : (<Form.Group id="gender">
-                      <Form.Label>Gender</Form.Label>
-                      <Form.Control 
-                        type="text"
-                        readOnly={true}
-                        style={{ backgroundColor:'#f2f2f2'}} 
-                        value={gender}
-                        onChange={(e) => setGender(e.target.value)}
-                      />
-                    </Form.Group>)}
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="email">
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control 
-                        required 
-                        type="text"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="prefix@mail.suffix" />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="SSN">
-                      <Form.Label>SSN</Form.Label>
-                      <Form.Control 
-                        required 
-                        type="text"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        value={SSN}
-                        onChange={(e) => setSSN(e.target.value)} 
-                        placeholder="xxx-xx-xxxx" />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="birthday">
-                      <Form.Label>Date of Birth</Form.Label>
-                      <DatePicker
-                        showIcon
-                        selected={birthDate}
-                        onChange={(date) => {setBirthDate(date); console.log(birthDate)}}
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        closeOnScroll={true}
-                        monthsShown={2}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                <h5 className="my-4">Address</h5>
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="street">
-                      <Form.Label>Street</Form.Label>
-                      <Form.Control 
-                        required 
-                        type="text" 
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="apt">
-                      <Form.Label>Apt # (Option)</Form.Label>
-                      <Form.Control 
-                        type="text" 
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        value={apt}
-                        onChange={(e) => setApt(e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="city">
-                      <Form.Label>City</Form.Label>
-                      <Form.Control 
-                        required 
-                        type="text"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group className="mb-2">
-                      <Form.Label>State</Form.Label>
-                      {is_not_hr && isEdit ? (<Form.Select 
-                        id="state" 
-                        defaultValue={state}
-                        disabled={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        onChange={(e) => setState(e.target.value)}
-                      >
-                        <option value=""></option>
-                        <option value="AL">Alabama</option>
-                        <option value="AK">Alaska</option>
-                        <option value="AZ">Arizona</option>
-                        <option value="AR">Arkansas</option>
-                        <option value="CA">California</option>
-                        <option value="CO">Colorado</option>
-                        <option value="CT">Connecticut</option>
-                        <option value="DE">Delaware</option>
-                        <option value="DC">District Of Columbia</option>
-                        <option value="FL">Florida</option>
-                        <option value="GA">Georgia</option>
-                        <option value="HI">Hawaii</option>
-                        <option value="ID">Idaho</option>
-                        <option value="IL">Illinois</option>
-                        <option value="IN">Indiana</option>
-                        <option value="IA">Iowa</option>
-                        <option value="KS">Kansas</option>
-                        <option value="KY">Kentucky</option>
-                        <option value="LA">Louisiana</option>
-                        <option value="ME">Maine</option>
-                        <option value="MD">Maryland</option>
-                        <option value="MA">Massachusetts</option>
-                        <option value="MI">Michigan</option>
-                        <option value="MN">Minnesota</option>
-                        <option value="MS">Mississippi</option>
-                        <option value="MO">Missouri</option>
-                        <option value="MT">Montana</option>
-                        <option value="NE">Nebraska</option>
-                        <option value="NV">Nevada</option>
-                        <option value="NH">New Hampshire</option>
-                        <option value="NJ">New Jersey</option>
-                        <option value="NM">New Mexico</option>
-                        <option value="NY">New York</option>
-                        <option value="NC">North Carolina</option>
-                        <option value="ND">North Dakota</option>
-                        <option value="OH">Ohio</option>
-                        <option value="OK">Oklahoma</option>
-                        <option value="OR">Oregon</option>
-                        <option value="PA">Pennsylvania</option>
-                        <option value="RI">Rhode Island</option>
-                        <option value="SC">South Carolina</option>
-                        <option value="SD">South Dakota</option>
-                        <option value="TN">Tennessee</option>
-                        <option value="TX">Texas</option>
-                        <option value="UT">Utah</option>
-                        <option value="VT">Vermont</option>
-                        <option value="VA">Virginia</option>
-                        <option value="WA">Washington</option>
-                        <option value="WV">West Virginia</option>
-                        <option value="WI">Wisconsin</option>
-                        <option value="WY">Wyoming</option>
-                      </Form.Select>) : (<Form.Control 
-                        type="text" 
-                        readOnly={true}
-                        style={{ backgroundColor: '#f2f2f2' }} 
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                      />)}
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="zipcode">
-                      <Form.Label>Zipcode</Form.Label>
-                      <Form.Control 
-                        type="text"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                <h5 className="my-4">Contact Information</h5>
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="cell-phone">
-                      <Form.Label>Cell Phone</Form.Label>
-                      <Form.Control 
-                        type="text" 
-                        value={cellPhone}
-                        onChange={(e) => setCellPhone(e.target.value)}
-                        placeholder="xxx-xx-xxxx"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="work phone">
-                      <Form.Label>Work Phone</Form.Label>
-                      <Form.Control 
-                        type="text" 
-                        value={workPhone}
-                        onChange={(e) => setWorkPhone(e.target.value)}
-                        placeholder="xxx-xx-xxxx" 
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-
-                <h5 className="my-4">Employment</h5>
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="visa-title">
-                      <Form.Label>Visa Title</Form.Label>
-                      <Form.Control 
-                        type="text" 
-                        value={visaTitle}
-                        onChange={(e) => setVisaTitle(e.target.value)}
-                        placeholder="H1-B, L2, F1(CPT/OPT), H4, Other"
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="start-date">
-                      <Form.Label>Visa Start Date</Form.Label>
-                      <DatePicker
-                        showIcon
-                        selected={visaStartDate}
-                        onChange={(date) => {
-                          if (date <= visaEndDate) {
-                            setVisaStartDate(date);
-                          } else {
-                            alert("Please select a date earlier than the end date");
-                          }
-                        }}
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        closeOnScroll={true}
-                        monthsShown={2}
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="end-date">
-                      <Form.Label>Visa End Date</Form.Label>
-                      <DatePicker
-                        showIcon
-                        selected={visaEndDate}
-                        onChange={(date) => {
-                          if (date >= visaStartDate) {
-                            setVisaEndDate(date);
-                          } else {
-                            alert("Please select a date later than the start date");
-                          }
-                        }}
-                        readOnly={!(is_not_hr && isEdit)}
-                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                        closeOnScroll={true}
-                        monthsShown={2}
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-
-                <h5 className="my-4">Emergency Contact</h5>
-                {emergencies.map((emergency, index) => (
-                  <div key={index}>
-                    {index > 0 && <hr />}
-                    <Row>
-                      <Col className="mb-3">
-                        <Form.Group id="ref-first-name">
-                          <Form.Label>First Name {index + 1}</Form.Label>
-                          <Form.Control 
-                            required
-                            type="text" 
-                            readOnly={!(is_not_hr && isEdit)}
-                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                            value={emergency.firstName}
-                            onChange={(e) => {updateEmergencyFirstName(index, e.target.value); console.log(emergencies[index].firstName)}}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col className="mb-3">
-                        <Form.Group id="ref-last-name">
-                          <Form.Label>Last Name {index + 1}</Form.Label>
-                          <Form.Control 
-                            required
-                            type="text" 
-                            readOnly={!(is_not_hr && isEdit)}
-                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                            value={emergency.lastName}
-                            onChange={(e) => updateEmergencyLastName(index, e.target.value)}
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col className="mb-3">
-                        <Form.Group id="ref-middle-name">
-                          <Form.Label>Middle Name {index + 1} (Optional)</Form.Label>
-                          <Form.Control 
-                            type="text" 
-                            readOnly={!(is_not_hr && isEdit)}
-                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                            value={emergency.middleName}
-                            onChange={(e) => updateEmergencyMiddleName(index, e.target.value)}
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col className="mb-3">
-                        <Form.Group id="ref-phone-number">
-                          <Form.Label>Phone Number {index + 1} (Optional)</Form.Label>
-                          <Form.Control 
-                            required
-                            type="text" 
-                            readOnly={!(is_not_hr && isEdit)}
-                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                            value={emergency.phone}
-                            onChange={(e) => updateEmergencyPhone(index, e.target.value)}
-                            placeholder="xxx-xxx-xxxx" 
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col className="mb-3">
-                        <Form.Group id="ref-email">
-                          <Form.Label>Email {index + 1} (Optional)</Form.Label>
-                          <Form.Control 
-                            required
-                            type="text" 
-                            readOnly={!(is_not_hr && isEdit)}
-                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                            value={emergency.email}
-                            onChange={(e) => updateEmergencyEmail(index, e.target.value)}
-                            placeholder="prefix@mail.suffix" 
-                          />
-                        </Form.Group>
-                      </Col>
-                      <Col className="mb-3">
-                        <Form.Group id="ref-relationship">
-                          <Form.Label>Relationship</Form.Label>
-                          <Form.Control 
-                            type="text" 
-                            readOnly={!(is_not_hr && isEdit)}
-                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
-                            value={emergency.relationship}
-                            onChange={(e) => updateEmergencyRelationship(index, e.target.value)}
-                            placeholder="Sibling, parent, spouse, etc." 
-                          />
-                        </Form.Group>
-                      </Col>
-                    </Row>
-                    {is_not_hr && isEdit && index > 0 && <Button variant="danger" onClick={() => {removeEmergencyBlock(index); console.log(emergencies)}} className="mb-3">
-                      Remove Emergency Contact
-                    </Button>}
-
-                  </div>
-                ))}
-                {is_not_hr && isEdit && <Button variant="primary" onClick={addEmergencyBlock} className="mt-3">
-                  Add Emergency Contact
-                </Button>}
-
-              </Card.Body>
-            </Card>
-
-
-
-            <Table className="bg-white shadow-sm mb-4" striped bordered hover style={{ width : '80vw'}}>
-              <thead>
-                <tr>
-                  <th>File Type</th>
-                  <th>File Name</th>
-                  <th>Download</th>
-                  <th>Preview</th>
-                </tr>
-              </thead>
-              <tbody>
-                  <tr key={0}>
-                    <td>Driver License</td>
-                    <td>{DLFileName}</td>
-                    <td>
-                      <Button variant="primary" onClick={() => handleDownload(DLBase64, DLFileName)}>
-                        Download
-                      </Button>
-                    </td>
-                    <td>
-                      {DLFileName ? (
-                        <>
-                          <Button variant="info" onClick={() => setShowDLImage(true)}>
-                            Preview
-                          </Button>
-                          <Modal show={showDLImage} onHide={() => setShowDLImage(false)}>
+                        <Modal show={showImageModal} onHide={handleCloseImageModal}>
                           <Modal.Header closeButton>
-                            <Modal.Title>Driver License Image</Modal.Title>
+                            <Modal.Title>Avatar Settings</Modal.Title>
                           </Modal.Header>
                           <Modal.Body>
-                            <img src={DLBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                            {is_not_hr && isEdit && <div {...getRootProps1()} className="dropzone">
+                              <input {...getInputProps1()} />
+                              <p>Drop new image here, or click to select a file</p>
+                            </div>}
                           </Modal.Body>
-                          <Modal.Footer/>
+                          <Modal.Footer>
+                            {DLBase64 && <Dropdown>
+                              <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                                Options
+                              </Dropdown.Toggle>
+
+                              <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => setShowBigImage(true)}>View Large Image</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>}
+                            <Button variant="secondary" onClick={handleCloseImageModal}>
+                              Close
+                            </Button>
+                            <Modal show={showBigImage} onHide={() => setShowBigImage(false)}>
+                              <Modal.Header closeButton>
+                                <Modal.Title>Large Image</Modal.Title>
+                              </Modal.Header>
+                              <Modal.Body>
+                                <img src={avatarBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                              </Modal.Body>
+                              <Modal.Footer/>
+                            </Modal>
+                          </Modal.Footer>
                         </Modal>
-                      </>
-                      ) : (
-                        <span>Not supported</span>
-                      )}
-                    </td>
+                      </div>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="mb-3">
+                      <Form.Group id="first-name">
+                        <Form.Label>First Name</Form.Label>
+                        <Form.Control 
+                          required 
+                          type="text"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }}
+                          value={firstName} 
+                          onChange={(e) => setFirstName(e.target.value)} />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="last-name">
+                        <Form.Label>Last Name</Form.Label>
+                        <Form.Control 
+                          required 
+                          type="text"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)} 
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="middle-name">
+                        <Form.Label>Middle Name (option)</Form.Label>
+                        <Form.Control 
+                          type="text"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          value={middleName}
+                          onChange={(e) => setMiddleName(e.target.value)} 
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col className="mb-3">
+                      <Form.Group id="preferred-name">
+                        <Form.Label>Preferred Name (option)</Form.Label>
+                        <Form.Control 
+                          type="text"
+                          readOnly={!isEdit}
+                          style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
+                          value={preferredName}
+                          onChange={(e) => setPreferredName(e.target.value)} 
+                        />
+                      </Form.Group>
+                    </Col>
+
+                    <Col className="mb-3">
+                      {is_not_hr && isEdit ? (<Form.Group id="gender">
+                        <Form.Label>Gender</Form.Label>
+                        <Form.Select 
+                          id="gender-select" 
+                          disabled={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          defaultValue={gender}
+                          onChange={(e) => setGender(e.target.value)}
+                        >
+                          <option value=""></option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="transgender">Transgender</option>
+                          <option value="non-binary">Non-binary</option>
+                          <option value="other">Other</option>
+                          <option value="I wish not to disclose">I wish not to disclose</option>
+                        </Form.Select>
+                      </Form.Group>) : (<Form.Group id="gender">
+                        <Form.Label>Gender</Form.Label>
+                        <Form.Control 
+                          type="text"
+                          readOnly={true}
+                          style={{ backgroundColor:'#f2f2f2'}} 
+                          value={gender}
+                          onChange={(e) => setGender(e.target.value)}
+                        />
+                      </Form.Group>)}
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col className="mb-3">
+                      <Form.Group id="email">
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control 
+                          required 
+                          type="text"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          value={email} 
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="prefix@mail.suffix" />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="SSN">
+                        <Form.Label>SSN</Form.Label>
+                        <Form.Control 
+                          required 
+                          type="text"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          value={SSN}
+                          onChange={(e) => setSSN(e.target.value)} 
+                          placeholder="xxx-xx-xxxx" />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="birthday">
+                        <Form.Label>Date of Birth</Form.Label>
+                        <DatePicker
+                          showIcon
+                          selected={birthDate}
+                          onChange={(date) => {setBirthDate(date); console.log(birthDate)}}
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          closeOnScroll={true}
+                          monthsShown={2}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <h5 className="my-4">Address</h5>
+                  <Row>
+                    <Col className="mb-3">
+                      <Form.Group id="street">
+                        <Form.Label>Street</Form.Label>
+                        <Form.Control 
+                          required 
+                          type="text" 
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="apt">
+                        <Form.Label>Apt # (Option)</Form.Label>
+                        <Form.Control 
+                          type="text" 
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          value={apt}
+                          onChange={(e) => setApt(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col className="mb-3">
+                      <Form.Group id="city">
+                        <Form.Label>City</Form.Label>
+                        <Form.Control 
+                          required 
+                          type="text"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          value={city}
+                          onChange={(e) => setCity(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group className="mb-2">
+                        <Form.Label>State</Form.Label>
+                        {is_not_hr && isEdit ? (<Form.Select 
+                          id="state" 
+                          defaultValue={state}
+                          disabled={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          onChange={(e) => setState(e.target.value)}
+                        >
+                          <option value=""></option>
+                          <option value="AL">Alabama</option>
+                          <option value="AK">Alaska</option>
+                          <option value="AZ">Arizona</option>
+                          <option value="AR">Arkansas</option>
+                          <option value="CA">California</option>
+                          <option value="CO">Colorado</option>
+                          <option value="CT">Connecticut</option>
+                          <option value="DE">Delaware</option>
+                          <option value="DC">District Of Columbia</option>
+                          <option value="FL">Florida</option>
+                          <option value="GA">Georgia</option>
+                          <option value="HI">Hawaii</option>
+                          <option value="ID">Idaho</option>
+                          <option value="IL">Illinois</option>
+                          <option value="IN">Indiana</option>
+                          <option value="IA">Iowa</option>
+                          <option value="KS">Kansas</option>
+                          <option value="KY">Kentucky</option>
+                          <option value="LA">Louisiana</option>
+                          <option value="ME">Maine</option>
+                          <option value="MD">Maryland</option>
+                          <option value="MA">Massachusetts</option>
+                          <option value="MI">Michigan</option>
+                          <option value="MN">Minnesota</option>
+                          <option value="MS">Mississippi</option>
+                          <option value="MO">Missouri</option>
+                          <option value="MT">Montana</option>
+                          <option value="NE">Nebraska</option>
+                          <option value="NV">Nevada</option>
+                          <option value="NH">New Hampshire</option>
+                          <option value="NJ">New Jersey</option>
+                          <option value="NM">New Mexico</option>
+                          <option value="NY">New York</option>
+                          <option value="NC">North Carolina</option>
+                          <option value="ND">North Dakota</option>
+                          <option value="OH">Ohio</option>
+                          <option value="OK">Oklahoma</option>
+                          <option value="OR">Oregon</option>
+                          <option value="PA">Pennsylvania</option>
+                          <option value="RI">Rhode Island</option>
+                          <option value="SC">South Carolina</option>
+                          <option value="SD">South Dakota</option>
+                          <option value="TN">Tennessee</option>
+                          <option value="TX">Texas</option>
+                          <option value="UT">Utah</option>
+                          <option value="VT">Vermont</option>
+                          <option value="VA">Virginia</option>
+                          <option value="WA">Washington</option>
+                          <option value="WV">West Virginia</option>
+                          <option value="WI">Wisconsin</option>
+                          <option value="WY">Wyoming</option>
+                        </Form.Select>) : (<Form.Control 
+                          type="text" 
+                          readOnly={true}
+                          style={{ backgroundColor: '#f2f2f2' }} 
+                          value={state}
+                          onChange={(e) => setState(e.target.value)}
+                        />)}
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="zipcode">
+                        <Form.Label>Zipcode</Form.Label>
+                        <Form.Control 
+                          type="text"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          value={zipCode}
+                          onChange={(e) => setZipCode(e.target.value)}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+                  <h5 className="my-4">Contact Information</h5>
+                  <Row>
+                    <Col className="mb-3">
+                      <Form.Group id="cell-phone">
+                        <Form.Label>Cell Phone</Form.Label>
+                        <Form.Control 
+                          type="text" 
+                          value={cellPhone}
+                          onChange={(e) => setCellPhone(e.target.value)}
+                          placeholder="xxx-xx-xxxx"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="work phone">
+                        <Form.Label>Work Phone</Form.Label>
+                        <Form.Control 
+                          type="text" 
+                          value={workPhone}
+                          onChange={(e) => setWorkPhone(e.target.value)}
+                          placeholder="xxx-xx-xxxx" 
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+
+                  <h5 className="my-4">Employment</h5>
+                  <Row>
+                    <Col className="mb-3">
+                      <Form.Group id="visa-title">
+                        <Form.Label>Visa Title</Form.Label>
+                        <Form.Control 
+                          type="text" 
+                          value={visaTitle}
+                          onChange={(e) => setVisaTitle(e.target.value)}
+                          placeholder="H1-B, L2, F1(CPT/OPT), H4, Other"
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="start-date">
+                        <Form.Label>Visa Start Date</Form.Label>
+                        <DatePicker
+                          showIcon
+                          selected={visaStartDate}
+                          onChange={(date) => {
+                            if (date <= visaEndDate) {
+                              setVisaStartDate(date);
+                            } else {
+                              alert("Please select a date earlier than the end date");
+                            }
+                          }}
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          closeOnScroll={true}
+                          monthsShown={2}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col className="mb-3">
+                      <Form.Group id="end-date">
+                        <Form.Label>Visa End Date</Form.Label>
+                        <DatePicker
+                          showIcon
+                          selected={visaEndDate}
+                          onChange={(date) => {
+                            if (date >= visaStartDate) {
+                              setVisaEndDate(date);
+                            } else {
+                              alert("Please select a date later than the start date");
+                            }
+                          }}
+                          readOnly={!(is_not_hr && isEdit)}
+                          style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                          closeOnScroll={true}
+                          monthsShown={2}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+
+
+                  <h5 className="my-4">Emergency Contact</h5>
+                  {emergencies.map((emergency, index) => (
+                    <div key={index}>
+                      {index > 0 && <hr />}
+                      <Row>
+                        <Col className="mb-3">
+                          <Form.Group id="ref-first-name">
+                            <Form.Label>First Name {index + 1}</Form.Label>
+                            <Form.Control 
+                              required
+                              type="text" 
+                              readOnly={!(is_not_hr && isEdit)}
+                              style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                              value={emergency.firstName}
+                              onChange={(e) => {updateEmergencyFirstName(index, e.target.value); console.log(emergencies[index].firstName)}}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col className="mb-3">
+                          <Form.Group id="ref-last-name">
+                            <Form.Label>Last Name {index + 1}</Form.Label>
+                            <Form.Control 
+                              required
+                              type="text" 
+                              readOnly={!(is_not_hr && isEdit)}
+                              style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                              value={emergency.lastName}
+                              onChange={(e) => updateEmergencyLastName(index, e.target.value)}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col className="mb-3">
+                          <Form.Group id="ref-middle-name">
+                            <Form.Label>Middle Name {index + 1} (Optional)</Form.Label>
+                            <Form.Control 
+                              type="text" 
+                              readOnly={!(is_not_hr && isEdit)}
+                              style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                              value={emergency.middleName}
+                              onChange={(e) => updateEmergencyMiddleName(index, e.target.value)}
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col className="mb-3">
+                          <Form.Group id="ref-phone-number">
+                            <Form.Label>Phone Number {index + 1} (Optional)</Form.Label>
+                            <Form.Control 
+                              required
+                              type="text" 
+                              readOnly={!(is_not_hr && isEdit)}
+                              style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                              value={emergency.phone}
+                              onChange={(e) => updateEmergencyPhone(index, e.target.value)}
+                              placeholder="xxx-xxx-xxxx" 
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col className="mb-3">
+                          <Form.Group id="ref-email">
+                            <Form.Label>Email {index + 1} (Optional)</Form.Label>
+                            <Form.Control 
+                              required
+                              type="text" 
+                              readOnly={!(is_not_hr && isEdit)}
+                              style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                              value={emergency.email}
+                              onChange={(e) => updateEmergencyEmail(index, e.target.value)}
+                              placeholder="prefix@mail.suffix" 
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col className="mb-3">
+                          <Form.Group id="ref-relationship">
+                            <Form.Label>Relationship</Form.Label>
+                            <Form.Control 
+                              type="text" 
+                              readOnly={!(is_not_hr && isEdit)}
+                              style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                              value={emergency.relationship}
+                              onChange={(e) => updateEmergencyRelationship(index, e.target.value)}
+                              placeholder="Sibling, parent, spouse, etc." 
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                      {is_not_hr && isEdit && index > 0 && <Button variant="danger" onClick={() => {removeEmergencyBlock(index); console.log(emergencies)}} className="mb-3">
+                        Remove Emergency Contact
+                      </Button>}
+
+                    </div>
+                  ))}
+                  {is_not_hr && isEdit && <Button variant="primary" onClick={addEmergencyBlock} className="mt-3">
+                    Add Emergency Contact
+                  </Button>}
+
+                </Card.Body>
+              </Card>
+
+
+
+              <Table className="bg-white shadow-sm mb-4" striped bordered hover style={{ width : '80vw'}}>
+                <thead>
+                  <tr>
+                    <th>File Type</th>
+                    <th>File Name</th>
+                    <th>Download</th>
+                    <th>Preview</th>
                   </tr>
-                  <tr key={1}>
-                    <td>Work Authentication</td>
-                    <td>{authFileName}</td>
-                    <td>
-                      <Button variant="primary" onClick={() => handleDownload(authBase64, authFileName)}>
-                        Download
-                      </Button>
-                    </td>
-                    <td>
-                      {authFileName ? (
-                        <>
-                          <Button variant="info" onClick={() => setShowAuthImage(true)}>
-                            Preview
-                          </Button>
-                          <Modal show={showAuthImage} onHide={() => setShowAuthImage(false)}>
+                </thead>
+                <tbody>
+                    <tr key={0}>
+                      <td>Driver License</td>
+                      <td>{DLFileName}</td>
+                      <td>
+                        <Button variant="primary" onClick={() => handleDownload(DLBase64, DLFileName)}>
+                          Download
+                        </Button>
+                      </td>
+                      <td>
+                        {DLFileName ? (
+                          <>
+                            <Button variant="info" onClick={() => setShowDLImage(true)}>
+                              Preview
+                            </Button>
+                            <Modal show={showDLImage} onHide={() => setShowDLImage(false)}>
                             <Modal.Header closeButton>
-                              <Modal.Title>Work Authentication Image</Modal.Title>
+                              <Modal.Title>Driver License Image</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
-                              <img src={authBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                              <img src={DLBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
                             </Modal.Body>
                             <Modal.Footer/>
                           </Modal>
                         </>
-                      ) : (
-                        <span>Not supported</span>
-                      )}
-                    </td>
-                  </tr>
-              </tbody>
-            </Table>
-
-            {/* <Form className="mt-4 mb-4 mx-auto" style={{width: '30vw', backgroundColor : 'lightblue'}}>
-              <Form.Group controlId="fileUpload">
-                <Form.Label>Upload File</Form.Label>
-                <Form.Control type="file" accept=".pdf, .jpg, .jpeg, .docx" onChange={handleFileUpload} />
-              </Form.Group>
-            </Form>
-
-            <Modal show={showPreview} onHide={closeModal} size="lg">
-              <Modal.Header closeButton>
-                <Modal.Title>File Preview</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Worker workerUrl={`https://unpkg.com/pdfjs-dist@${require('pdfjs-dist/package.json').version}/build/pdf.worker.min.js`}>
-                  <Viewer fileUrl="/path/to/preview.pdf" />
-                </Worker> 
-                {['pdf', 'jpg', 'jpeg', 'docx'].includes(previewUrl.split('.').pop()) ? (
-                  <iframe src={previewUrl} title="File Preview" width="100%" height="500px"></iframe>
-                ) : (
-                  <span>Not supported</span>
-                )}
-              </Modal.Body>
-            </Modal> */}
-
-          </Col>
-        </Row>
-      </Container>
+                        ) : (
+                          <span>Not supported</span>
+                        )}
+                      </td>
+                    </tr>
+                    <tr key={1}>
+                      <td>Work Authentication</td>
+                      <td>{authFileName}</td>
+                      <td>
+                        <Button variant="primary" onClick={() => handleDownload(authBase64, authFileName)}>
+                          Download
+                        </Button>
+                      </td>
+                      <td>
+                        {authFileName ? (
+                          <>
+                            <Button variant="info" onClick={() => setShowAuthImage(true)}>
+                              Preview
+                            </Button>
+                            <Modal show={showAuthImage} onHide={() => setShowAuthImage(false)}>
+                              <Modal.Header closeButton>
+                                <Modal.Title>Work Authentication Image</Modal.Title>
+                              </Modal.Header>
+                              <Modal.Body>
+                                <img src={authBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                              </Modal.Body>
+                              <Modal.Footer/>
+                            </Modal>
+                          </>
+                        ) : (
+                          <span>Not supported</span>
+                        )}
+                      </td>
+                    </tr>
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+        </Container>
+      </div>)}
     </div>
   );
 };

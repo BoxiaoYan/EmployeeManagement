@@ -3,6 +3,7 @@ import apiCall from "./api";
 export const fetchProfileSummary = async (
   setProfile,
   setDisplayProfile,
+  setIsLoading,
   navigate
 ) => {
   try {
@@ -24,5 +25,7 @@ export const fetchProfileSummary = async (
         navigate("/error/server-error");
         break;
     }
+  } finally {
+    setIsLoading(false);
   }
 };

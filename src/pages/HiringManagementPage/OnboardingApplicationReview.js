@@ -3,6 +3,7 @@ import { Tabs } from "antd";
 
 import ReviewTable from "./ReviewTable";
 import styles from "./style.module.css";
+import Navbar from "../../components/Navbar";
 
 // HiringManagementPage
 export default function OnboardingApplicationReview({ search, setSearch }) {
@@ -42,7 +43,7 @@ export default function OnboardingApplicationReview({ search, setSearch }) {
 
   return (
     <>
-      {/** Navigation Bar */}
+      <Navbar />
       <Tabs
         className={styles.tab}
         activeKey={status}
