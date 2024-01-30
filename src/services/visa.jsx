@@ -26,6 +26,8 @@ export const fetchVisaStatus = async (
   } catch (error) {
     console.log(error.message);
     switch (error.message) {
+      case "Already approved":
+        break;
       case "Authentication failed":
         navigate("/error/not-authorized");
         break;

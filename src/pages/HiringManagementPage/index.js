@@ -30,11 +30,6 @@ export default function HiringManagementPage() {
     },
   ];
 
-  const handleSetTab = (key) => {
-    setStatus(key);
-    localStorage.setItem("hiringManagementTab1", key);
-  };
-
   useEffect(() => {
     // Check Authentication
     if (position !== "hr") {
@@ -47,6 +42,11 @@ export default function HiringManagementPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleSetTab = (key) => {
+    setStatus(key);
+    localStorage.setItem("hiringManagementTab1", key);
+  };
 
   return (
     <>

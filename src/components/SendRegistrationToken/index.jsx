@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input, Button, message } from "antd";
+import { Input, Button, Typography, message } from "antd";
 
 import { sendRegistrationLink } from "../../services/hr";
 import styles from "./style.module.css";
 
 export default function SendRegistrationToken({ refresh, setRefresh }) {
   const rootLink = "http://localhost:8081";
+  const { Title } = Typography;
 
   // Full name input variables
   const [fullName, setFullName] = useState("");
@@ -49,7 +50,7 @@ export default function SendRegistrationToken({ refresh, setRefresh }) {
 
   return (
     <div className={styles.page}>
-      <div className={styles.title}>Send Registration Token</div>
+      <Title className={styles.title}>Send Registration Token</Title>
       <div className={styles.inputContainer}>
         <div className={styles.inputText}>
           <div style={{ marginBottom: 10 }}>Employee Full Name</div>

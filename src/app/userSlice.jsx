@@ -60,6 +60,8 @@ const userSlice = createSlice({
       localStorage.removeItem("hiringManagementTab1");
       localStorage.removeItem("hiringManagementTab2");
       localStorage.removeItem("hiringManagementSearch");
+      // Remove data in visa management page
+      localStorage.removeItem("visaStatusSearch");
     },
   },
   extraReducers: (builder) => {

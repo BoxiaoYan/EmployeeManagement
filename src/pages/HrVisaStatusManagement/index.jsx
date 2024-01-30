@@ -1,122 +1,89 @@
 import { useState, useEffect } from "react";
-import { Typography, Button, Table, Input } from "antd";
+import { Typography, Tabs } from "antd";
 import { useSelector } from "react-redux";
-import { FaFilePdf } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-import SearchBar from "../../components/SearchBar";
-import PDF from "../../components/PDF";
+import { fetchEmployeeByVisa } from "../../services/hr";
 
-// import {
-//   fetchVisaStatus,
-//   approveDocument,
-//   rejectDocument,
-//   sendNotification,
-// } from "../../services/visa"; // 你需要编写这些服务函数
-
-const { Title, Text } = Typography;
-const { Search } = Input;
+import InProgressVisa from "./InProgressVisa";
+import AllVisa from "./AllVisa";
+import styles from "./style.module.css";
 
 export default function HrVisaStatusManagement() {
+  const { Title } = Typography;
+
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("InProgress");
+
   const [employees, setEmployees] = useState([]);
-  const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [feedback, setFeedback] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [fileChange, setFileChange] = useState(false);
 
-  const userID = useSelector((state) => state.user.user.id || null);
+  const position = useSelector((state) => state.user.user.position);
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   fetchVisaStatus(userID, setEmployees);
-  // }, [userID]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    // Check Authentication
+    if (position !== "hr") {
+      navigate("/error/not-authorized");
+    }
+    // Load the search result from localStorage
+    const storedTab = localStorage.getItem("visaStatusTab");
+    if (storedTab) {
+      setStatus(storedTab);
+    }
 
-  // const handleApprove = async () => {
-  //   if (selectedEmployee) {
-  //     setLoading(true);
-  //     const success = await approveDocument(selectedEmployee.documentId);
-  //     if (success) {
-  //       // logic to handle approved file
-  //     }
-  //     setLoading(false);
-  //   }
-  // };
+    fetchEmployeeByVisa(setEmployees, navigate);
+    fetchEmployeeByVisa(setEmployees, navigate);
 
-  // const handleReject = async () => {
-  //   if (selectedEmployee && feedback.trim() !== "") {
-  //     setLoading(true);
-  //     const success = await rejectDocument(
-  //       selectedEmployee.documentId,
-  //       feedback
-  //     );
-  //     if (success) {
-  //       // logic to handle rejected file
-  //     }
-  //     setLoading(false);
-  //   }
-  // };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fileChange]);
 
-  // const handleSendNotification = async () => {
-  //   if (selectedEmployee) {
-  //     setLoading(true);
-  //     const success = await sendNotification(selectedEmployee.userId);
-  //     if (success) {
-  //       // will send an email to the employee as a reminder
-  //       // for their next steps
-  //     }
-  //     setLoading(false);
-  //   }
-  // };
+  const refresh = () => {
+    setFileChange(!fileChange);
+  };
 
-  const columns = [
-    // Lists all employees who have not yet uploaded and been approved
-    // for all required OPT documents
+  const handleSetTab = (key) => {
+    setStatus(key);
+    localStorage.setItem("visaStatusTab", key);
+  };
+
+  const items = [
+    {
+      key: "InProgress",
+      label: "In Progress",
+      children: (
+        <InProgressVisa
+          employees={employees}
+          search={search}
+          setSearch={setSearch}
+          fileChange={fileChange}
+          refresh={refresh}
+        />
+      ),
+    },
+    {
+      key: "All",
+      label: "All",
+      children: (
+        <AllVisa employees={employees} search={search} setSearch={setSearch} />
+      ),
+    },
   ];
 
   return (
-    <div>
-      <Title>Visa Status Management</Title>
-      <Text italic>Please follow the document order one by one.</Text>
+    <>
+      <Title className={styles.title}>Visa Status Management</Title>
 
-      <SearchBar storageId="hiringManagementSearch"
-        search={search}
-        setSearch={setSearch}/>
-
-      <Table
-        dataSource={employees}
-        columns={columns}
-        rowKey={(record) => record.userId}
-        pagination={false}
-        onRow={(record) => ({
-          onClick: () => {
-            setSelectedEmployee(record);
-          },
-        })}
-      />
-
-      {selectedEmployee && (
-        <div>
-          {selectedEmployee.nextStep === "HR approval" && (
-            <div>
-              <Button type="primary" onClick={() => {}} loading={loading}>
-                Approve
-              </Button>
-              <Button type="danger" onClick={() => {}} loading={loading}>
-                Reject
-              </Button>
-              <Input
-                placeholder="Feedback (if rejected)"
-                value={feedback}
-                onChange={(e) => setFeedback(e.target.value)}
-                style={{ marginTop: 16 }}
-              />
-            </div>
-          )}
-          {selectedEmployee.nextStep === "Send notification" && (
-            <Button type="primary" onClick={() => {}} loading={loading}>
-              Send Notification
-            </Button>
-          )}
-        </div>
-      )}
-    </div>
+      <div className={styles.tab}>
+        <Tabs
+          activeKey={status}
+          defaultActiveKey="Registration Token"
+          items={items}
+          size="large"
+          onChange={handleSetTab}
+        />
+      </div>
+    </>
   );
 }

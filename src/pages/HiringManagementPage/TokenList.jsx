@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table, Divider } from "antd";
+import { Table, Divider, Typography } from "antd";
 import { pageTableColumns } from "./dataFormat";
 import { fetchEmployeeByStatus } from "../../services/hr";
 
@@ -9,6 +9,7 @@ import SendRegistrationToken from "../../components/SendRegistrationToken";
 import styles from "./style.module.css";
 
 export default function TokenList({ search, setSearch }) {
+  const { Title } = Typography;
   const [refresh, setRefresh] = useState(false);
   const [employees, setEmployees] = useState([]);
   const [displayEmployees, setDisplayEmployees] = useState([]);
@@ -41,9 +42,9 @@ export default function TokenList({ search, setSearch }) {
 
       <Divider style={{ color: "black" }} />
 
-      <div className={styles.title}>Registration Token History</div>
+      <Title className={styles.title}>Registration Token History</Title>
       <SearchBar
-        storageId="hiringManagementSearch"
+        searchId="hiringManagementSearch"
         search={search}
         setSearch={setSearch}
       />

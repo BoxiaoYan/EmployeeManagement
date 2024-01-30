@@ -37,6 +37,56 @@ export const fetchEmployeeByStatus = async (
   }
 };
 
+export const fetchEmployeeByVisa = async (
+  setEmployees,
+  navigate
+) => {
+  try {
+    const response = await apiCall({
+      url: "/api/employees_visa_status",
+      method: "GET",
+    });
+    setEmployees(response.visaStatus);
+  } catch (error) {
+    switch (error.message) {
+      case "Authentication failed":
+        navigate("/error/not-authorized");
+        break;
+      case "Token Expired":
+        navigate("/error/session-expired");
+        break;
+      default:
+        navigate("/error/server-error");
+        break;
+    }
+  }
+};
+
+export const reviewVisaFile = async (
+  data,
+  navigate
+) => {
+  try {
+    await apiCall({
+      url: "/api/review_visa_file",
+      method: "POST",
+      data
+    });
+  } catch (error) {
+    switch (error.message) {
+      case "Authentication failed":
+        navigate("/error/not-authorized");
+        break;
+      case "Token Expired":
+        navigate("/error/session-expired");
+        break;
+      default:
+        navigate("/error/server-error");
+        break;
+    }
+  }
+};
+
 export const sendRegistrationLink = async (
   data,
   message,

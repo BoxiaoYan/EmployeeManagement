@@ -1,0 +1,64 @@
+.title {
+  width: 95%;
+  margin: auto;
+  margin-top: 2%;
+}
+
+.tab {
+  width: 95%;
+  min-width: 80vh;
+  margin: auto;
+}
+
+.text {
+  width: 95%;
+  margin: auto;
+  font-size: medium;
+  font-weight: 500;
+}
+
+.employeeTable {
+  width: 95%;
+  margin: auto;
+  margin-top: 1%;
+  margin-bottom: 10%;
+  border: 1px solid lightgray;
+}
+
+.review {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 2%;
+  padding-right: 2%;
+}
+
+.feedback {
+  display: flex;
+  flex-direction: column;
+  padding-left: 2%;
+  padding-right: 2%;
+  margin-top: 2%;
+}
+
+.input {
+  display: flex;
+  justify-content: flex-start;
+  width: 50%;
+}
+
+.reviewButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.rejectButtonContainer {
+  display: flex;
+  margin-top: 2%;
+  gap: 20px;
+}
+
+.button {
+  width: 150px;
+}
+
