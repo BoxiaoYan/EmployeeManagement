@@ -3,9 +3,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Layout from "./components/Layout";
 import EmployeeProfileSummary from "./pages/EmployeeProfileSummary";
-import HiringManagementPage from "./pages/HiringManagementPage";
-import VisaStatusManagement from "./pages/VisaStatusManagement";
 import HrVisaStatusManagement from "./pages/HrVisaStatusManagement";
+import HiringManagementPage from "./pages/HiringManagementPage";
+
+import OnboardingApplication from "./pages/OnboardingApplication";
+import VisaStatusManagement from "./pages/VisaStatusManagement";
 
 import NotFound from "./pages/ErrorPages/NotFound";
 import NotAuthorized from "./pages/ErrorPages/NotAuthorized";
@@ -25,7 +27,7 @@ function App() {
           {/* Employee pages */}
           <Route
             path="/onboarding-application"
-            element={<>onboarding application</>}
+            element={<OnboardingApplication />}
           />
           <Route path="/personal-profile" element={<>personal application</>} />
           <Route path="/visa-status" element={<VisaStatusManagement />} />

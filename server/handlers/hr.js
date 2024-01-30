@@ -54,6 +54,31 @@ exports.generateRegLink = async function (req, res, next) {
   }
 };
 
+exports.setEmployeeStatus = async function (req, res, next) {
+  try {
+    const { employee_id, newStatus, reason } = req.body;
+    const user = await db.User.findById(employee_id);
+    const profile = await db.Profile.findOne({ user: employee_id });
+    if (!user) {
+      return next({ status: 400, message: "User not found" });
+    }
+    if (!profile) {
+      return next({ status: 400, message: "Profile not found" });
+    }
+
+    user.appStatus = newStatus;
+    await user.save();
+
+    profile.appStatus = newStatus;
+    profile.rejectReason = reason;
+    await profile.save();
+
+    res.status(200).json({ message: "User status updated" });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 exports.getEmployeeVisaStatus = async (req, res, next) => {
   try {
     const userVisa = await db.Visa.find();
