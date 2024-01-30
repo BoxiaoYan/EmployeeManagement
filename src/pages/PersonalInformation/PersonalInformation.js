@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment-timezone";
 import Datetime from "react-datetime";
 import { useDropzone } from 'react-dropzone';
+import DatePicker from "react-datepicker";
+import axios from "axios";
 
 import "./PersonalInformation.css";
 
@@ -12,12 +14,31 @@ import { Col, Row, Card, Form, Button, InputGroup, Container, Table,  Modal, Ima
 
 
 import { CalendarIcon } from '@chakra-ui/icons'
+import { set } from "mongoose";
 
 
-function PersonalInformation() {
+function PersonalInformation( {user_id} ) {
+  const [isLoading, setIsLoading] = useState(false);
+
   const [showImageModal, setShowImageModal] = useState(false);
   const [showBigImage, setShowBigImage] = useState(false);
-  const [avatarImage, setAvatarImage] = useState(null);
+  const [avatarBase64, setAvatarBase64] = useState('');
+  const [avatarType, setAvatarType] = useState('');
+  const [avatarFileName, setAvatarFileName] = useState('');
+
+  const [showDLImage, setShowDLImage] = useState(false);
+  const [DLBase64, setDLBase64] = useState('');
+  const [DLType, setDLType] = useState('');
+  const [DLFileName, setDLFileName] = useState('');
+
+  const [showAuthImage, setShowAuthImage] = useState(false);
+  const [authBase64, setAuthBase64] = useState('');
+  const [authType, setAuthType] = useState('');
+  const [authFileName, setAuthFileName] = useState('');
+
+  const [F1Base64, setF1Base64] = useState('');
+  const [F1Type, setF1Type] = useState('');
+  const [F1FileName, setF1FileName] = useState('');
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -26,7 +47,7 @@ function PersonalInformation() {
   const [gender, setGender] = useState("");
   const [email, setEmail] = useState("");
   const [SSN, setSSN] = useState("");
-  const [birthDate, setBirthDate] = useState("");
+  const [birthDate, setBirthDate] = useState(new Date(2000, 0, 1));
 
   const [address, setAddress] = useState("");
   const [apt, setApt] = useState("");
@@ -38,98 +59,373 @@ function PersonalInformation() {
   const [workPhone, setWorkPhone] = useState("");
 
   const [visaTitle, setVisaTitle] = useState("");
-  const [visaStartDate, setVisaStartDate] = useState("");
-  const [visaEndDate, setVisaEndDate] = useState("");
+  const [visaStartDate, setVisaStartDate] = useState(new Date(2000, 0, 1));
+  const [visaEndDate, setVisaEndDate] = useState(new Date(2000, 0, 1));
 
-  const [emerFirstName, setEmerFirstName] = useState("");
-  const [emerLastName, setEmerLastName] = useState("");
-  const [emerMiddleName, setEmerMiddleName] = useState("");
-  const [emerPhone, setEmerPhone] = useState("");
-  const [emerEmail, setEmerEmail] = useState("");
-  const [relationship, setRelationship] = useState("");
+  const [refFirstName, setRefFirstName] = useState("");
+  const [refLastName, setRefLastName] = useState("");
+  const [refMiddleName, setRefMiddleName] = useState("");
+  const [refPhone, setRefPhone] = useState("");
+  const [refEmail, setRefEmail] = useState("");
+  const [refRelationship, setRefRelationship] = useState("");
+
+  const [emergencies, setEmergencies] = useState([{ firstName: '', lastName: '', middleName: '', phone: '', email: '', relationship: '' }]);
 
   const [isEdit, setIsEdit] = useState(false);
 
-  const [showPreview, setShowPreview] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState('');
-  const [uploadedFile, setUploadedFile] = useState(null);
+  const user_token = localStorage.getItem("token");
+  const is_not_hr = localStorage.getItem("position") !== "hr";
+  const user_email = localStorage.getItem("email");
 
-  const files = [
-    { name: 'File1', extension: 'pdf', url: '../../assets/file1.pdf' },
-    { name: 'File2', extension: 'jpg', url: '../../assets/file2.jpg' },
-    { name: 'File3', extension: 'docx', url: '../../assets/file3.docx' },
-  ];
+
+
+
+
+  const addEmergencyBlock = () => {
+    setEmergencies([...emergencies, { firstName: '', lastName: '', middleName: '', phone: '', email: '', relationship: '' }]);
+  };
+  const removeEmergencyBlock = (index) => {
+    if (emergencies.length > 1) {
+      const updatedEmergencies = [...emergencies];
+      updatedEmergencies.splice(index, 1);
+      setEmergencies(updatedEmergencies);
+    }
+  };
+
+  const updateEmergencyFirstName = (index, newFirstName) => {
+    setEmergencies(prevEmergencies => {
+      const newEmergencies = [...prevEmergencies];
+      newEmergencies[index] = {
+        ...newEmergencies[index],
+        firstName: newFirstName,
+      };
+      return newEmergencies;
+    });
+  };
+
+  const updateEmergencyLastName = (index, newLastName) => {
+    setEmergencies(prevEmergencies => {
+      const newEmergencies = [...prevEmergencies];
+      newEmergencies[index] = {
+        ...newEmergencies[index],
+        lastName: newLastName,
+      };
+      return newEmergencies;
+    });
+  };
+  
+  const updateEmergencyMiddleName = (index, newMiddleName) => {
+    setEmergencies(prevEmergencies => {
+      const newEmergencies = [...prevEmergencies];
+      newEmergencies[index] = {
+        ...newEmergencies[index],
+        middleName: newMiddleName,
+      };
+      return newEmergencies;
+    });
+  };
+  
+  const updateEmergencyPhone = (index, newPhone) => {
+    setEmergencies(prevEmergencies => {
+      const newEmergencies = [...prevEmergencies];
+      newEmergencies[index] = {
+        ...newEmergencies[index],
+        phone: newPhone,
+      };
+      return newEmergencies;
+    });
+  };
+  
+  const updateEmergencyEmail = (index, newEmail) => {
+    setEmergencies(prevEmergencies => {
+      const newEmergencies = [...prevEmergencies];
+      newEmergencies[index] = {
+        ...newEmergencies[index],
+        email: newEmail,
+      };
+      return newEmergencies;
+    });
+  };
+  
+  const updateEmergencyRelationship = (index, newRelationship) => {
+    setEmergencies(prevEmergencies => {
+      const newEmergencies = [...prevEmergencies];
+      newEmergencies[index] = {
+        ...newEmergencies[index],
+        relationship: newRelationship,
+      };
+      return newEmergencies;
+    });
+  };
+
+
+
+
+
 
   const handleShowImageModal = () => setShowImageModal(true);
   const handleCloseImageModal = () => setShowImageModal(false);
 
-  const onDrop = (acceptedFiles) => {
+  const onImageDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
-      setAvatarImage(URL.createObjectURL(file));
-      handleCloseImageModal();
+      if (file.size / 1024 / 1024 >= 3) {
+        console.log('Image must smaller than 3MB!');
+        alert('Image must smaller than 3MB!');
+      } else {
+        console.log("Preloaded file: ", file);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          console.log('Base64:', reader.result);
+          setAvatarBase64(reader.result);
+          console.log('type:', file.type);
+          setAvatarType(file.type);
+          console.log('name:', file.name);
+          setAvatarFileName(file.name);
+        }
+        reader.onerror = () => {
+          console.log("Error:", reader.error);
+        }
+        reader.onabort = () => {
+          console.log('file reading was aborted');
+        }
+        handleCloseImageModal();
+        console.log('Uploaded file:', file);
+      }
+      
     } else {
       alert('Invalid file format. Please upload a JPG/JPEG image.');
     }
   };
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'image/jpeg, image/jpg' });
+  const { getRootProps : getRootProps1, getInputProps: getInputProps1 } = useDropzone({ 
+    onDrop: onImageDrop, 
+    accept: 'image/jpeg, image/jpg',
+    multiple: false, 
+    maxSize: 3 * 1024 * 1024,  
+  });
 
-  const openLargeImage = () => {
-    setShowBigImage(true);                     
-  };
-
-
-  const handleDownload = (url) => {
-    // 创建一个隐藏的<a>标签
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    document.body.appendChild(link);
-
-    // 设置<a>标签的href属性为文件的URL
-    link.href = url;
-
-    // 设置<a>标签的download属性为文件名（你可以根据需要修改文件名）
-    link.download = 'downloaded_file';
-
-    // 模拟点击<a>标签，触发下载
-    link.click();
-
-    // 移除<a>标签
-    document.body.removeChild(link);
-
+  
+  
+  const handleDownload = (url, fileName) => {
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = fileName;
+    // 触发点击事件
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    // 移除下载链接
+    document.body.removeChild(downloadLink);
     console.log('Downloading file:', url);
   };
 
-  const handlePreview = (url) => {
-    setPreviewUrl(url);
-    setShowPreview(true);
-    // window.open(url, '_blank');
-  };
 
-  const closeModal = () => {
-    setPreviewUrl('');
-    setShowPreview(false);
-  };
+  const checkBeforeSubmit = () => {
+    if (firstName.trim() === "") {
+      alert("Please enter your first name");
+      return;
+    } else if (lastName.trim() === "") {
+      alert("Please enter your last name");
+      return;
+    } else if (gender === "") {
+      alert("Please enter the gender");
+      return;
+    } else if (SSN.trim() === "" || /^\d{3}-\d{2}-\d{4}$/.test(SSN) === false){
+      alert("Please enter your SSN in the correct format");
+      return;
+    } else if (zipCode.trim() === "" || /^\d{5}$/.test(zipCode) === false) {
+      alert("Please enter your zipcode in the correct format");
+      return;
+    }
 
-
-  const handleFileUpload = (event) => {
-    const uploadedFile = event.target.files[0];
-
-    if (uploadedFile) {
-      // Check file extension
-      const allowedExtensions = ['pdf', 'jpg', 'jpeg', 'docx'];
-      const fileExtension = uploadedFile.name.split('.').pop().toLowerCase();
-
-      if (allowedExtensions.includes(fileExtension)) {
-        // Process the uploaded file (you can upload it to the server or handle it as needed)
-        console.log('Uploaded file:', uploadedFile);
-        setUploadedFile(uploadedFile);
-      } else {
-        alert('Invalid file type. Allowed types: pdf, jpg, jpeg, docx');
+    emergencies.forEach((emergency, index) => {
+      if (emergency.firstName.trim() === "") {
+        alert(`Please enter the first name of the emergency contact ${index + 1}`);
+        return;
+      } else if (emergency.lastName.trim() === "") {
+        alert(`Please enter the last name of the emergency contact ${index + 1}`);
+        return;
+      } else if (emergency.relationship.trim() === "") {
+        alert(`Please enter the relationship of the emergency contact ${index + 1}`);
+        return;
       }
+    });
+  }
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    checkBeforeSubmit();
+
+    const profile = {
+      name: {
+        firstName: firstName,
+        lastName: lastName,
+        middleName: middleName,
+        preferredName: preferredName,
+      },
+      picture: {
+        data: avatarBase64,
+        contentType: avatarType,
+        fileName: avatarFileName,
+      },
+      email: user_email,
+      personalInfo: {
+        ssn: SSN,
+        birthday: birthDate,
+        gender: gender
+      },
+      address: {
+        street: address,
+        apt: apt,
+        city: city,
+        state: state,
+        zip: zipCode,
+      },
+      phone: {
+        cellPhone: cellPhone,
+        workPhone: workPhone,
+      },
+      employment: {
+        visa: visaTitle,
+        startDate: visaStartDate,
+        endDate: visaEndDate
+      },
+      reference: {
+        firstName: refFirstName,
+        lastName: refLastName,
+        middleName: refMiddleName,
+        phone: refPhone,
+        email: refEmail,
+        relationship: refRelationship,
+      },
+      emergencyContacts: emergencies,
+      documents: [
+        {
+          data: DLBase64,
+          contentType: DLType,
+          fileName: DLFileName,
+        },
+        {
+          data: authBase64,
+          contentType: authType,
+          fileName: authFileName,
+        },
+        {
+          data: F1Base64,
+          contentType: F1Type,
+          fileName: F1FileName,
+        }
+      ],
+      appStatus: "Approved"
+    };
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/save_profile`, {profile},
+        {
+          headers: {
+            "Content-Type": 'multipart/form-data',
+            Authorization: `Bearer ${user_token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Success in submitting the profile:", response.data.message);
+        alert("Your profile has been saved successfully!");
+      } else {
+        console.log("Fail in submitting the profile:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error for submitting the profile:", error.message);
     }
   };
+
+  const fetchProfile = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/profile/${user_id}`,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            // ????????????????
+            Authorization: `Bearer ${user_token}`,
+          },
+        }
+      );
+      if (response.data.status === 200) {
+        const profile = response.data.profile;
+
+        setFirstName(profile.name.firstName);
+        setLastName(profile.name.lastName);
+        setMiddleName(profile.name.middleName);
+        setPreferredName(profile.name.preferredName);
+        setGender(profile.personalInfo.gender);
+        setSSN(profile.personalInfo.ssn);
+        setBirthDate(new Date(profile.personalInfo.birthday));
+
+        setAddress(profile.address.street);
+        setApt(profile.address.apt);
+        setCity(profile.address.city);
+        setState(profile.address.state);
+        setZipCode(profile.address.zip);
+
+        setCellPhone(profile.phone.cellPhone);
+        setWorkPhone(profile.phone.workPhone);
+
+        setVisaTitle(profile.employment.visa);
+        setVisaStartDate(new Date(profile.employment.startDate));
+        setVisaEndDate(new Date(profile.employment.endDate));
+
+        setRefFirstName(profile.reference.firstName);
+        setRefLastName(profile.reference.lastName);
+        setRefMiddleName(profile.reference.middleName);
+        setRefPhone(profile.reference.phone);
+        setRefEmail(profile.reference.email);
+        setRefRelationship(profile.reference.relationship);
+
+        setEmergencies(profile.emergencyContacts);
+
+        setAvatarBase64(profile.picture.data);
+        setAvatarType(profile.picture.contentType);
+        setAvatarFileName(profile.picture.fileName);
+
+        setDLBase64(profile.documents[0].data);
+        setDLType(profile.documents[0].contentType);
+        setDLFileName(profile.documents[0].fileName);
+
+        setAuthBase64(profile.documents[1].data);
+        setAuthType(profile.documents[1].contentType);
+        setAuthFileName(profile.documents[1].fileName);
+
+        setF1Base64(profile.documents[2].data);
+        setF1Type(profile.documents[2].contentType);
+        setF1FileName(profile.documents[2].fileName);
+
+        console.log("Setting done.")
+
+      } else if (response.data.status === 201) {
+        console.log("The profile does not exist", response.data.message);
+      } else {
+        console.log("???");
+      }
+    } catch (err) {
+      console.error("Error fetching product", err.message);
+    }
+  }
+
+
+  useEffect(() => {
+    setIsLoading(true);
+    console.log("user_id is", user_id);
+
+    fetchProfile();
+
+    setIsLoading(false);
+  }, [])
+
 
   // const handleEmailChange = (e) => {
   //   const inputValue = e.target.value;
@@ -185,26 +481,26 @@ function PersonalInformation() {
       <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <Row>
           <Col xs={12} md={6} xl={10}>
-            {isEdit ? (<Row className="mt-4 mb-4">
+            {is_not_hr && (isEdit ? (<Row className="mt-4 mb-4">
               <Col>
-                <Button variant="primary">
+                <Button variant="primary" onClick={handleSave}>
                   Save
                 </Button>
               </Col>
               <Col>
-                <Button variant="danger" onClick={() => {setIsEdit(false)}}>
+                <Button variant="danger" onClick={() => {fetchProfile(); setIsEdit(false)}}>
                   Cancel
                 </Button>
               </Col>
             </Row>) : (
               <Row className="mt-4 mb-4">
               <Col>
-                <Button variant="primary" onClick={() => {setIsEdit(true)}}>
+                <Button variant="primary" onClick={() => setIsEdit(true)}>
                   Edit
                 </Button>
               </Col>
             </Row>
-            )}
+            ))}
 
             <Card className="bg-white shadow-sm mb-4" style={{ width : '80vw'}}>
               <Card.Body>
@@ -214,9 +510,9 @@ function PersonalInformation() {
                   </Col>
                   <Col className="mb-3">
                     <div>
-                      <div className="avatar-container" onClick={isEdit ? handleShowImageModal : null}>
-                        {avatarImage && <Image src={avatarImage} alt="Avatar" roundedCircle />}
-                        {!avatarImage && <div className="avatar-placeholder">Upload Avatar</div>}
+                      <div className="avatar-container" onClick={is_not_hr && isEdit ? handleShowImageModal : null}>
+                        {avatarBase64 && <Image src={avatarBase64} alt="Avatar" roundedCircle />}
+                        {!avatarBase64 && <div className="avatar-placeholder">Upload Avatar</div>}
                       </div>
 
                       <Modal show={showImageModal} onHide={handleCloseImageModal}>
@@ -224,21 +520,21 @@ function PersonalInformation() {
                           <Modal.Title>Avatar Settings</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                          <div {...getRootProps()} className="dropzone">
-                            <input {...getInputProps()} />
+                          <div {...getRootProps1()} className="dropzone">
+                            <input {...getInputProps1()} />
                             <p>Drop new image here, or click to select a file</p>
                           </div>
                         </Modal.Body>
                         <Modal.Footer>
-                          <Dropdown>
+                          {DLBase64 && <Dropdown>
                             <Dropdown.Toggle variant="primary" id="dropdown-basic">
                               Options
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                              <Dropdown.Item onClick={openLargeImage}>View Large Image</Dropdown.Item>
+                              <Dropdown.Item onClick={() => setShowBigImage(true)}>View Large Image</Dropdown.Item>
                             </Dropdown.Menu>
-                          </Dropdown>
+                          </Dropdown>}
                           <Button variant="secondary" onClick={handleCloseImageModal}>
                             Close
                           </Button>
@@ -247,7 +543,7 @@ function PersonalInformation() {
                               <Modal.Title>Large Image</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
-                              <img src={avatarImage} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                              <img src={avatarBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
                             </Modal.Body>
                             <Modal.Footer/>
                           </Modal>
@@ -263,8 +559,8 @@ function PersonalInformation() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }}
                         value={firstName} 
                         onChange={(e) => setFirstName(e.target.value)} />
                     </Form.Group>
@@ -275,8 +571,8 @@ function PersonalInformation() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)} 
                       />
@@ -287,8 +583,8 @@ function PersonalInformation() {
                       <Form.Label>Middle Name (option)</Form.Label>
                       <Form.Control 
                         type="text"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         value={middleName}
                         onChange={(e) => setMiddleName(e.target.value)} 
                       />
@@ -314,8 +610,8 @@ function PersonalInformation() {
                       <Form.Label>Gender</Form.Label>
                       <Form.Select 
                         id="gender-select" 
-                        disabled={!isEdit} 
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}
+                        disabled={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         defaultValue={gender}
                         onChange={(e) => setGender(e.target.value)}
                       >
@@ -325,7 +621,7 @@ function PersonalInformation() {
                         <option value="transgender">Transgender</option>
                         <option value="non-binary">Non-binary</option>
                         <option value="other">Other</option>
-                        <option value="not to disclose">Not to disclose</option>
+                        <option value="I wish not to disclose">I wish not to disclose</option>
                       </Form.Select>
                     </Form.Group>
                   </Col>
@@ -338,8 +634,8 @@ function PersonalInformation() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         value={email} 
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="prefix@mail.suffix" />
@@ -351,8 +647,8 @@ function PersonalInformation() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         value={SSN}
                         onChange={(e) => setSSN(e.target.value)} 
                         placeholder="xxx-xx-xxxx" />
@@ -361,18 +657,16 @@ function PersonalInformation() {
                   <Col className="mb-3">
                     <Form.Group id="birthday">
                       <Form.Label>Date of Birth</Form.Label>
-                        <InputGroup>
-                          <InputGroup.Text><CalendarIcon /></InputGroup.Text>
-                          <Form.Control 
-                            required 
-                            type="text"
-                            readOnly={!isEdit}
-                            style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
-                            value={birthDate}
-                            onChange={(e) => setBirthDate(e.target.value)} 
-                            placeholder="mm/dd/yyyy" />
-                        </InputGroup>
-                      </Form.Group>
+                      <DatePicker
+                        showIcon
+                        selected={birthDate}
+                        onChange={(date) => {setBirthDate(date); console.log(birthDate)}}
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                        closeOnScroll={true}
+                        monthsShown={2}
+                      />
+                    </Form.Group>
                   </Col>
                 </Row>
 
@@ -384,8 +678,8 @@ function PersonalInformation() {
                       <Form.Control 
                         required 
                         type="text" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
                       />
@@ -396,8 +690,8 @@ function PersonalInformation() {
                       <Form.Label>Apt # (Option)</Form.Label>
                       <Form.Control 
                         type="text" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         value={apt}
                         onChange={(e) => setApt(e.target.value)}
                       />
@@ -412,8 +706,8 @@ function PersonalInformation() {
                       <Form.Control 
                         required 
                         type="text"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                       />
@@ -425,8 +719,8 @@ function PersonalInformation() {
                       <Form.Select 
                         id="state" 
                         defaultValue={state}
-                        disabled={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
+                        disabled={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         onChange={(e) => setState(e.target.value)}
                       >
                         <option value=""></option>
@@ -489,8 +783,8 @@ function PersonalInformation() {
                       <Form.Label>Zipcode</Form.Label>
                       <Form.Control 
                         type="text"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                         value={zipCode}
                         onChange={(e) => setZipCode(e.target.value)}
                       />
@@ -508,8 +802,8 @@ function PersonalInformation() {
                         value={cellPhone}
                         onChange={(e) => setCellPhone(e.target.value)}
                         placeholder="xxx-xx-xxxx"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                       />
                     </Form.Group>
                   </Col>
@@ -521,8 +815,8 @@ function PersonalInformation() {
                         value={workPhone}
                         onChange={(e) => setWorkPhone(e.target.value)}
                         placeholder="xxx-xx-xxxx" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                       />
                     </Form.Group>
                   </Col>
@@ -539,192 +833,249 @@ function PersonalInformation() {
                         value={visaTitle}
                         onChange={(e) => setVisaTitle(e.target.value)}
                         placeholder="H1-B, L2, F1(CPT/OPT), H4, Other"
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
                       />
                     </Form.Group>
                   </Col>
                   <Col className="mb-3">
                     <Form.Group id="start-date">
                       <Form.Label>Visa Start Date</Form.Label>
-                        <InputGroup>
-                          <InputGroup.Text><CalendarIcon /></InputGroup.Text>
-                          <Form.Control 
-                            required 
-                            type="text"
-                            readOnly={!isEdit}
-                            style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
-                            value={visaStartDate}
-                            onChange={(e) => setVisaStartDate(e.target.value)} 
-                            placeholder="mm/dd/yyyy" />
-                        </InputGroup>
-                      </Form.Group>
+                      <DatePicker
+                        showIcon
+                        selected={visaStartDate}
+                        onChange={(date) => {
+                          if (date <= visaEndDate) {
+                            setVisaStartDate(date);
+                          } else {
+                            alert("Please select a date earlier than the end date");
+                          }
+                        }}
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                        closeOnScroll={true}
+                        monthsShown={2}
+                      />
+                    </Form.Group>
                   </Col>
                   <Col className="mb-3">
                     <Form.Group id="end-date">
                       <Form.Label>Visa End Date</Form.Label>
-                        <InputGroup>
-                          <InputGroup.Text><CalendarIcon /></InputGroup.Text>
-                          <Form.Control 
-                            required 
-                            type="text"
-                            readOnly={!isEdit}
-                            style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }}  
-                            value={visaEndDate}
-                            onChange={(e) => setVisaEndDate(e.target.value)} 
-                            placeholder="mm/dd/yyyy" />
-                        </InputGroup>
-                      </Form.Group>
+                      <DatePicker
+                        showIcon
+                        selected={visaEndDate}
+                        onChange={(date) => {
+                          if (date >= visaStartDate) {
+                            setVisaEndDate(date);
+                          } else {
+                            alert("Please select a date later than the start date");
+                          }
+                        }}
+                        readOnly={!(is_not_hr && isEdit)}
+                        style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                        closeOnScroll={true}
+                        monthsShown={2}
+                      />
+                    </Form.Group>
                   </Col>
                 </Row>
 
 
                 <h5 className="my-4">Emergency Contact</h5>
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="emer-first-name">
-                      <Form.Label>First Name</Form.Label>
-                      <Form.Control 
-                        required
-                        type="text" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
-                        value={emerFirstName}
-                        onChange={(e) => setEmerFirstName(e.target.value)}
-                        placeholder="" 
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="emer-last-name">
-                      <Form.Label>Last Name</Form.Label>
-                      <Form.Control 
-                        required
-                        type="text" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
-                        value={emerLastName}
-                        onChange={(e) => setEmerLastName(e.target.value)}
-                        placeholder="" 
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="emer-last-name">
-                      <Form.Label>Middle Name</Form.Label>
-                      <Form.Control 
-                        type="text" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
-                        value={emerMiddleName}
-                        onChange={(e) => setEmerMiddleName(e.target.value)}
-                        placeholder="" 
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col className="mb-3">
-                    <Form.Group id="emer-phone-number">
-                      <Form.Label>Phone Number</Form.Label>
-                      <Form.Control 
-                        required
-                        type="text" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
-                        value={emerPhone}
-                        onChange={(e) => setEmerPhone(e.target.value)}
-                        placeholder="xxx-xxx-xxxx" 
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="emer-email">
-                      <Form.Label>Email</Form.Label>
-                      <Form.Control 
-                        required
-                        type="text" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
-                        value={emerEmail}
-                        onChange={(e) => setEmerEmail(e.target.value)}
-                        placeholder="prefix@mail.suffix" 
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col className="mb-3">
-                    <Form.Group id="emer-relationship">
-                      <Form.Label>Relationship with whom</Form.Label>
-                      <Form.Control 
-                        type="text" 
-                        readOnly={!isEdit}
-                        style={{ backgroundColor: isEdit ? 'white' : '#f2f2f2' }} 
-                        value={relationship}
-                        onChange={(e) => setRelationship(e.target.value)}
-                        placeholder="Sibling, parent, spouse, etc." 
-                      />
-                    </Form.Group>
-                  </Col>
-                </Row>
+                {emergencies.map((emergency, index) => (
+                  <div key={index}>
+                    {index > 0 && <hr />}
+                    <Row>
+                      <Col className="mb-3">
+                        <Form.Group id="ref-first-name">
+                          <Form.Label>First Name {index + 1}</Form.Label>
+                          <Form.Control 
+                            required
+                            type="text" 
+                            readOnly={!(is_not_hr && isEdit)}
+                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                            value={emergency.firstName}
+                            onChange={(e) => {updateEmergencyFirstName(index, e.target.value); console.log(emergencies[index].firstName)}}
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col className="mb-3">
+                        <Form.Group id="ref-last-name">
+                          <Form.Label>Last Name {index + 1}</Form.Label>
+                          <Form.Control 
+                            required
+                            type="text" 
+                            readOnly={!(is_not_hr && isEdit)}
+                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                            value={emergency.lastName}
+                            onChange={(e) => updateEmergencyLastName(index, e.target.value)}
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col className="mb-3">
+                        <Form.Group id="ref-middle-name">
+                          <Form.Label>Middle Name {index + 1} (Optional)</Form.Label>
+                          <Form.Control 
+                            type="text" 
+                            readOnly={!(is_not_hr && isEdit)}
+                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                            value={emergency.middleName}
+                            onChange={(e) => updateEmergencyMiddleName(index, e.target.value)}
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col className="mb-3">
+                        <Form.Group id="ref-phone-number">
+                          <Form.Label>Phone Number {index + 1} (Optional)</Form.Label>
+                          <Form.Control 
+                            required
+                            type="text" 
+                            readOnly={!(is_not_hr && isEdit)}
+                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                            value={emergency.phone}
+                            onChange={(e) => updateEmergencyPhone(index, e.target.value)}
+                            placeholder="xxx-xxx-xxxx" 
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col className="mb-3">
+                        <Form.Group id="ref-email">
+                          <Form.Label>Email {index + 1} (Optional)</Form.Label>
+                          <Form.Control 
+                            required
+                            type="text" 
+                            readOnly={!(is_not_hr && isEdit)}
+                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                            value={emergency.email}
+                            onChange={(e) => updateEmergencyEmail(index, e.target.value)}
+                            placeholder="prefix@mail.suffix" 
+                          />
+                        </Form.Group>
+                      </Col>
+                      <Col className="mb-3">
+                        <Form.Group id="ref-relationship">
+                          <Form.Label>Relationship</Form.Label>
+                          <Form.Control 
+                            type="text" 
+                            readOnly={!(is_not_hr && isEdit)}
+                            style={{ backgroundColor: is_not_hr && isEdit ? 'white' : '#f2f2f2' }} 
+                            value={emergency.relationship}
+                            onChange={(e) => updateEmergencyRelationship(index, e.target.value)}
+                            placeholder="Sibling, parent, spouse, etc." 
+                          />
+                        </Form.Group>
+                      </Col>
+                    </Row>
+                    {is_not_hr && isEdit && index > 0 && <Button variant="danger" onClick={() => {removeEmergencyBlock(index); console.log(emergencies)}} className="mb-3">
+                      Remove Emergency Contact
+                    </Button>}
+
+                  </div>
+                ))}
+                {is_not_hr && isEdit && <Button variant="primary" onClick={addEmergencyBlock} className="mt-3">
+                  Add Emergency Contact
+                </Button>}
+
               </Card.Body>
             </Card>
+
+
 
             <Table className="bg-white shadow-sm mb-4" striped bordered hover style={{ width : '80vw'}}>
               <thead>
                 <tr>
+                  <th>File Type</th>
                   <th>File Name</th>
-                  <th>File Extension</th>
                   <th>Download</th>
                   <th>Preview</th>
                 </tr>
               </thead>
               <tbody>
-                {files.map((file, index) => (
-                  <tr key={index}>
-                    <td>{file.name}</td>
-                    <td>{file.extension}</td>
+                  <tr key={0}>
+                    <td>Driver License</td>
+                    <td>{DLFileName}</td>
                     <td>
-                      <Button variant="primary" onClick={() => handleDownload(file.url)}>
+                      <Button variant="primary" onClick={() => handleDownload(DLBase64, DLFileName)}>
                         Download
                       </Button>
                     </td>
                     <td>
-                      {['pdf', 'jpg', 'jpeg', 'docx'].includes(file.extension) ? (
-                        <Button variant="info" onClick={() => handlePreview(file.url)}>
-                          Preview
-                        </Button>
+                      {['jpg', 'jpeg'].includes(DLType) ? (
+                        <>
+                          <Button variant="info" onClick={() => setShowDLImage(true)}>
+                            Preview
+                          </Button>
+                          <Modal show={showDLImage} onHide={() => setShowDLImage(false)}>
+                          <Modal.Header closeButton>
+                            <Modal.Title>Driver License Image</Modal.Title>
+                          </Modal.Header>
+                          <Modal.Body>
+                            <img src={DLBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                          </Modal.Body>
+                          <Modal.Footer/>
+                        </Modal>
+                      </>
                       ) : (
                         <span>Not supported</span>
                       )}
                     </td>
                   </tr>
-                ))}
+                  <tr key={1}>
+                    <td>Work Authentication</td>
+                    <td>{authFileName}</td>
+                    <td>
+                      <Button variant="primary" onClick={() => handleDownload(authBase64, authFileName)}>
+                        Download
+                      </Button>
+                    </td>
+                    <td>
+                      {['jpg', 'jpeg'].includes(authType) ? (
+                        <>
+                          <Button variant="info" onClick={() => setShowAuthImage(true)}>
+                            Preview
+                          </Button>
+                          <Modal show={showAuthImage} onHide={() => setShowAuthImage(false)}>
+                            <Modal.Header closeButton>
+                              <Modal.Title>Work Authentication Image</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                              <img src={authBase64} alt="Large Image" style={{ width: '100%', height: 'auto' }} />
+                            </Modal.Body>
+                            <Modal.Footer/>
+                          </Modal>
+                        </>
+                      ) : (
+                        <span>Not supported</span>
+                      )}
+                    </td>
+                  </tr>
               </tbody>
             </Table>
 
-            <Form className="mt-4 mb-4 mx-auto" style={{width: '30vw', backgroundColor : 'lightblue'}}>
+            {/* <Form className="mt-4 mb-4 mx-auto" style={{width: '30vw', backgroundColor : 'lightblue'}}>
               <Form.Group controlId="fileUpload">
                 <Form.Label>Upload File</Form.Label>
                 <Form.Control type="file" accept=".pdf, .jpg, .jpeg, .docx" onChange={handleFileUpload} />
               </Form.Group>
             </Form>
 
-            {/* Preview Modal */}
             <Modal show={showPreview} onHide={closeModal} size="lg">
               <Modal.Header closeButton>
                 <Modal.Title>File Preview</Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                {/* <Worker workerUrl={`https://unpkg.com/pdfjs-dist@${require('pdfjs-dist/package.json').version}/build/pdf.worker.min.js`}>
+                <Worker workerUrl={`https://unpkg.com/pdfjs-dist@${require('pdfjs-dist/package.json').version}/build/pdf.worker.min.js`}>
                   <Viewer fileUrl="/path/to/preview.pdf" />
-                </Worker> */}
+                </Worker> 
                 {['pdf', 'jpg', 'jpeg', 'docx'].includes(previewUrl.split('.').pop()) ? (
                   <iframe src={previewUrl} title="File Preview" width="100%" height="500px"></iframe>
                 ) : (
                   <span>Not supported</span>
                 )}
               </Modal.Body>
-            </Modal>
+            </Modal> */}
 
           </Col>
         </Row>

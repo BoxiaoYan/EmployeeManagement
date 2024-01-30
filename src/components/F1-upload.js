@@ -14,7 +14,7 @@ const [F1Base64, setF1Base64] = useState("");
 const [F1FileName, setF1FileName] = useState("");
 
 
-function F1_upload({onF1Drop, F1Base64, F1FileName, F1Type, step, handleDownload}) {
+function F1_upload({ onF1Drop, handleCloseF1Modal, handleDownload }) {
     return (
         <Col>                
             <Form className="mx-auto">

@@ -41,6 +41,7 @@ export default function TokenList({ search, setSearch }) {
 
       <Divider style={{ color: "black" }} />
 
+      <div className={styles.title}>Registration Token History</div>
       <SearchBar
         storageId="hiringManagementSearch"
         search={search}
@@ -51,7 +52,7 @@ export default function TokenList({ search, setSearch }) {
       </div>
       <div className={styles.table}>
         <Table
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize: 5 }}
           columns={pageTableColumns}
           dataSource={displayEmployees}
         />

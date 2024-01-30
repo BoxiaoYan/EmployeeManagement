@@ -4,32 +4,65 @@ import { faCheck, faCog, faHome, faSearch, faEllipsisH, faEye, faEdit, faTrashAl
 import { Col, Row, Form, Button, ButtonGroup, InputGroup, Dropdown, Card, Table, Nav, Pagination } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import "./HRInformation.css";
-import datas from "./dataFormat";
+
+import { useNavigate } from "react-router-dom";
+import { fetchProfileSummary } from "../../services/profiles";
+import { set } from "mongoose";
 
 function HRInformation() {
-    const totalDatas = datas.length;
+    const [search, setSearch] = useState("");
+    const [profile, setProfile] = useState([]);
+    const [displayProfile, setDisplayProfile] = useState([]);
+    const [totalDatas, setTotalDatas] = useState(0);
 
     const [itemsPerPage, setItemsPerPage] = useState(5);
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(totalDatas / itemsPerPage);
 
-    const [searchKeyword, setSearchKeyword] = useState('');
-    const [searchResults, setSearchResults] = useState(datas);
+    const navigate = useNavigate();
 
     const handlePageChange = (page) => {
       setCurrentPage(page);
     };
-
     const handleSearch = () => {
     };
 
+    useEffect(() => {
+      fetchProfileSummary(setProfile, setDisplayProfile, navigate);
+      setTotalDatas(displayProfile.length);
+    }, []);
+
+    useEffect(() => {
+      // Update displayed employee with search result
+      setDisplayProfile(
+        profile.filter((item) => {
+          const { firstName, lastName, preferredName } = item.name.name;
+          const fullName = firstName + " " + lastName;
+          const lowerCaseSearchTerm = search.toLowerCase();
+          return (
+            firstName.toLowerCase().includes(lowerCaseSearchTerm) ||
+            lastName.toLowerCase().includes(lowerCaseSearchTerm) ||
+            preferredName.toLowerCase().includes(lowerCaseSearchTerm) ||
+            fullName.toLowerCase().includes(lowerCaseSearchTerm)
+          );
+        })
+      );
+    }, [search, profile]);
+
+
+
+
     const TableRow = (props) => {
-        const { fullName, SSN, workAuth, phone, email } = props;
+        const fullName = props.name.name.firstName + " " + props.name.name.lastName;
+        const SSN = props.ssn;
+        const visa = props.visa;
+        const cellPhone = props.cellPhone;
+        const email = props.email;
     
         return (
           <tr>
             <td>
-              <Card.Link as={Link} to="/employee-personal-information" className="fw-normal">
+              <Card.Link as={Link} to="/personal-profile" className="fw-normal">
                 {fullName}
               </Card.Link>
             </td>
@@ -40,12 +73,12 @@ function HRInformation() {
             </td>
             <td>
               <span className="fw-normal">
-                {workAuth}
+                {visa}
               </span>
             </td>
             <td>
               <span className="fw-normal">
-                {phone}
+                {cellPhone}
               </span>
             </td>
             <td>
@@ -91,8 +124,8 @@ function HRInformation() {
                             <Form.Control
                               type="text"
                               placeholder="Search"
-                              value={searchKeyword}
-                              onChange={(e) => setSearchKeyword(e.target.value)}
+                              value={search}
+                              onChange={(e) => setSearch(e.target.value)}
                             />
                             <Button
                               variant="primary"
@@ -144,8 +177,8 @@ function HRInformation() {
                     </tr>
                   </thead>
                   <tbody>
-                    {datas.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((data) => (
-                      <TableRow key={`data-${data.fullName}`} {...data} />
+                    {displayProfile.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((item) => (
+                      <TableRow key={`profile-${item.name.id}`} {...item} />
                     ))}
                   </tbody>
                 </Table>
@@ -172,7 +205,7 @@ function HRInformation() {
                     </Pagination>
                   </Nav>
                   <small className="fw-bold">
-                    Showing <b>{itemsPerPage}</b> out of <b>{totalDatas}</b> entries
+                    Showing <b>{currentPage !== totalPages ? itemsPerPage : totalDatas % itemsPerPage}</b> out of <b>{totalDatas}</b> entries
                   </small>
                 </Card.Footer>
               </Card.Body>

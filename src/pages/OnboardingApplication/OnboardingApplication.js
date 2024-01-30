@@ -172,7 +172,7 @@ function OnboardingApplication() {
   const [step, setStep] = useState("UnSubmitted");
 
 
-  const user_email = useSelector((state) => state.user.email);
+  const user_email = useSelector((state) => state.user.user.email);
   const user_id = useSelector((state) => state.user.user.id);
   const user_token = localStorage.getItem("token");
   const user_position = localStorage.getItem("position");
@@ -222,12 +222,12 @@ function OnboardingApplication() {
         console.log('Uploaded file:', file);
       }
     } else {
-      alert('Invalid file format. Please upload a JPG/JPEG image or pdf.');
+      alert('Invalid file format. Please upload a JPG/JPEG image');
     }
   };
   const { getRootProps: getRootProps1, getInputProps: getInputProps1 } = useDropzone({ 
     onDrop: onImageDrop, 
-    accept: 'image/jpeg, image/jpg, application/pdf',
+    accept: 'image/jpeg, image/jpg',
     multiple: false, 
     maxSize: 3 * 1024 * 1024,  
   });
@@ -378,12 +378,14 @@ function OnboardingApplication() {
   
   const addEmergencyBlock = () => {
     setEmergencies([...emergencies, { firstName: '', lastName: '', middleName: '', phone: '', email: '', relationship: '' }]);
+    localStorage.setItem("emergencies", JSON.stringify(emergencies));
   };
   const removeEmergencyBlock = (index) => {
     if (emergencies.length > 1) {
       const updatedEmergencies = [...emergencies];
       updatedEmergencies.splice(index, 1);
       setEmergencies(updatedEmergencies);
+      localStorage.setItem("emergencies", JSON.stringify(emergencies));
     }
   };
 
@@ -396,6 +398,7 @@ function OnboardingApplication() {
       };
       return newEmergencies;
     });
+    localStorage.setItem("emergencies", JSON.stringify(emergencies));
   };
 
   const updateEmergencyLastName = (index, newLastName) => {
@@ -407,6 +410,7 @@ function OnboardingApplication() {
       };
       return newEmergencies;
     });
+    localStorage.setItem("emergencies", JSON.stringify(emergencies));
   };
   
   const updateEmergencyMiddleName = (index, newMiddleName) => {
@@ -418,6 +422,7 @@ function OnboardingApplication() {
       };
       return newEmergencies;
     });
+    localStorage.setItem("emergencies", JSON.stringify(emergencies));
   };
   
   const updateEmergencyPhone = (index, newPhone) => {
@@ -429,6 +434,7 @@ function OnboardingApplication() {
       };
       return newEmergencies;
     });
+    localStorage.setItem("emergencies", JSON.stringify(emergencies));
   };
   
   const updateEmergencyEmail = (index, newEmail) => {
@@ -440,6 +446,7 @@ function OnboardingApplication() {
       };
       return newEmergencies;
     });
+    localStorage.setItem("emergencies", JSON.stringify(emergencies));
   };
   
   const updateEmergencyRelationship = (index, newRelationship) => {
@@ -451,6 +458,7 @@ function OnboardingApplication() {
       };
       return newEmergencies;
     });
+    localStorage.setItem("emergencies", JSON.stringify(emergencies));
   };
 
   useEffect(() => {
@@ -502,8 +510,7 @@ function OnboardingApplication() {
 
     console.log(typeof user_email);
     console.log(refEmail);
-    console.log(emergencies[0].email);
-    console.log(emergencies[1].email);
+    console.log(emergencies[0]?.email);
     
 
     const profile = {
@@ -565,7 +572,8 @@ function OnboardingApplication() {
           contentType: F1Type,
           fileName: F1FileName,
         }
-      ]
+      ],
+      appStatus: "Pending"
     }
 
 
@@ -580,16 +588,21 @@ function OnboardingApplication() {
           },
         }
       );
+
       if (response.status === 201) {
         console.log("Success in submitting the profile:", response.data.message);
-        localStorage.setItem("userStatus", response.data.newStatus);
-        setStep(response.data.newStatus);
+        localStorage.setItem("userStatus", "Pending");
+        setStep("Pending");
         alert("Your application has been submitted successfully!");
       } else if (response.status === 200) {
-        console.log("Success in updating the profile:", response.data.message);
-        localStorage.setItem("userStatus", response.data.newStatus);
-        setStep(response.data.newStatus);
-        alert("Your application was updated successfully!");
+        if (localStorage.getItem("appStatus") === "Rejected") {
+          console.log("Success in resubmitting the profile:", response.data.message);
+          localStorage.setItem("userStatus", "Pending");
+          setStep("Pending");
+          alert("Your application was resubmitted successfully!");
+        } else {
+          alert("Your application was updated successfully!");
+        }
       } else {
         console.log("Fail in submitting the profile:", response.data.message);
       }
@@ -704,7 +717,7 @@ function OnboardingApplication() {
 
   const handleLogOut = () => {
     dispatch(logOutUser());
-    navigate("/signin");
+    navigate("/login");
   }
 
 
@@ -856,7 +869,7 @@ function OnboardingApplication() {
                         <option value="transgender">Transgender</option>
                         <option value="non-binary">Non-binary</option>
                         <option value="other">Other</option>
-                        <option value="not to disclose">I wish not to disclose</option>
+                        <option value="I wish not to disclose">I wish not to disclose</option>
                       </Form.Select>}
 
                       {step === "Pending" && <Form.Control 

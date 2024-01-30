@@ -84,6 +84,9 @@ const profileSchema = new mongoose.Schema({
       fileName: { type: String },
     },
   ],
+
+  // k. appStatus
+  appStatus: { type: String },
 });
 
 const Profile = mongoose.model("Profile", profileSchema);

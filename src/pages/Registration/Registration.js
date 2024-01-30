@@ -81,7 +81,7 @@ useEffect(() => {
       console.log('Submitted data:', data);
   
       // Dispatch registerUser action
-      dispatch(registerUser({ ...data, email })).then(() => navigate('/signin'));
+      dispatch(registerUser({ ...data, email })).then(() => navigate('/login'));
     } catch (error) {
       console.error('Error during verification:', error);
       // Handle the error if needed

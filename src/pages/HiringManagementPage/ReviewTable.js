@@ -38,6 +38,9 @@ export default function ReviewTable({ status, search, setSearch }) {
 
   return (
     <>
+      <div className={styles.title}>
+        Onboarding Application Review: {status}
+      </div>
       <SearchBar
         storageId="hiringManagementSearch"
         search={search}

@@ -96,31 +96,31 @@ exports.saveProfile = async function (req, res, next) {
       userProfile.reference = profile.reference || userProfile.reference;
       userProfile.emergencyContacts =
         profile.emergencyContacts || userProfile.emergencyContacts;
+      if (userProfile.appStatus !== "Approved") {
+        userProfile.appStatus = "Pending";
+      }
       await userProfile.save();
       // await db.Profile.updateOne({ user: userID }, profile);
       const user = await db.User.findById(userID);
-      // if (user.appStatus !== "Approved") {
-      //   user.appStatus = "Pending";
-      //   await user.save();
-      // }
+      if (user.appStatus !== "Approved") {
+        user.appStatus = "Pending";
+        await user.save();
+      }
       return res
         .status(200)
-        .json({ status: 200, message: "User profile is updated successfully", newStatus: user.appStatus });
+        .json({ status: 200, message: "User profile is resubmitted / updated successfully"});
     } else {
       // If user does not exist, create a new profile
       profile.user = userID;
       const newUserProfile = new db.Profile(profile);
       await newUserProfile.save();
       // Update application status
-      // const user = await db.User.findById(userID);
-      const user = await db.User.findOne({
-        id: userID
-      });
+      const user = await db.User.findById(userID);
       user.appStatus = "Pending";
       await user.save();
       return res
         .status(201)
-        .json({ status: 201, message: "User profile is saved successfully", newStatus: "Pending" });
+        .json({ status: 201, message: "User profile is submitted successfully", newStatus: "Pending" });
     }
   } catch (error) {
     if (error.message.includes("Profile validation failed")) {
@@ -171,6 +171,7 @@ exports.getProfileSummary = async function (req, res, next) {
       visa: profile.employment.visa,
       cellPhone: profile.phone.cellPhone,
       email: profile.email,
+      appStatus: profile.appStatus,
     }));
 
     return res.status(200).json({ profileSummary });

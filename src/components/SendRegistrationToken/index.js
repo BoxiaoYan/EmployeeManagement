@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Input, Button, Alert } from "antd";
+import { useNavigate } from "react-router-dom";
+import { Input, Button, message } from "antd";
 
 import { sendRegistrationLink } from "../../services/hr";
 import styles from "./style.module.css";
@@ -17,20 +18,18 @@ export default function SendRegistrationToken({ refresh, setRefresh }) {
   const [emailStatus, setEmailStatus] = useState("");
   const [emailError, setEmailError] = useState("");
 
-  // Error message
-  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
   const reFetch = () => setRefresh(!refresh);
 
   const handleSendRegLink = () => {
-    setErrorMsg("");
     if (fullName && email) {
       const data = { rootLink, email, fullName };
-      sendRegistrationLink(data, setErrorMsg, reFetch);
+      sendRegistrationLink(data, message, navigate, reFetch);
       setFullName("");
       setEmail("");
     } else {
-      setErrorMsg("Name or email is empty");
+      message.error("Name or email is empty");
     }
   };
 
@@ -42,7 +41,7 @@ export default function SendRegistrationToken({ refresh, setRefresh }) {
   };
 
   const handleEmailChange = (e) => {
-    const value = e.target.value.replace(/\s/g, '');
+    const value = e.target.value.replace(/\s/g, "");
     setEmail(value);
     setEmailStatus(value.trim() === "" ? "error" : "");
     setEmailError(value.trim() === "" ? "Email cannot be empty" : "");
@@ -51,18 +50,6 @@ export default function SendRegistrationToken({ refresh, setRefresh }) {
   return (
     <div className={styles.page}>
       <div className={styles.title}>Send Registration Token</div>
-      {errorMsg !== "" && (
-        <Alert
-          className={styles.error}
-          message={errorMsg}
-          type="error"
-          showIcon
-          closable
-          onClose={() => {
-            setErrorMsg("");
-          }}
-        />
-      )}
       <div className={styles.inputContainer}>
         <div className={styles.inputText}>
           <div style={{ marginBottom: 10 }}>Employee Full Name</div>
