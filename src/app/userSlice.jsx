@@ -61,6 +61,7 @@ const userSlice = createSlice({
       localStorage.removeItem("hiringManagementTab2");
       localStorage.removeItem("hiringManagementSearch");
       // Remove data in visa management page
+      localStorage.removeItem("visaStatusTab");
       localStorage.removeItem("visaStatusSearch");
     },
   },
