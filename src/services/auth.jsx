@@ -24,10 +24,11 @@ export const verifySession = async (navigate) => {
     });
     if (response.token) {
       localStorage.setItem("token", response.token);
+      const employee_id = localStorage.getItem("userID");
       navigate(
         response.position === "hr"
           ? "/hr-profile"
-          : "/visa-status-management"
+          : `/onboarding-application/${employee_id}`
       );
     }
   } catch (error) {}

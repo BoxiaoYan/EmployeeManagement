@@ -123,6 +123,16 @@ const userSlice = createSlice({
       localStorage.removeItem("hiringManagementTab1");
       localStorage.removeItem("hiringManagementTab2");
       localStorage.removeItem("hiringManagementSearch");
+      // Remove data in employee profile page
+      localStorage.removeItem("profileSummaryPage");
+      localStorage.removeItem("profileSummarySearch");
+      // Remove data in hiring management page
+      localStorage.removeItem("hiringManagementTab1");
+      localStorage.removeItem("hiringManagementTab2");
+      localStorage.removeItem("hiringManagementSearch");
+      // Remove data in visa management page
+      localStorage.removeItem("visaStatusTab");
+      localStorage.removeItem("visaStatusSearch");
     },
   },
   extraReducers: (builder) => {

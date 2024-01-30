@@ -55,10 +55,11 @@ export default function Login() {
       dispatch(setCurrentUserPosition(response.payload.position));
 
       const position = response.payload.position;
+      const employee_id = response.payload.id;
       navigate(
         position === "hr"
           ? "/hr-profile"
-          : "/onboarding-application"
+          : `/onboarding-application/${employee_id}`
       );
     } else {
       message.error("Invalid username password");

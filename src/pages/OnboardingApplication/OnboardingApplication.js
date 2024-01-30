@@ -18,8 +18,7 @@ import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
-import { CalendarIcon } from '@chakra-ui/icons';
-import { now, set } from "mongoose";
+import Navbar from "../../components/Navbar";
 
 
 
@@ -682,9 +681,6 @@ function OnboardingApplication() {
 
     console.log("employee_id is", employee_id);
 
-    // const now_status = localStorage.getItem("appStatus");
-    // setStep(now_status);
-    // console.log("userStatus is", now_status);
 
     console.log("userEmail is", user_email);
 
@@ -699,7 +695,7 @@ function OnboardingApplication() {
             },
           }
         );
-        if (response.data.status === 200) {
+        if (response.status === 200) {
           const profile = response.data.profile;
 
           setFirstName(profile.name.firstName);
@@ -753,9 +749,10 @@ function OnboardingApplication() {
           setStep(profile.appStatus);
           setRejectReason(profile.rejectReason);
 
+          console.log("employee app statu is", profile.appStatus);
           console.log("Setting done.")
 
-        } else if (response.data.status === 201) {
+        } else if (response.status === 201) {
           console.log("The profile does not exist", response.data.message);
         } else {
           console.log("???");
@@ -771,6 +768,10 @@ function OnboardingApplication() {
 
   }, []);
 
+  useEffect(() => {
+    console.log(step);
+  }, [firstName])
+
   const handleLogOut = () => {
     dispatch(logOutUser());
     navigate("/login");
@@ -780,7 +781,8 @@ function OnboardingApplication() {
 
   return (
     <div className="all-onboarding-application">
-      <Button onClick={handleLogOut}>Log out</Button>
+      {isLoading ? <h4>The page is loading.</h4>  : (<div className="onboarding-application">
+      <Navbar />
       {!is_hr && step === "Rejected" && 
         <>
           <div className="custom-textbox-rejected" onClick={() => {setShowFeedback(true)}}>
@@ -1694,8 +1696,8 @@ function OnboardingApplication() {
         </Row>
       </Container>
 
-      {/* Hr decision */}
-      {is_hr && <Row>
+
+      {is_hr && step === "Pending" && <Row>
         <Col>
           <Button variant="primary" onClick={() => handleApprove()}>Approve</Button>
         </Col>
@@ -1714,6 +1716,7 @@ function OnboardingApplication() {
           </Modal>
         </Col>
       </Row>}
+      </div>)}
     </div>
     );
   }

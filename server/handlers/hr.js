@@ -78,3 +78,53 @@ exports.setEmployeeStatus = async function (req, res, next) {
     return next(error);
   }
 }
+
+exports.getEmployeeVisaStatus = async (req, res, next) => {
+  try {
+    const userVisa = await db.Visa.find();
+    const visaStatus = await Promise.all(
+      userVisa.map(async (visa, index) => {
+        const userProfile = await db.Profile.findOne(
+          { user: visa.user },
+          "name employment"
+        );
+        if (!userProfile) {
+          return next({ status: 404, message: "None existing profile" });
+        }
+        return {
+          key: index,
+          name: userProfile.name,
+          employment: userProfile.employment,
+          visa: {
+            user: visa.user,
+            opt_receipt: visa.opt_receipt.status,
+            opt_ead: visa.opt_ead.status,
+            i983: visa.i983.status,
+            i20: visa.i20.status,
+          },
+        };
+      })
+    );
+    return res.status(200).json({ visaStatus });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.reviewVisaFile = async (req, res, next) => {
+  try {
+    const { userID, fileName, action, feedback } = req.body;
+    const userVisa = await db.Visa.findOne({ user: userID });
+    if (!userVisa) {
+      return next({ status: 404, message: "None existing visa" });
+    }
+    userVisa[fileName].status = action;
+    if (action === "Rejected") {
+      userVisa[fileName].feedback = feedback;
+    }
+    await userVisa.save();
+    return res.status(200).json({ message: "Visa status is updated." });
+  } catch (error) {
+    return next(error);
+  }
+};
