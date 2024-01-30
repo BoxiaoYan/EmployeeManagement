@@ -47,7 +47,9 @@ export default function PDF({ fileName, userID }) {
         // eslint-disable-next-line jsx-a11y/anchor-is-valid
         <a onClick={() => setShowPdf(!showPdf)}>
           <FaFilePdf />
-          <span>{`${fileName}.pdf`}</span>
+          <span
+            style={{ marginLeft: 2, fontSize: 15 }}
+          >{`${fileName}.pdf`}</span>
         </a>
       }
       <Button

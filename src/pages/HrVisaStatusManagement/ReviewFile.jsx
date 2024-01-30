@@ -14,6 +14,7 @@ export default function ReviewFile({ visa, refresh }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(visa.user)
     if (visa.opt_receipt === "Pending") {
       setFileName("opt_receipt");
     } else if (visa.opt_ead === "Pending") {
@@ -40,7 +41,7 @@ export default function ReviewFile({ visa, refresh }) {
   return (
     <>
       <div className={styles.review}>
-        <PDF fileName={fileName} userID={visa.user} />
+        {fileName && <PDF fileName={fileName} userID={visa.user} />}
         {!ifReject && (
           <div className={styles.reviewButtonContainer}>
             <Button

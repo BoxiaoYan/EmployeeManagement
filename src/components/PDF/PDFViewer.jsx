@@ -71,7 +71,7 @@ export default function PDFViewer({ pdf, onCancel, visible }) {
       maskClosable={false}
       onCancel={onCancel}
       open={visible}
-      width={"50%"}
+      width={"60%"}
       styles={{ height: 600, overflowY: "auto" }}
       footer={footer}
     >
