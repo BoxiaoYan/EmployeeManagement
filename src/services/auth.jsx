@@ -26,7 +26,7 @@ export const verifySession = async (navigate) => {
       localStorage.setItem("token", response.token);
       navigate(
         response.position === "hr"
-          ? "/hiring-management"
+          ? "/hr-profile"
           : "/visa-status-management"
       );
     }

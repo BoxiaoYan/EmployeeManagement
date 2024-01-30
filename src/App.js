@@ -50,8 +50,8 @@ function App() {
 
             <Route path="/hiring-management" element={<HiringManagementPage />} />
             <Route path="/summary" element={<EmployeeProfileSummary />} />
-            <Route path="/onboarding-application" element={<OnboardingApplication />} />
-            <Route path="/personal-profile" element={<PersonalInformation />} />
+            <Route path="/onboarding-application/:employee_id" element={<OnboardingApplication />} />
+            <Route path="/personal-profile/:employee_id" element={<PersonalInformation />} />
             <Route path="/employee-profile-summary"element={<EmployeeProfileSummary />}/>
             <Route path="/hr-profile" element={<HRInformation />} />
           </Routes>

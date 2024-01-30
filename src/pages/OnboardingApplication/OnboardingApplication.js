@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 
 import { useDropzone } from 'react-dropzone';
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from "axios";
 import DatePicker from "react-datepicker";
 
@@ -173,7 +173,7 @@ function OnboardingApplication() {
 
 
   const user_email = useSelector((state) => state.user.user.email);
-  const user_id = useSelector((state) => state.user.user.id);
+  const { employee_id } = useParams(); 
   const user_token = localStorage.getItem("token");
   const user_position = localStorage.getItem("position");
 
@@ -623,7 +623,7 @@ function OnboardingApplication() {
 
     setIsLoading(true);
 
-    console.log("user_id is", user_id);
+    console.log("employee_id is", employee_id);
 
     const now_status = localStorage.getItem("appStatus");
     setStep(now_status);
@@ -636,7 +636,7 @@ function OnboardingApplication() {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/profile/${user_id}`,
+          `http://localhost:8080/api/profile/${employee_id}`,
           {
             headers: {
               "Content-Type": "multipart/form-data",

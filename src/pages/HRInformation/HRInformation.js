@@ -4,6 +4,7 @@ import { faCheck, faCog, faHome, faSearch, faEllipsisH, faEye, faEdit, faTrashAl
 import { Col, Row, Form, Button, ButtonGroup, InputGroup, Dropdown, Card, Table, Nav, Pagination } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import "./HRInformation.css";
+import Navbar from "../../components/Navbar";
 
 import { useNavigate } from "react-router-dom";
 import { fetchProfileSummary } from "../../services/profiles";
@@ -58,11 +59,12 @@ function HRInformation() {
         const visa = props.visa;
         const cellPhone = props.cellPhone;
         const email = props.email;
-    
+        const user_id = props.name.id;
+
         return (
           <tr>
             <td>
-              <Card.Link as={Link} to="/personal-profile" className="fw-normal">
+              <Card.Link as={Link} to={`/personal-profile/${user_id}`} className="fw-normal">
                 {fullName}
               </Card.Link>
             </td>
@@ -113,8 +115,8 @@ function HRInformation() {
 
     return (
         <div className="all-HR-profiles">
-
             <div className="table-settings">
+                <Navbar/>
                 <Row style={{ marginLeft: '2rem', marginRight: '2rem'}} className="justify-content-between align-items-center mb-4 pt-4">
                     <Col xs={8} md={6} lg={3} xl={4}>
                         <InputGroup>
@@ -210,7 +212,6 @@ function HRInformation() {
                 </Card.Footer>
               </Card.Body>
             </Card>
-
         </div>
     );
 }

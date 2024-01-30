@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import moment from "moment-timezone";
-import Datetime from "react-datetime";
+
 import { useDropzone } from 'react-dropzone';
 import DatePicker from "react-datepicker";
+import { useParams } from 'react-router-dom';
+
 import axios from "axios";
+import Navbar from "../../components/Navbar";
 
 import "./PersonalInformation.css";
 
@@ -17,7 +19,7 @@ import { CalendarIcon } from '@chakra-ui/icons'
 import { set } from "mongoose";
 
 
-function PersonalInformation( {user_id} ) {
+function PersonalInformation() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [showImageModal, setShowImageModal] = useState(false);
@@ -76,6 +78,8 @@ function PersonalInformation( {user_id} ) {
   const user_token = localStorage.getItem("token");
   const is_not_hr = localStorage.getItem("position") !== "hr";
   const user_email = localStorage.getItem("email");
+
+  const { employee_id } = useParams();
 
 
 
@@ -346,7 +350,7 @@ function PersonalInformation( {user_id} ) {
   const fetchProfile = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/profile/${user_id}`,
+        `http://localhost:8080/api/profile/${employee_id}`,
         {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -419,7 +423,8 @@ function PersonalInformation( {user_id} ) {
 
   useEffect(() => {
     setIsLoading(true);
-    console.log("user_id is", user_id);
+
+    console.log("employee_id is", employee_id);
 
     fetchProfile();
 
@@ -478,6 +483,7 @@ function PersonalInformation( {user_id} ) {
 
   return (
     <div className="all-personal-profile">
+      <Navbar />
       <Container className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
         <Row>
           <Col xs={12} md={6} xl={10}>
@@ -510,7 +516,7 @@ function PersonalInformation( {user_id} ) {
                   </Col>
                   <Col className="mb-3">
                     <div>
-                      <div className="avatar-container" onClick={is_not_hr && isEdit ? handleShowImageModal : null}>
+                      <div className="avatar-container" onClick= {handleShowImageModal}>
                         {avatarBase64 && <Image src={avatarBase64} alt="Avatar" roundedCircle />}
                         {!avatarBase64 && <div className="avatar-placeholder">Upload Avatar</div>}
                       </div>
@@ -520,10 +526,10 @@ function PersonalInformation( {user_id} ) {
                           <Modal.Title>Avatar Settings</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                          <div {...getRootProps1()} className="dropzone">
+                          {is_not_hr && isEdit && <div {...getRootProps1()} className="dropzone">
                             <input {...getInputProps1()} />
                             <p>Drop new image here, or click to select a file</p>
-                          </div>
+                          </div>}
                         </Modal.Body>
                         <Modal.Footer>
                           {DLBase64 && <Dropdown>
@@ -533,6 +539,7 @@ function PersonalInformation( {user_id} ) {
 
                             <Dropdown.Menu>
                               <Dropdown.Item onClick={() => setShowBigImage(true)}>View Large Image</Dropdown.Item>
+                              <Dropdown.Item onClick={() => handleDownload(avatarBase64, avatarFileName)}>Download</Dropdown.Item>
                             </Dropdown.Menu>
                           </Dropdown>}
                           <Button variant="secondary" onClick={handleCloseImageModal}>
@@ -606,7 +613,7 @@ function PersonalInformation( {user_id} ) {
                   </Col>
 
                   <Col className="mb-3">
-                    <Form.Group id="gender">
+                    {is_not_hr && isEdit ? (<Form.Group id="gender">
                       <Form.Label>Gender</Form.Label>
                       <Form.Select 
                         id="gender-select" 
@@ -623,7 +630,16 @@ function PersonalInformation( {user_id} ) {
                         <option value="other">Other</option>
                         <option value="I wish not to disclose">I wish not to disclose</option>
                       </Form.Select>
-                    </Form.Group>
+                    </Form.Group>) : (<Form.Group id="gender">
+                      <Form.Label>Gender</Form.Label>
+                      <Form.Control 
+                        type="text"
+                        readOnly={true}
+                        style={{ backgroundColor:'#f2f2f2'}} 
+                        value={gender}
+                        onChange={(e) => setGender(e.target.value)}
+                      />
+                    </Form.Group>)}
                   </Col>
                 </Row>
 
@@ -716,7 +732,7 @@ function PersonalInformation( {user_id} ) {
                   <Col className="mb-3">
                     <Form.Group className="mb-2">
                       <Form.Label>State</Form.Label>
-                      <Form.Select 
+                      {is_not_hr && isEdit ? (<Form.Select 
                         id="state" 
                         defaultValue={state}
                         disabled={!(is_not_hr && isEdit)}
@@ -775,7 +791,13 @@ function PersonalInformation( {user_id} ) {
                         <option value="WV">West Virginia</option>
                         <option value="WI">Wisconsin</option>
                         <option value="WY">Wyoming</option>
-                      </Form.Select>
+                      </Form.Select>) : (<Form.Control 
+                        type="text" 
+                        readOnly={true}
+                        style={{ backgroundColor: '#f2f2f2' }} 
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                      />)}
                     </Form.Group>
                   </Col>
                   <Col className="mb-3">
@@ -1002,7 +1024,7 @@ function PersonalInformation( {user_id} ) {
                       </Button>
                     </td>
                     <td>
-                      {['jpg', 'jpeg'].includes(DLType) ? (
+                      {DLFileName ? (
                         <>
                           <Button variant="info" onClick={() => setShowDLImage(true)}>
                             Preview
@@ -1031,7 +1053,7 @@ function PersonalInformation( {user_id} ) {
                       </Button>
                     </td>
                     <td>
-                      {['jpg', 'jpeg'].includes(authType) ? (
+                      {authFileName ? (
                         <>
                           <Button variant="info" onClick={() => setShowAuthImage(true)}>
                             Preview
