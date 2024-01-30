@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, message } from "antd";
-import { FaFilePdf } from "react-icons/fa";
-import { DownloadOutlined } from "@ant-design/icons";
+import { DownloadOutlined, FilePdfFilled } from "@ant-design/icons";
 
 import PDFViewer from "./PDFViewer";
 
@@ -42,13 +41,13 @@ export default function PDF({ fileName, userID }) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "row", gap: 15 }}>
+    <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
       {
         // eslint-disable-next-line jsx-a11y/anchor-is-valid
         <a onClick={() => setShowPdf(!showPdf)}>
-          <FaFilePdf />
+          <FilePdfFilled style={{fontSize: 18}}/>
           <span
-            style={{ marginLeft: 2, fontSize: 15 }}
+            style={{ marginLeft: 1, fontSize: 18 }}
           >{`${fileName}.pdf`}</span>
         </a>
       }

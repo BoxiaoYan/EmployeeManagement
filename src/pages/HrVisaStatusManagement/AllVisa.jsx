@@ -33,6 +33,7 @@ export default function AllVisa({ employees, search, setSearch }) {
       title: "Approved Documents",
       dataIndex: "visa",
       key: "documents",
+      width: "25%",
       render: (visa) => (
         <div className={styles.files}>
           {visa.opt_receipt === "Approved" && (

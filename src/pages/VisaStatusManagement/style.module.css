@@ -53,10 +53,9 @@ container{
   box-sizing: content-box;
   display: flex;
   flex-direction: row;
-  gap:15px;
+  gap:50px;
   align-items: center;
   justify-content: flex-start;
-  margin-left: 2px;
 }
 
 .uploadFile {
