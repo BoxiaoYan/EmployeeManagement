@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Typography, Button, Table, Input, Tabs } from "antd";
+import { Table } from "antd";
+import { commonColumns } from "./dataFormat";
 
 import SearchBar from "../../components/SearchBar";
 import PDF from "../../components/PDF";
@@ -7,18 +8,11 @@ import PDF from "../../components/PDF";
 import styles from "./style.module.css";
 
 export default function AllVisa({ employees, search, setSearch }) {
-
-  const [feedback, setFeedback] = useState("");
-  const [selectedEmployee, setSelectedEmployee] = useState([]);
-
-  const columns = [
-    // Lists all employees who have not yet uploaded and been approved
-    // for all required OPT documents
-  ];
+  const [displayEmployees, setDisplayEmployees] = useState([]);
 
   useEffect(() => {
     // Update displayed employee with search result
-    setSelectedEmployee(
+    setDisplayEmployees(
       employees.filter((item) => {
         const { firstName, lastName, preferredName } = item.name;
         const fullName = firstName + " " + lastName;
@@ -33,30 +27,46 @@ export default function AllVisa({ employees, search, setSearch }) {
     );
   }, [search, employees]);
 
+  const allColumns = [
+    ...commonColumns,
+    {
+      title: "Approved Documents",
+      dataIndex: "visa",
+      key: "documents",
+      render: (visa) => (
+        <div className={styles.files}>
+          {visa.opt_receipt === "Approved" && (
+            <PDF fileName="opt_receipt" userID={visa.user} />
+          )}
+          {visa.opt_ead === "Approved" && (
+            <PDF fileName="opt_ead" userID={visa.user} />
+          )}
+          {visa.i983 === "Approved" && (
+            <PDF fileName="i983" userID={visa.user} />
+          )}
+          {visa.i20 === "Approved" && <PDF fileName="i20" userID={visa.user} />}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
-    <SearchBar
+      <SearchBar
         storageId="visaStatusSearch"
         search={search}
         setSearch={setSearch}
       />
 
       <div className={styles.text}>
-        Found {selectedEmployee.length} employee(s)
+        Found {displayEmployees.length} employee(s)
       </div>
-{/* 
+
       <Table
         className={styles.employeeTable}
-        dataSource={employees}
-        columns={columns}
-        rowKey={(record) => record.userId}
-        pagination={false}
-        onRow={(record) => ({
-          onClick: () => {
-            setSelectedEmployee(record);
-          },
-        })}
-      /> */}
+        dataSource={displayEmployees}
+        columns={allColumns}
+      />
     </>
   );
 }
