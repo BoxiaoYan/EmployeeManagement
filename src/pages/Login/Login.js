@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
-import { authUser, setCurrentUser, setCurrentUserStatus, setCurrentUserEmail, setCurrentUserPosition } from "../../app/userSlice";
+import { authUser, setCurrentUser } from "../../app/userSlice";
 import { verifySession } from "../../services/auth";
 
 import Authform from "../../components/Authform";
@@ -50,16 +50,11 @@ export default function Login() {
     if (!response.error) {
       message.success("Successful login");
       dispatch(setCurrentUser(response.payload));
-      dispatch(setCurrentUserStatus(response.payload.appStatus));
-      dispatch(setCurrentUserEmail(response.payload.email));
-      dispatch(setCurrentUserPosition(response.payload.position));
-
       const position = response.payload.position;
-      const employee_id = response.payload.id;
       navigate(
         position === "hr"
-          ? "/hr-profile"
-          : `/onboarding-application/${employee_id}`
+          ? "/employee-profile-summary"
+          : "/onboarding-application"
       );
     } else {
       message.error("Invalid username password");

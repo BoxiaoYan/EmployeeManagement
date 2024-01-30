@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Table } from "antd";
+import { Table, Typography } from "antd";
 
 import { reviewTableColumns } from "./dataFormat";
 import { fetchEmployeeByStatus } from "../../services/hr";
@@ -9,7 +9,7 @@ import SearchBar from "../../components/SearchBar";
 import styles from "./style.module.css";
 
 export default function ReviewTable({ status, search, setSearch }) {
-  // const [search, setSearch] = useState("");
+  const { Title } = Typography;
   const [employees, setEmployees] = useState([]);
   const [displayEmployees, setDisplayEmployees] = useState([]);
 
@@ -38,11 +38,11 @@ export default function ReviewTable({ status, search, setSearch }) {
 
   return (
     <>
-      <div className={styles.title}>
+      <Title className={styles.title}>
         Onboarding Application Review: {status}
-      </div>
+      </Title>
       <SearchBar
-        storageId="hiringManagementSearch"
+        searchId="hiringManagementSearch"
         search={search}
         setSearch={setSearch}
       />

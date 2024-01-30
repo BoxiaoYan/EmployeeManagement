@@ -1,19 +1,18 @@
-.searchBar {
-  width: 80%;
+.title {
+  width: 95%;
   margin: auto;
-  margin-top: 5%;
-  margin-bottom: 2%;
+  margin-top: 2%;
 }
 
 .text {
-  width: 80%;
+  width: 95%;
   margin: auto;
   font-size: medium;
   font-weight: 500;
 }
 
 .employeeTable {
-  width: 80%;
+  width: 95%;
   margin: auto;
   margin-top: 1%;
   margin-bottom: 10%;
