@@ -45,9 +45,9 @@ export default function PDF({ fileName, userID }) {
       {
         // eslint-disable-next-line jsx-a11y/anchor-is-valid
         <a onClick={() => setShowPdf(!showPdf)}>
-          <FilePdfFilled style={{fontSize: 18}}/>
+          <FilePdfFilled style={{fontSize: 18, color: "#1677ff"}}/>
           <span
-            style={{ marginLeft: 1, fontSize: 18 }}
+            style={{ marginLeft: 1, fontSize: 18, color: "#1677ff" }}
           >{`${fileName}.pdf`}</span>
         </a>
       }

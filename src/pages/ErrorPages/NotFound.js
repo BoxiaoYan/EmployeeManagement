@@ -5,6 +5,7 @@ import { Result, Button } from "antd";
 
 export default function NotFound() {
   const position = useSelector((state) => state.user.user.position);
+  const userID = useSelector((state) => state.user.user.id || null);
 
   return (
     <Result
@@ -16,7 +17,7 @@ export default function NotFound() {
           to={
             position === "hr"
               ? "/employee-profile-summary"
-              : "/onboarding-application"
+              : `/onboarding-application/${userID}`
           }
         >
           <Button type="primary" size="large">

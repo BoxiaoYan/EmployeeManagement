@@ -6,34 +6,15 @@ exports.saveFile = async (req, res, next) => {
     const fileBuffer = req.file.buffer;
     const { fileName, contentType } = req.body;
 
-    // If file is a visa file, also upload for visa status management
-    if (["opt_receipt", "opt_ead", "i983", "i20"].includes(fileName)) {
-      let userVisa = await db.Visa.findOne({ user: userID });
-      if (!userVisa) {
-        userVisa = await db.Visa.create({ user: userID });
-      }
-      userVisa[fileName].data = fileBuffer;
-      userVisa[fileName].contentType = contentType;
-      userVisa[fileName].status = "Pending";
-      await userVisa.save();
+    let userVisa = await db.Visa.findOne({ user: userID });
+    if (!userVisa) {
+      userVisa = await db.Visa.create({ user: userID });
     }
-
-    // Save the file to employee profile -> documents
-    const userProfile = await db.Profile.findOne({ user: userID });
-    if (!userProfile) {
-      return next({ status: 404, message: "None existing profile" });
-    }
-    const documents = userProfile.documents;
-    const targetFile = documents.find((file) => file.fileName === fileName);
-    if (targetFile) {
-      // File is already existed, update
-      targetFile.data = fileBuffer;
-      targetFile.contentType = contentType;
-    } else {
-      // Add the file to the document list
-      documents.push({ fileName, data: fileBuffer, contentType });
-    }
-    await userProfile.save();
+    
+    userVisa[fileName].data = fileBuffer;
+    userVisa[fileName].contentType = contentType;
+    userVisa[fileName].status = "Pending";
+    await userVisa.save();
 
     res.status(200).json({ message: "File is saved" });
   } catch (error) {

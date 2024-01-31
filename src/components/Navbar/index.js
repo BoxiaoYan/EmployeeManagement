@@ -9,11 +9,12 @@ import { logOutUser } from "../../app/userSlice";
 
 import styles from "./style.module.css";
 
-export default function Navbar({userID}) {
+export default function Navbar() {
   const dispatch = useDispatch();
   const navigator = useNavigate();
   const position = useSelector((state) => state.user.user.position);
   const username = useSelector((state) => state.user.user.username);
+  const userID = useSelector((state) => state.user.user.id || null);
 
   const handleLogout = () => {
     dispatch(logOutUser());
