@@ -1,0 +1,25 @@
+.tab {
+  width: 95%;
+  min-width: 80vh;
+  margin: auto;
+}
+
+.title {
+  width: 95%;
+  margin: auto;
+}
+
+.text {
+  width: 95%;
+  margin: auto;
+  font-size: medium;
+  font-weight: 500;
+}
+
+.table {
+  width: 95%;
+  margin: auto;
+  margin-top: 1%;
+  margin-bottom: 10%;
+  border: 1px solid lightgray;
+}
