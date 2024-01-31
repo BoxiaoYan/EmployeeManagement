@@ -50,11 +50,12 @@ export default function Login() {
     if (!response.error) {
       message.success("Successful login");
       dispatch(setCurrentUser(response.payload));
-      const position = response.payload.position;
+      const { id, position } = response.payload;
+      console.log(response.payload)
       navigate(
         position === "hr"
           ? "/employee-profile-summary"
-          : "/onboarding-application"
+          : `/onboarding-application/${id}`
       );
     } else {
       message.error("Invalid username password");

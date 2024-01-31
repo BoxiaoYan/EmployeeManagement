@@ -1,4 +1,5 @@
 const db = require("../models");
+const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 
 exports.getEmployeeByStatus = async (req, res, next) => {
@@ -43,6 +44,24 @@ exports.generateRegLink = async function (req, res, next) {
       // Update the registration link
       existUser.regLink = regLink;
       await existUser.save();
+      // Send email
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: "yanboxiao199961@gmail.com",
+          pass: "YBXjosh0601",
+        },
+      });
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: "Registration Link",
+        text: `This is your registration link: ${regLink}`,
+      };
+      transporter.sendMail(mailOptions, function (err, info) {
+        if (err) console.log(err);
+        else console.log(info);
+      });
       return res.status(200).json({ regLink });
     } else {
       // Create new user
@@ -77,7 +96,7 @@ exports.setEmployeeStatus = async function (req, res, next) {
   } catch (error) {
     return next(error);
   }
-}
+};
 
 exports.getEmployeeVisaStatus = async (req, res, next) => {
   try {

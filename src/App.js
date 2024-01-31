@@ -26,7 +26,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           {/* Employee pages */}
           <Route
-            path="/onboarding-application"
+            path="/onboarding-application/:employee_id"
             element={<OnboardingApplication />}
           />
           <Route path="/personal-profile" element={<>personal application</>} />
