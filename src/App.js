@@ -19,56 +19,29 @@ import ServerError from "./pages/ErrorPages/ServerError";
 import Registration from "./pages/Registration/Registration";
 import Login from "./pages/Login/Login";
 
-
 function App() {
   return (
-      // <BrowserRouter>
-      //   <Routes>
-      //     <Route path="/home" element={(<>Welcome to the Home Page</>)} />
-      //     <Route path="/registration/:token" element={<Registration/>} />
-      //     <Route path="/" element={<Login/>} />
-      //     <Route path="/login" element={<Login/>} />
-
-      //     <Route path="/error">
-      //       <Route path="/error/server-error" element={<ServerError />} />
-      //       <Route path="/error/not-authorized" element={<NotAuthorized />} />
-      //       <Route path="/error/session-expired" element={<SessionExpired />} />
-      //     </Route>
-      //     <Route path="*" element={<NotFound />} />
-
-      //     {/* <Route path="/test" element={<TestRedux />} /> */}
-
-      //     <Route path="/hiring-management" element={<HiringManagementPage />} />
-      //     <Route path="/summary" element={<EmployeeProfileSummary />} />
-      //     <Route path="/onboarding-application/:employee_id" element={<OnboardingApplication />} />
-      //     <Route path="/personal-profile/:employee_id" element={<PersonalInformation />} />
-      //     <Route path="/employee-profile-summary"element={<EmployeeProfileSummary />}/>
-      //     <Route path="/hr-profile" element={<HRInformation />} />
-      //   </Routes>
-      // </BrowserRouter>
-      <BrowserRouter>
+    <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Login />} />
         <Route path="/" element={<Layout />}>
           {/* Employee pages */}
           <Route
             path="/onboarding-application/:employee_id"
             element={<OnboardingApplication />}
           />
-          <Route path="/personal-profile/:employee_id" element={<PersonalInformation />} />
+          <Route
+            path="/personal-profile/:employee_id"
+            element={<PersonalInformation />}
+          />
           <Route path="/visa-status" element={<VisaStatusManagement />} />
           {/* Hr pages */}
-          <Route
-            path="/hr-profile"
-            element={<HRInformation />}
-          />
+          <Route path="/hr-profile" element={<HRInformation />} />
           <Route
             path="/employee-visa-status"
             element={<HrVisaStatusManagement />}
           />
-          <Route
-            path="/hiring-management"
-            element={<HiringManagementPage />}
-          />
+          <Route path="/hiring-management" element={<HiringManagementPage />} />
         </Route>
         <Route path="/registration/:token" element={<Registration />} />
         <Route path="/login" element={<Login />} />

@@ -1,5 +1,6 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 exports.getEmployeeByStatus = async (req, res, next) => {
   try {
@@ -43,6 +44,27 @@ exports.generateRegLink = async function (req, res, next) {
       // Update the registration link
       existUser.regLink = regLink;
       await existUser.save();
+      // Send email
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "yanboxiao199961@gmail.com",
+          pass: "YBXjosh0601",
+        },
+      });
+      const mailOptions = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: "Registration Link",
+        text: `This is your registration link: ${regLink}`,
+      };
+      await transporter.sendMail(mailOptions, function (err, info) {
+        if (err) console.log(err);
+        else console.log(info);
+      });
+      console.log("send email")
       return res.status(200).json({ regLink });
     } else {
       // Create new user

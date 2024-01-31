@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
   faCog,
-  faHome,
   faSearch,
   faEllipsisH,
   faEye,
@@ -25,7 +24,6 @@ import {
 } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./HRInformation.css";
-import Navbar from "../../components/Navbar";
 
 import { useNavigate } from "react-router-dom";
 import { fetchProfileSummary } from "../../services/profiles";
@@ -52,6 +50,7 @@ function HRInformation() {
     setIsLoading(true);
     fetchProfileSummary(setProfile, setDisplayProfile, setIsLoading, navigate);
     setTotalDatas(profile.length);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

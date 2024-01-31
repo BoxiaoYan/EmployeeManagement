@@ -16,6 +16,7 @@ exports.saveProfile = async function (req, res, next) {
       userProfile.reference = profile.reference || userProfile.reference;
       userProfile.emergencyContacts =
         profile.emergencyContacts || userProfile.emergencyContacts;
+      userProfile.documents = profile.documents || userProfile.documents;
       if (userProfile.appStatus !== "Approved") {
         userProfile.appStatus = "Pending";
       }

@@ -16,7 +16,7 @@ export default function NotFound() {
         <Link
           to={
             position === "hr"
-              ? "/employee-profile-summary"
+              ? "/hr-profile"
               : `/onboarding-application/${userID}`
           }
         >
